@@ -41,8 +41,11 @@ def get_sanitized_arguments(
         log("For a release a valid semantic version has to be set.")
         exit_process(2)
     elif args.release is False and version is None:
-        dev_version = _get_current_branch_dev_version()
-        if not dev_version and not args.force:
+        dev_version, existing_versions = _get_current_branch_dev_version()
+        if not dev_version and args.force and len(existing_versions) > 0:
+            dev_version = existing_versions[0]
+
+        if not dev_version:
             log(
                 "No version found. Please provide the semantic version you are working on."
             )
@@ -57,8 +60,9 @@ def get_sanitized_arguments(
 
 def concat_command_line_arguments(args: dict) -> str:
     command_line_arguments = ""
+    
     for arg in args:
-        arg_value = getattr(args, arg)
+        arg_value = args[arg]  # getattr(args, arg)
         if arg_value:
             # For boolean types, the existence of the flag is enough
             if type(arg_value) == bool:
@@ -99,6 +103,20 @@ def release_docker_image(name: str, version: str) -> subprocess.CompletedProcess
     return completed_process
 
 
+def create_git_tag(args: Dict[str, Union[bool, str]]):
+    completed_process = run(
+        f"git tag -a -m 'Automatically tagged during build process.' {args['version']}"
+    )
+
+    if completed_process.returncode == 128:
+        log(f"Git tag {args['version']} already exists.")
+    elif completed_process.returncode > 0:
+        log(completed_process.stderr)
+
+    if args["release"]:
+        run(f"git push origin {args['version']}")
+
+
 def build(component_path: str, args: Dict[str, str]):
     """Run the build logic of the specified component, except if the path is a (sub-)path in skipped-paths.
 
@@ -111,11 +129,15 @@ def build(component_path: str, args: Dict[str, str]):
     if _is_path_skipped(component_path, args["skip_path"]) is True:
         return
 
-    build_command = _create_build_cmd_from_args(component_path, **args)
-    failed = run(build_command).returncode
+    build_command = _create_build_cmd_from_args(component_path, args)
+    completed_process = run(build_command)
 
-    if failed:
-        log("Failed to build module " + component_path)
+    for line in completed_process.stdout.split('\n'):
+        print(line)
+
+    if completed_process.returncode > 0:
+        error_message = completed_process.stderr or completed_process.stdout
+        log(f"Failed to build module {component_path}. Code: {completed_process.returncode}. Reason: {error_message}")
         exit_process(1)
 
 
@@ -126,7 +148,9 @@ def run(command: str) -> subprocess.CompletedProcess:
         subprocess.CompletedProcess: State
     """
     log("Executing: " + command)
-    return subprocess.run("command", shell=True, stdout=subprocess.PIPE, text=True)
+    return subprocess.run(
+        command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+    )
 
 
 def exit_process(code: int = 0):
@@ -165,7 +189,7 @@ def _get_current_branch() -> Tuple[str, str]:
         return (path_parts[0], merged_branch_name)
 
 
-def _is_path_skipped(path: str, skip_paths=[]) -> bool:
+def _is_path_skipped(path: str, skip_paths: List[str] = []) -> bool:
     """Check whether the path is itself defined as a skip_path or is a sub-path of a skipped path.
 
     Args:
@@ -175,6 +199,7 @@ def _is_path_skipped(path: str, skip_paths=[]) -> bool:
     Returns:
         bool: Return true if the path should be skipped
     """
+    skip_paths = skip_paths or []
     for skip_path in skip_paths:
         if os.path.commonpath([path, skip_path]) != "":
             return True
@@ -234,7 +259,6 @@ def _create_build_cmd_from_args(module_path: str, sanitized_args: dict):
 
 
 def _is_valid_command_combination(args: argparse.Namespace) -> bool:
-    print(f"*** {args}")
     if (
         args.release
         and (not args.version or not args.test or not args.make)
@@ -266,7 +290,7 @@ def _get_version_tags() -> List["Version"]:
     versions = []
     for tag in unformatted_tags:
         tag_parts = tag.split("/")
-        tag = tag_parts[len(tag_parts) - 1]
+        tag = tag_parts[-1]
         # only consider tags that resemble versions
         version = Version.get_version_from_string(tag)
         if version is not None:
@@ -310,14 +334,19 @@ def _get_version(version: str, force: bool = False) -> "Version":
     return version_obj
 
 
-def _get_current_branch_dev_version() -> Optional["Version"]:
+def _get_current_branch_dev_version() -> Tuple[Optional["Version"], List["Version"]]:
+    """Returns a tuple of the best suiting version based on our logic and all available versions.
+
+    Returns:
+        [Tuple]:(best suited version | None, list of all existing versions sorted from highest to lowest based on git's sorting algorithm)
+    """
     # TODO Check that latest dev tag is given although there should be only one dev version per branch
     existing_versions = _get_version_tags()
     branch_name, branch_type = _get_current_branch()
     for version in existing_versions:
         if version.suffix == _get_dev_suffix(branch_name):
-            return version
-    return None
+            return (version, existing_versions)
+    return (None, existing_versions)
 
 
 def _get_dev_suffix(branch_name: Optional[str]):
@@ -359,6 +388,6 @@ class Version:
     @staticmethod
     def is_valid_version_format(version: str) -> Optional[Match[str]]:
         return re.match(
-            r"^([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?$",
+            r"^v?([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?$",
             version,
         )
