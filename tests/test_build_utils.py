@@ -8,8 +8,7 @@ valid_minor_version = "2.2.0"
 
 
 def _mocked_get_remote_git_tags() -> list:
-    return ["1.0.0", "1.1.3", "2.1.0", "1.2.0-dev.foo-branch", "1.0.0-dev"]
-
+    return sorted(["1.0.0", "1.1.3", "2.1.0", "1.2.0-dev.foo-branch", "1.0.0-dev"], reverse=True)
 
 def exit_process(code: int = 0):
     sys.exit(code)
@@ -56,6 +55,24 @@ class TestGetVersionClass:
     def test_with_too_small_patch(self):
         with pytest.raises(Exception):
             build_utils._get_version("1.1.2")
+    
+    def test_version_formats(self):
+        git_tags = ["1.0.0", "1.0.0-dev", "1.0.0-dev.foo", "v1.0.0", "v1.0.0-dev"]
+        invalid_git_tags = ["f1.0.0", "f1.0.0-dev-foo"]
+        validated_tags = []
+        for tag in git_tags:
+            version = build_utils.Version.get_version_from_string(tag)
+            if version == None:
+                continue
+            validated_tags.append(version)
+        
+        for tag in invalid_git_tags:
+            version = build_utils.Version.get_version_from_string(tag)
+            if version == None:
+                continue
+            validated_tags.append(version)
+        
+        assert len(validated_tags) == len(git_tags)
 
 
 class TestBuildClass:
@@ -108,6 +125,12 @@ class TestBuildClass:
 
         sanitized_args = build_utils.get_sanitized_arguments()
         assert sanitized_args["version"] == "1.2.0-dev.foo-branch"
+    
+    def test_build_with_force_without_version(self):
+        mock_branch("main")
+        sanitized_args = build_utils.get_sanitized_arguments(["--make", "--force"])
+        assert sanitized_args["version"] == "2.1.0"
+
 
     def test_build_with_no_dev_tag_in_branch(self):
         mock_branch("bar-branch", "feature")
