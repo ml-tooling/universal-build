@@ -59,12 +59,11 @@ with io.open(os.path.join(here, "requirements.txt"), encoding="utf-8") as f:
 # Load the package's __version__.py module as a dictionary.
 about = {}
 if not VERSION:
-    with open(os.path.join(here, os.path.join("src", MAIN_PACKAGE) , "r", "about.py")) as f:
+    with open(os.path.join(here, os.path.join("src", MAIN_PACKAGE), "about.py")) as f:
         exec(f.read(), about)
 else:
     about["__version__"] = VERSION
 
-print
 # Where the magic happens:
 setup(
     name=NAME,
@@ -94,9 +93,9 @@ setup(
         "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.5",
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
-        'Programming Language :: Python :: 3.8',
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
         # 'Programming Language :: Python :: 3 :: Only',
         "Topic :: Software Development :: Libraries",
         "Topic :: Software Development :: Libraries :: Python Modules",
