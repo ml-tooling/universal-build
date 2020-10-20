@@ -349,9 +349,9 @@ def _is_valid_command_combination(args: argparse.Namespace) -> bool:
         and (not args.version or not args.test or not args.make)
         and not args.force
     ):
-        log("Please provide a version for deployment (--version=MAJOR.MINOR.PATCH-TAG)")
-        log("Test must be executed before the deployment (--test)")
-        log("Build must be executed before the deployment (--make)")
+        log(f"Please provide a version for deployment (--{FLAG_VERSION}=MAJOR.MINOR.PATCH-TAG)")
+        log(f"Test must be executed before the deployment (--{FLAG_TEST})")
+        log(f"Build must be executed before the deployment (--{FLAG_MAKE})")
 
         return False
 
