@@ -48,6 +48,12 @@ def get_sanitized_arguments(
     if not _is_valid_command_combination(args):
         exit_process(1)
 
+    # Handle login when using the buld container
+    if args.release and args.docker:
+        completed_process = run(f"docker login -u {os.getenv('DOCKER_USERNAME')} -p {os.getenv('DOCKER_ACCESS_TOKEN')}")
+        if completed_process.returncode > 0:
+            log("Could not login into Docker repository. The environment variables DOCKER_USERNAME and DOCKER_ACCESS_TOKEN have to be set. Think about using an access token instead of your actual password.")
+        
     existing_versions = _get_version_tags()
     try:
         version = _get_version(
