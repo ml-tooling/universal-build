@@ -7,7 +7,6 @@ import sys
 
 ALLOWED_BRANCH_TYPES = ["release", "production"]
 MAIN_BRANCH_NAMES = ["master", "main"]
-REMOTE_IMAGE_PREFIX = "mltooling/"
 
 FLAG_MAKE = "make"
 FLAG_TEST = "test"
@@ -111,24 +110,26 @@ def build_docker_image(
     )
 
     if completed_process.returncode > 0:
-        build_utils.log(f"Failed to build Docker image {name}:{version}")
+        log(f"Failed to build Docker image {name}:{version}")
 
     return completed_process
 
 
-def release_docker_image(name: str, version: str) -> subprocess.CompletedProcess:
+def release_docker_image(
+    name: str, version: str, remote_image_prefix: str = ""
+) -> subprocess.CompletedProcess:
     versioned_image = name + ":" + version
     latest_image = name + ":latest"
-    remote_versioned_image = REMOTE_IMAGE_PREFIX + versioned_image
+    remote_versioned_image = remote_image_prefix + versioned_image
     run("docker tag " + versioned_image + " " + remote_versioned_image)
     completed_process = run("docker push " + remote_versioned_image)
 
     if completed_process.returncode > 0:
-        build_utils.log(f"Failed to release Docker image {name}:{version}")
+        log(f"Failed to release Docker image {name}:{version}")
 
     if "-dev" not in version:
         log("Release Docker image with latest tag as well.")
-        remote_latest_image = REMOTE_IMAGE_PREFIX + latest_image
+        remote_latest_image = remote_image_prefix + latest_image
         run("docker tag " + latest_image + " " + remote_latest_image)
         run("docker push " + remote_latest_image)
 
