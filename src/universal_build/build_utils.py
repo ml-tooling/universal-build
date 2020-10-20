@@ -1,3 +1,5 @@
+from subprocess import CompletedProcess
+from sys import stdout
 from typing import Dict, List, Match, Optional, Tuple, Union
 import argparse
 import subprocess
@@ -60,7 +62,7 @@ def get_sanitized_arguments(
 
 def concat_command_line_arguments(args: dict) -> str:
     command_line_arguments = ""
-    
+
     for arg in args:
         arg_value = args[arg]  # getattr(args, arg)
         if arg_value:
@@ -132,12 +134,11 @@ def build(component_path: str, args: Dict[str, str]):
     build_command = _create_build_cmd_from_args(component_path, args)
     completed_process = run(build_command)
 
-    for line in completed_process.stdout.split('\n'):
-        print(line)
-
     if completed_process.returncode > 0:
         error_message = completed_process.stderr or completed_process.stdout
-        log(f"Failed to build module {component_path}. Code: {completed_process.returncode}. Reason: {error_message}")
+        log(
+            f"Failed to build module {component_path}. Code: {completed_process.returncode}. Reason: {error_message}"
+        )
         exit_process(1)
 
 
@@ -148,8 +149,26 @@ def run(command: str) -> subprocess.CompletedProcess:
         subprocess.CompletedProcess: State
     """
     log("Executing: " + command)
-    return subprocess.run(
+
+    process = subprocess.Popen(
         command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+    )
+    stdout = ""
+    stderr = ""
+    with process.stdout:
+        for line in iter(process.stdout.readline, ""):
+            log(line.rstrip("\n"))
+            stdout += line
+    with process.stderr:
+        for line in iter(process.stderr.readline, ""):
+            log(line.rstrip("\n"))
+            stderr += line
+
+    exitcode = process.wait()
+
+    # return completed_process
+    return subprocess.CompletedProcess(
+        args=command, returncode=exitcode, stdout=stdout, stderr=stderr
     )
 
 
