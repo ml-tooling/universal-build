@@ -1,5 +1,3 @@
-from subprocess import CompletedProcess
-from sys import stdout
 from typing import Dict, List, Match, Optional, Tuple, Union
 import argparse
 import subprocess
@@ -11,23 +9,37 @@ ALLOWED_BRANCH_TYPES = ["release", "production"]
 MAIN_BRANCH_NAMES = ["master", "main"]
 REMOTE_IMAGE_PREFIX = "mltooling/"
 
+FLAG_MAKE = "make"
+FLAG_TEST = "test"
+FLAG_RELEASE = "release"
+FLAG_VERSION = "version"
+FLAG_SKIP_PATH = "skip-path"
+FLAG_FORCE = "force"
+FLAG_DOCKER = "docker"
+FLAG_SANITIZED = "_sanitized"
+
 
 def log(message: str):
     print(message, flush=True)
 
 
 def get_sanitized_arguments(
-    arguments: List[str] = None,
+    arguments: List[str] = None, argument_parser: argparse.ArgumentParser = None
 ) -> Dict[str, Union[str, bool]]:
     """Return sanitized default arguments when they are valid.
     Sanitized means that, for example, the version is already checked and set depending on our build guidelines.
     If arguments are not valid, exit the script run.
 
+    Args:
+        arguments (List[str], optional): List of arguments that are used instead of the arguments passed to the process. Defaults to None.
+        argument_parser (arparse.ArgumentParser, optional): An argument parser which is passed as a parents parser to the default ArgumentParser to be able to use additional flags besides the default ones. Must be initialized with `add_help=False` flag like argparse.ArgumentParser(add_help=False)!
+
     Returns:
         Dict[str, Union[bool, str]]: The parsed default arguments thar are already checked for validity.
     """
 
-    parser = _get_default_cli_arguments_parser(argparse.ArgumentParser(add_help=False))
+    argument_parser = argument_parser or argparse.ArgumentParser(add_help=False)
+    parser = _get_default_cli_arguments_parser(argument_parser)
     args, unknown = parser.parse_known_args(args=arguments)
 
     if args._sanitized:
@@ -36,8 +48,11 @@ def get_sanitized_arguments(
     if not _is_valid_command_combination(args):
         exit_process(1)
 
+    existing_versions = _get_version_tags()
     try:
-        version = _get_version(args.version, args.force)
+        version = _get_version(
+            args.version, args.force, existing_versions=existing_versions
+        )
     except Exception as e:
         log(str(e))
         version = None
@@ -46,7 +61,9 @@ def get_sanitized_arguments(
         log("For a release a valid semantic version has to be set.")
         exit_process(2)
     elif args.release is False and version is None:
-        dev_version, existing_versions = _get_current_branch_dev_version()
+        dev_version, existing_versions = _get_current_branch_dev_version(
+            existing_versions=existing_versions
+        )
         if not dev_version and args.force and len(existing_versions) > 0:
             dev_version = existing_versions[0]
 
@@ -83,7 +100,7 @@ def build_docker_image(
 ) -> subprocess.CompletedProcess:
     versioned_image = name + ":" + version
     latest_image = name + ":latest"
-    return run(
+    completed_process = run(
         "docker build -t "
         + versioned_image
         + " -t "
@@ -93,6 +110,11 @@ def build_docker_image(
         + " ./"
     )
 
+    if completed_process.returncode > 0:
+        build_utils.log(f"Failed to build Docker image {name}:{version}")
+
+    return completed_process
+
 
 def release_docker_image(name: str, version: str) -> subprocess.CompletedProcess:
     versioned_image = name + ":" + version
@@ -101,7 +123,11 @@ def release_docker_image(name: str, version: str) -> subprocess.CompletedProcess
     run("docker tag " + versioned_image + " " + remote_versioned_image)
     completed_process = run("docker push " + remote_versioned_image)
 
+    if completed_process.returncode > 0:
+        build_utils.log(f"Failed to release Docker image {name}:{version}")
+
     if "-dev" not in version:
+        log("Release Docker image with latest tag as well.")
         remote_latest_image = REMOTE_IMAGE_PREFIX + latest_image
         run("docker tag " + latest_image + " " + remote_latest_image)
         run("docker push " + remote_latest_image)
@@ -146,8 +172,14 @@ def build(component_path: str, args: Dict[str, str]):
         exit_process(1)
 
 
-def run(command: str) -> subprocess.CompletedProcess:
+def run(
+    command: str, disable_stdout_logging: bool = False
+) -> subprocess.CompletedProcess:
     """Wrapper for subprocess.run() to print our
+
+    Args:
+        command (str): The shell command that is executed via subprocess.Popen.
+        disable_stdout_logging (bool): Disable stdout logging when it is too much or handled by the caller.
 
     Returns:
         subprocess.CompletedProcess: State
@@ -161,7 +193,8 @@ def run(command: str) -> subprocess.CompletedProcess:
     stderr = ""
     with process.stdout:
         for line in iter(process.stdout.readline, ""):
-            log(line.rstrip("\n"))
+            if not disable_stdout_logging:
+                log(line.rstrip("\n"))
             stdout += line
     with process.stderr:
         for line in iter(process.stderr.readline, ""):
@@ -238,36 +271,38 @@ def _get_default_cli_arguments_parser(
 
     # NEW FLAGS
     parser.add_argument(
-        "--make", help="Make/compile/package all artefacts", action="store_true"
+        f"--{FLAG_MAKE}", help="Make/compile/package all artefacts", action="store_true"
     )
     parser.add_argument(
-        "--test", help="Run unit and integration tests", action="store_true"
+        f"--{FLAG_TEST}", help="Run unit and integration tests", action="store_true"
     )
     parser.add_argument(
-        "--release",
+        f"--{FLAG_RELEASE}",
         help="Release all artefacts to respective remote registries (e.g. DockerHub)",
         action="store_true",
     )
-    parser.add_argument("--version", help="Version of build (MAJOR.MINOR.PATCH-TAG)")
     parser.add_argument(
-        "--force",
+        f"--{FLAG_VERSION}", help="Version of build (MAJOR.MINOR.PATCH-TAG)"
+    )
+    parser.add_argument(
+        f"--{FLAG_FORCE}",
         help="Ignore all enforcements and warnings and run the action",
         action="store_true",
     )
     parser.add_argument(
-        "--skip-path",
+        f"--{FLAG_SKIP_PATH}",
         help="Skips the build phases for all (sub)paths provided here",
         action="append",
     )
     parser.add_argument(
-        "--docker",
+        f"--{FLAG_DOCKER}",
         help="Build it with help of the Builder Docker container instead of locally on your machine.",
         action="store_true",
     )
     parser.add_argument(
-        '--_sanitized',
+        f"--{FLAG_SANITIZED}",
         help="Indicates that a parent build.py script already checked the validity of the passed arguments so that subsequent scripts don't do it again.",
-        action="store_true"
+        action="store_true",
     )
 
     return parser
@@ -327,11 +362,15 @@ def _get_version_tags() -> List["Version"]:
 
 
 def _get_remote_git_tags() -> List[str]:
-    result = run("git ls-remote --tags --sort='-v:refname' --refs")
+    result = run(
+        "git ls-remote --tags --sort='-v:refname' --refs", disable_stdout_logging=True
+    )
     return result.stdout.rstrip("\n").split("\n")
 
 
-def _get_version(version: str, force: bool = False) -> "Version":
+def _get_version(
+    version: str, force: bool = False, existing_versions: List["Version"] = []
+) -> "Version":
     """Get version. If force is set to True, the version is allowed to be equal or smaller than the existing patch version.
     Raises:
         Exception: Raises an exception when the provided version's format is not valid, an existing or higher version in the patch branch exists or no version is passed. The exception contains a respective message.
@@ -339,7 +378,6 @@ def _get_version(version: str, force: bool = False) -> "Version":
         Version: Validated version
     """
     provided_version = version
-    existing_versions = _get_version_tags()
     if provided_version:
         version_obj = Version.get_version_from_string(provided_version)
         if version_obj is None:
@@ -362,14 +400,15 @@ def _get_version(version: str, force: bool = False) -> "Version":
     return version_obj
 
 
-def _get_current_branch_dev_version() -> Tuple[Optional["Version"], List["Version"]]:
+def _get_current_branch_dev_version(
+    existing_versions: List["Version"] = [],
+) -> Tuple[Optional["Version"], List["Version"]]:
     """Returns a tuple of the best suiting version based on our logic and all available versions.
 
     Returns:
         [Tuple]:(best suited version | None, list of all existing versions sorted from highest to lowest based on git's sorting algorithm)
     """
     # TODO Check that latest dev tag is given although there should be only one dev version per branch
-    existing_versions = _get_version_tags()
     branch_name, branch_type = _get_current_branch()
     for version in existing_versions:
         if version.suffix == _get_dev_suffix(branch_name):

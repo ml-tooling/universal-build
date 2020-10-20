@@ -8,7 +8,10 @@ valid_minor_version = "2.2.0"
 
 
 def _mocked_get_remote_git_tags() -> list:
-    return sorted(["1.0.0", "1.1.3", "2.1.0", "1.2.0-dev.foo-branch", "1.0.0-dev"], reverse=True)
+    return sorted(
+        ["1.0.0", "1.1.3", "2.1.0", "1.2.0-dev.foo-branch", "1.0.0-dev"], reverse=True
+    )
+
 
 def exit_process(code: int = 0):
     sys.exit(code)
@@ -27,7 +30,7 @@ def mock_branch(branch_name: str, branch_type: str = ""):
 
 class TestGetVersionClass:
     def test_correct_semantic_patch_version(self):
-        valid_version = build_utils._get_version(valid_patch_version)
+        valid_version = build_utils._get_version(valid_patch_version, existing_versions=build_utils._get_version_tags())
         assert isinstance(valid_version, build_utils.Version)
         version_split = valid_patch_version.split(".")
         assert (
@@ -38,7 +41,7 @@ class TestGetVersionClass:
         )
 
     def test_correct_semantic_minor_version(self):
-        valid_version = build_utils._get_version(valid_minor_version)
+        valid_version = build_utils._get_version(valid_minor_version, existing_versions=build_utils._get_version_tags())
         assert isinstance(valid_version, build_utils.Version)
         version_split = valid_minor_version.split(".")
         assert (
@@ -50,12 +53,12 @@ class TestGetVersionClass:
 
     def test_no_semantic_version(self):
         with pytest.raises(Exception):
-            build_utils._get_version("foobar")
+            build_utils._get_version("foobar", existing_versions=build_utils._get_version_tags())
 
     def test_with_too_small_patch(self):
         with pytest.raises(Exception):
-            build_utils._get_version("1.1.2")
-    
+            build_utils._get_version("1.1.2", existing_versions=build_utils._get_version_tags())
+
     def test_version_formats(self):
         git_tags = ["1.0.0", "1.0.0-dev", "1.0.0-dev.foo", "v1.0.0", "v1.0.0-dev"]
         invalid_git_tags = ["f1.0.0", "f1.0.0-dev-foo"]
@@ -65,20 +68,20 @@ class TestGetVersionClass:
             if version == None:
                 continue
             validated_tags.append(version)
-        
+
         for tag in invalid_git_tags:
             version = build_utils.Version.get_version_from_string(tag)
             if version == None:
                 continue
             validated_tags.append(version)
-        
+
         assert len(validated_tags) == len(git_tags)
 
 
 class TestBuildClass:
     def test_release_without_version(self):
         with pytest.raises(SystemExit) as pytest_wrapped_e:
-            build_utils.get_sanitized_arguments(["--release"])
+            build_utils.get_sanitized_arguments([f"--{build_utils.FLAG_RELEASE}"])
 
         assert pytest_wrapped_e.type == SystemExit
         assert pytest_wrapped_e.value.code == 1
@@ -87,7 +90,12 @@ class TestBuildClass:
         mock_branch("foobar")
         with pytest.raises(SystemExit) as pytest_wrapped_e:
             build_utils.get_sanitized_arguments(
-                ["--release", "--test", "--make", "--version=foo"]
+                [
+                    f"--{build_utils.FLAG_RELEASE}",
+                    f"--{build_utils.FLAG_TEST}",
+                    f"--{build_utils.FLAG_MAKE}",
+                    f"--{build_utils.FLAG_VERSION}=foo",
+                ]
             )
 
         assert pytest_wrapped_e.type == SystemExit
@@ -97,7 +105,12 @@ class TestBuildClass:
         mock_branch("main")
         with pytest.raises(SystemExit) as pytest_wrapped_e:
             build_utils.get_sanitized_arguments(
-                ["--release", "--test", "--make", "--version=foo"]
+                [
+                    f"--{build_utils.FLAG_RELEASE}",
+                    f"--{build_utils.FLAG_TEST}",
+                    f"--{build_utils.FLAG_MAKE}",
+                    f"--{build_utils.FLAG_VERSION}=foo",
+                ]
             )
 
         assert pytest_wrapped_e.type == SystemExit
@@ -106,7 +119,12 @@ class TestBuildClass:
     def test_release_with_already_existing_version(self):
         with pytest.raises(SystemExit) as pytest_wrapped_e:
             build_utils.get_sanitized_arguments(
-                ["--release", "--test", "--make", "--version 1.0.0"]
+                [
+                    f"--{build_utils.FLAG_RELEASE}",
+                    f"--{build_utils.FLAG_TEST}",
+                    f"--{build_utils.FLAG_MAKE}",
+                    f"--{build_utils.FLAG_VERSION} 1.0.0",
+                ]
             )
 
         assert pytest_wrapped_e.type == SystemExit
@@ -115,22 +133,28 @@ class TestBuildClass:
     def test_release(self):
 
         sanitized_arguments = build_utils.get_sanitized_arguments(
-            ["--release", "--test", "--make", f"--version={valid_patch_version}"]
+            [
+                f"--{build_utils.FLAG_RELEASE}",
+                f"--{build_utils.FLAG_TEST}",
+                f"--{build_utils.FLAG_MAKE}",
+                f"--{build_utils.FLAG_VERSION}={valid_patch_version}",
+            ]
         )
-        assert isinstance(sanitized_arguments["version"], str)
-        assert sanitized_arguments["version"] == valid_patch_version
+        assert isinstance(sanitized_arguments[build_utils.FLAG_VERSION], str)
+        assert sanitized_arguments[build_utils.FLAG_VERSION] == valid_patch_version
 
     def test_build_with_dev_tag_in_branch(self):
         mock_branch("foo-branch", "feature")
 
         sanitized_args = build_utils.get_sanitized_arguments()
-        assert sanitized_args["version"] == "1.2.0-dev.foo-branch"
-    
+        assert sanitized_args[build_utils.FLAG_VERSION] == "1.2.0-dev.foo-branch"
+
     def test_build_with_force_without_version(self):
         mock_branch("main")
-        sanitized_args = build_utils.get_sanitized_arguments(["--make", "--force"])
-        assert sanitized_args["version"] == "2.1.0"
-
+        sanitized_args = build_utils.get_sanitized_arguments(
+            [f"--{build_utils.FLAG_MAKE}", f"--{build_utils.FLAG_FORCE}"]
+        )
+        assert sanitized_args[build_utils.FLAG_VERSION] == "2.1.0"
 
     def test_build_with_no_dev_tag_in_branch(self):
         mock_branch("bar-branch", "feature")
