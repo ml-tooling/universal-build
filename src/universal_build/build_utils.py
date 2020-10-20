@@ -30,6 +30,9 @@ def get_sanitized_arguments(
     parser = _get_default_cli_arguments_parser(argparse.ArgumentParser(add_help=False))
     args, unknown = parser.parse_known_args(args=arguments)
 
+    if args._sanitized:
+        return vars(args)
+
     if not _is_valid_command_combination(args):
         exit_process(1)
 
@@ -57,6 +60,7 @@ def get_sanitized_arguments(
         version.suffix = _get_dev_suffix(_get_current_branch()[0])
 
     args.version = version.to_string()
+    args._sanitized = True
     return vars(args)
 
 
@@ -259,6 +263,11 @@ def _get_default_cli_arguments_parser(
         "--docker",
         help="Build it with help of the Builder Docker container instead of locally on your machine.",
         action="store_true",
+    )
+    parser.add_argument(
+        '--_sanitized',
+        help="Indicates that a parent build.py script already checked the validity of the passed arguments so that subsequent scripts don't do it again.",
+        action="store_true"
     )
 
     return parser
