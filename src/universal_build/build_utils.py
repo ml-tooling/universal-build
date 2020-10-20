@@ -12,8 +12,9 @@ FLAG_MAKE = "make"
 FLAG_TEST = "test"
 FLAG_RELEASE = "release"
 FLAG_VERSION = "version"
-FLAG_SKIP_PATH = "skip-path"
+FLAG_SKIP_PATH = "skip_path"
 FLAG_FORCE = "force"
+FLAG_DOCKER_IMAGE_PREFIX = "docker_image_prefix"
 FLAG_DOCKER = "docker"
 FLAG_SANITIZED = "_sanitized"
 
@@ -116,11 +117,27 @@ def build_docker_image(
 
 
 def release_docker_image(
-    name: str, version: str, remote_image_prefix: str = ""
+    name: str, version: str, docker_image_prefix: str = ""
 ) -> subprocess.CompletedProcess:
+    """Push a Docker image to a repository.
+
+    Args:
+        name (str): The name of the image. Must not be prefixed!
+        version (str): The tag used for the image.
+        docker_image_prefix (str, optional): The prefix added to the name to indicate an organization on DockerHub or a completely different repository. Defaults to "".
+
+    Returns:
+        subprocess.CompletedProcess: Returns the CompletedProcess object of the `docker push ...` command.
+    """    
+    if not docker_image_prefix:
+        log(
+            f"The flag --docker-image-prefix cannot be blank when pushing a Docker image."
+        )
+        exit_process(1)
+
     versioned_image = name + ":" + version
     latest_image = name + ":latest"
-    remote_versioned_image = remote_image_prefix + versioned_image
+    remote_versioned_image = docker_image_prefix + versioned_image
     run("docker tag " + versioned_image + " " + remote_versioned_image)
     completed_process = run("docker push " + remote_versioned_image)
 
@@ -129,7 +146,7 @@ def release_docker_image(
 
     if "-dev" not in version:
         log("Release Docker image with latest tag as well.")
-        remote_latest_image = remote_image_prefix + latest_image
+        remote_latest_image = docker_image_prefix + latest_image
         run("docker tag " + latest_image + " " + remote_latest_image)
         run("docker push " + remote_latest_image)
 
@@ -159,7 +176,7 @@ def build(component_path: str, args: Dict[str, str]):
             script are passed down to the component.
     """
 
-    if _is_path_skipped(component_path, args["skip_path"]) is True:
+    if _is_path_skipped(component_path, args[FLAG_SKIP_PATH]) is True:
         return
 
     build_command = _create_build_cmd_from_args(component_path, args)
@@ -291,9 +308,13 @@ def _get_default_cli_arguments_parser(
         action="store_true",
     )
     parser.add_argument(
-        f"--{FLAG_SKIP_PATH}",
+        "--skip-path",
         help="Skips the build phases for all (sub)paths provided here",
         action="append",
+    )
+    parser.add_argument(
+        "--docker-image-prefix",
+        help="With this flag you can provide a prefix for a Docker image, e.g. 'mltooling/' or even a repository path. When leaving blank, the default Dockerhub Repository is used.",
     )
     parser.add_argument(
         f"--{FLAG_DOCKER}",
