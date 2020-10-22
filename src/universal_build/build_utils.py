@@ -161,7 +161,8 @@ def release_docker_image(
 
 def create_git_tag(args: Dict[str, Union[bool, str]]):
     completed_process = run(
-        f"git tag -a -m 'Automatically tagged during build process.' {args['version']}"
+        f"git tag -a -m 'Automatically tagged during build process.' {args['version']}",
+        disable_stderr_logging=True
     )
 
     if completed_process.returncode == 128:
@@ -197,7 +198,7 @@ def build(component_path: str, args: Dict[str, str]):
 
 
 def run(
-    command: str, disable_stdout_logging: bool = False
+    command: str, disable_stdout_logging: bool = False, disable_stderr_logging: bool = False
 ) -> subprocess.CompletedProcess:
     """Wrapper for subprocess.run() to print our
 
@@ -222,7 +223,8 @@ def run(
             stdout += line
     with process.stderr:
         for line in iter(process.stderr.readline, ""):
-            log(line.rstrip("\n"))
+            if not disable_stderr_logging:
+                log(line.rstrip("\n"))
             stderr += line
 
     exitcode = process.wait()
