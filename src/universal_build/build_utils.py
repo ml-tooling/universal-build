@@ -161,17 +161,17 @@ def release_docker_image(
 
 def create_git_tag(args: Dict[str, Union[bool, str]]):
     completed_process = run(
-        f"git tag -a -m 'Automatically tagged during build process.' {args['version']}",
+        f"git tag -a -m 'Automatically tagged during build process.' v{args['version']}",
         disable_stderr_logging=True
     )
 
     if completed_process.returncode == 128:
-        log(f"Git tag {args['version']} already exists.")
+        log(f"Git tag v{args['version']} already exists.")
     elif completed_process.returncode > 0:
         log(completed_process.stderr)
 
     if args["release"]:
-        run(f"git push origin {args['version']}")
+        run(f"git push origin v{args['version']}")
 
 
 def build(component_path: str, args: Dict[str, str]):
