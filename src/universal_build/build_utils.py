@@ -199,9 +199,9 @@ def create_git_tag(version: str, push: bool = False, force: bool = False):
         push (bool, optional): If true, push the tag to remote. Defaults to False.
         force (bool, optional): If true, force the tag to be created. Defaults to False.
     """
-    force = "-f" if force else ""
+    force_flag = "-f" if force else ""
     completed_process = run(
-        f"git tag -a -m 'Automatically tagged during build process.' {force} v{version}",
+        f"git tag -a -m 'Automatically tagged during build process.' {force_flag} v{version}",
         disable_stderr_logging=True,
     )
 
