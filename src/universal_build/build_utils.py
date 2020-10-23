@@ -53,7 +53,6 @@ def get_sanitized_arguments(
     if args._sanitized:
         return vars(args)
 
-    print(args)
     if not _is_valid_command_combination(args):
         exit_process(EXIT_CODE_INVALID_ARGUMENTS)
 
