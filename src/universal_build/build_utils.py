@@ -101,7 +101,7 @@ def get_sanitized_arguments(
             latest_branch_version, _get_current_branch()[0]
         ):
             log(
-                f"The found dev version {latest_branch_version.to_string()} does not belong to branch {_get_current_branch()[0]}. Please remove the tag or pass it manually."
+                f"The found dev version {latest_branch_version.to_string()} does not belong to branch {_get_current_branch()[0]}. Please remove the tag or pass it manually via the --{FLAG_VERSION} flag."
             )
             exit_process(EXIT_CODE_DEV_VERSION_NOT_MATCHES_BRANCH)
 
