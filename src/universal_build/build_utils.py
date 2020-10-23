@@ -110,7 +110,12 @@ def get_sanitized_arguments(
 
     # Reset the existing dev tag to the current HEAD.
     force_git_creation = not args.release
-    create_git_tag(version.to_string(), force=force_git_creation)
+    completed_process = create_git_tag(version.to_string(), force=force_git_creation)
+    if args.release and completed_process.returncode > 0:
+        log(
+            "Please not that a tag cannot be overriden for a release. Consider using a different version or delete the other one."
+        )
+
     args.version = version.to_string()
     args._sanitized = True
     return vars(args)
@@ -189,14 +194,20 @@ def release_docker_image(
     return completed_process
 
 
-def create_git_tag(version: str, push: bool = False, force: bool = False):
+def create_git_tag(
+    version: str, push: bool = False, force: bool = False
+) -> subprocess.CompletedProcess:
     """Create an annotated git tag in the current HEAD via `git tag` and the provided version.
     The version will be prefixed with 'v'.
+    If push is set, the tag is pushed to remote but only if the previous `git tag` command was successful.
 
     Args:
         version (str): The tag to be created. Will be prefixed with 'v'.
         push (bool, optional): If true, push the tag to remote. Defaults to False.
         force (bool, optional): If true, force the tag to be created. Defaults to False.
+
+    Returns:
+        subprocess.CompletedProcess: Returns the CompletedProcess object of either the `git tag` or the `git push tag` command. If `push` is set to true, the CompletedProcess of `git tag` is returned if it failed, otherwise the CompletedProcess object from the `git push tag` command is returned.
     """
     force_flag = "-f" if force else ""
     completed_process = run(
@@ -205,10 +216,14 @@ def create_git_tag(version: str, push: bool = False, force: bool = False):
     )
 
     if completed_process.returncode > 0:
-        log(f"Executing `git tag` for version v{version} might have a problem: {completed_process.stderr}")
+        log(
+            f"Executing `git tag` for version v{version} might have a problem: {completed_process.stderr}"
+        )
 
-    if push:
-        run(f"git push origin v{version}")
+    if completed_process.returncode == 0 and push:
+        completed_process = run(f"git push origin v{version}")
+
+    return completed_process
 
 
 def build(component_path: str, args: Dict[str, str]):
@@ -495,7 +510,8 @@ def _get_version(
                 existing_version.major == version_obj.major
                 and existing_version.minor == version_obj.minor
                 and existing_version.patch >= version_obj.patch
-                and existing_version.suffix == "" # Only consider release versions, not suffixed dev versions
+                and existing_version.suffix
+                == ""  # Only consider release versions, not suffixed dev versions
                 and not force
             ):
                 raise VersionInvalidPatchNumber(
