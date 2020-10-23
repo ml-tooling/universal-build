@@ -5,6 +5,8 @@ import os
 import re
 import sys
 
+from _pytest.python_api import _non_numeric_type_error
+
 ALLOWED_BRANCH_TYPES = ["release", "production"]
 MAIN_BRANCH_NAMES = ["master", "main"]
 
@@ -17,6 +19,14 @@ FLAG_FORCE = "force"
 FLAG_DOCKER_IMAGE_PREFIX = "docker_image_prefix"
 FLAG_DOCKER = "docker"
 FLAG_SANITIZED = "_sanitized"
+
+EXIT_CODE_GENERAL = 1
+EXIT_CODE_INVALID_VERSION = 2
+EXIT_CODE_NO_VERSION_FOUND = 3
+EXIT_CODE_VERSION_IS_REQUIRED = 4
+EXIT_CODE_DEV_VERSION_REQUIRED = 5
+EXIT_CODE_DEV_VERSION_NOT_MATCHES_BRANCH = 6
+EXIT_CODE_INVALID_ARGUMENTS = 7
 
 
 def log(message: str):
@@ -45,40 +55,62 @@ def get_sanitized_arguments(
     if args._sanitized:
         return vars(args)
 
+    print(args)
     if not _is_valid_command_combination(args):
-        exit_process(1)
+        exit_process(EXIT_CODE_INVALID_ARGUMENTS)
 
     # Handle login when using the buld container
     if args.release and args.docker:
-        completed_process = run(f"docker login -u {os.getenv('DOCKER_USERNAME')} -p {os.getenv('DOCKER_ACCESS_TOKEN')}")
+        completed_process = run(
+            f"docker login -u {os.getenv('DOCKER_USERNAME')} -p {os.getenv('DOCKER_ACCESS_TOKEN')}"
+        )
         if completed_process.returncode > 0:
-            log("Could not login into Docker repository. The environment variables DOCKER_USERNAME and DOCKER_ACCESS_TOKEN have to be set. Think about using an access token instead of your actual password.")
-        
+            log(
+                "Could not login into Docker repository. The environment variables DOCKER_USERNAME and DOCKER_ACCESS_TOKEN have to be set. Think about using an access token instead of your actual password."
+            )
+
     existing_versions = _get_version_tags()
     try:
         version = _get_version(
             args.version, args.force, existing_versions=existing_versions
         )
-    except Exception as e:
+    except VersionInvalidFormatException as e:
         log(str(e))
+        exit_process(EXIT_CODE_INVALID_VERSION)
+    except VersionInvalidPatchNumber as e:
+        log(str(e))
+        exit_process(EXIT_CODE_INVALID_VERSION)
+    except Exception as e:
         version = None
 
     if args.release and version is None and not args.force:
         log("For a release a valid semantic version has to be set.")
-        exit_process(2)
+        exit_process(EXIT_CODE_VERSION_IS_REQUIRED)
     elif args.release is False and version is None:
-        dev_version, existing_versions = _get_current_branch_dev_version(
-            existing_versions=existing_versions
-        )
-        if not dev_version and args.force and len(existing_versions) > 0:
-            dev_version = existing_versions[0]
-
-        if not dev_version:
+        latest_branch_version = _get_latest_branch_version()
+        if not latest_branch_version:
             log(
-                "No version found. Please provide the semantic version you are working on."
+                "No version found in branch. Please provide the semantic version you are working on or create a tag in your current git branch."
             )
-            exit_process(3)
-        version = dev_version
+            exit_process(EXIT_CODE_NO_VERSION_FOUND)
+        elif latest_branch_version.suffix == "" and not args.force:
+            log(
+                f"No version was provided and the last found version in the git branch looks like a release version ({latest_branch_version.to_string()}). \
+                Please provide a dev version or create a dev version git tag in the current branch or set the '--{FLAG_FORCE}' flag."
+            )
+            exit_process(EXIT_CODE_DEV_VERSION_REQUIRED)
+        elif not _is_dev_tag_belonging_to_branch(
+            latest_branch_version, _get_current_branch()[0]
+        ):
+            log(
+                f"The found dev version {latest_branch_version.to_string()} does not belong to branch {_get_current_branch()[0]}. Please remove the tag or pass it manually."
+            )
+            exit_process(EXIT_CODE_DEV_VERSION_NOT_MATCHES_BRANCH)
+        else:
+            # Reset the existing dev tag to the current HEAD.
+            create_git_tag(latest_branch_version.to_string(), force=True)
+
+        version = latest_branch_version
     elif args.release is False and version:
         version.suffix = _get_dev_suffix(_get_current_branch()[0])
 
@@ -134,12 +166,13 @@ def release_docker_image(
 
     Returns:
         subprocess.CompletedProcess: Returns the CompletedProcess object of the `docker push ...` command.
-    """    
+    """
+
     if not docker_image_prefix:
         log(
             f"The flag --docker-image-prefix cannot be blank when pushing a Docker image."
         )
-        exit_process(1)
+        exit_process(EXIT_CODE_GENERAL)
 
     versioned_image = name + ":" + version
     latest_image = name + ":latest"
@@ -159,19 +192,28 @@ def release_docker_image(
     return completed_process
 
 
-def create_git_tag(args: Dict[str, Union[bool, str]]):
+def create_git_tag(version: str, push: bool = False, force: bool = False):
+    """Create an annotated git tag in the current HEAD via `git tag` and the provided version.
+    The version will be prefixed with 'v'.
+
+    Args:
+        version (str): The tag to be created. Will be prefixed with 'v'.
+        push (bool, optional): If true, push the tag to remote. Defaults to False.
+        force (bool, optional): If true, force the tag to be created. Defaults to False.
+    """
+    force = "-f" if force else ""
     completed_process = run(
-        f"git tag -a -m 'Automatically tagged during build process.' v{args['version']}",
-        disable_stderr_logging=True
+        f"git tag -a -m 'Automatically tagged during build process.' {force} v{version}",
+        disable_stderr_logging=True,
     )
 
     if completed_process.returncode == 128:
-        log(f"Git tag v{args['version']} already exists.")
+        log(f"Git tag v{version} already exists.")
     elif completed_process.returncode > 0:
         log(completed_process.stderr)
 
-    if args["release"]:
-        run(f"git push origin v{args['version']}")
+    if push:
+        run(f"git push origin v{version}")
 
 
 def build(component_path: str, args: Dict[str, str]):
@@ -194,11 +236,13 @@ def build(component_path: str, args: Dict[str, str]):
         log(
             f"Failed to build module {component_path}. Code: {completed_process.returncode}. Reason: {error_message}"
         )
-        exit_process(1)
+        exit_process(EXIT_CODE_GENERAL)
 
 
 def run(
-    command: str, disable_stdout_logging: bool = False, disable_stderr_logging: bool = False
+    command: str,
+    disable_stdout_logging: bool = False,
+    disable_stderr_logging: bool = False,
 ) -> subprocess.CompletedProcess:
     """Wrapper for subprocess.run() to print our
 
@@ -357,7 +401,9 @@ def _is_valid_command_combination(args: argparse.Namespace) -> bool:
         and (not args.version or not args.test or not args.make)
         and not args.force
     ):
-        log(f"Please provide a version for deployment (--{FLAG_VERSION}=MAJOR.MINOR.PATCH-TAG)")
+        log(
+            f"Please provide a version for deployment (--{FLAG_VERSION}=MAJOR.MINOR.PATCH-TAG)"
+        )
         log(f"Test must be executed before the deployment (--{FLAG_TEST})")
         log(f"Build must be executed before the deployment (--{FLAG_MAKE})")
 
@@ -391,6 +437,28 @@ def _get_version_tags() -> List["Version"]:
     return versions
 
 
+def _get_latest_branch_version(branch_name: str = "") -> Optional["Version"]:
+    result = run(
+        "git describe --tags --match 'v[0-9].*' --abbrev=0", disable_stdout_logging=True
+    )
+
+    return Version.get_version_from_string(result.stdout.rstrip("\n"))
+
+
+def _is_dev_tag_belonging_to_branch(version: "Version", branch_name: str = "") -> bool:
+    # The found dev-version does not belong to the current branch
+    print(version.to_string(), _get_dev_suffix(branch_name))
+    if (
+        branch_name
+        and version
+        and version.suffix
+        and version.suffix != _get_dev_suffix(branch_name)
+    ):
+        return False
+
+    return True
+
+
 def _get_remote_git_tags() -> List[str]:
     result = run(
         "git ls-remote --tags --sort='-v:refname' --refs", disable_stdout_logging=True
@@ -401,17 +469,27 @@ def _get_remote_git_tags() -> List[str]:
 def _get_version(
     version: str, force: bool = False, existing_versions: List["Version"] = []
 ) -> "Version":
-    """Get version. If force is set to True, the version is allowed to be equal or smaller than the existing patch version.
+    """Get validated version. If force is set to True, the version is allowed to be equal or smaller than the existing patch version.
+
     Raises:
-        Exception: Raises an exception when the provided version's format is not valid, an existing or higher version in the patch branch exists or no version is passed. The exception contains a respective message.
+        VersionInvalidFormatException: Raised when the provided version's format is not valid
+        VersionInvalidPatchNumber: Raised when existing or higher version in the patch branch exists
+        Exception: Raised when no version is passed
+
+    Args:
+        version (str): The version to be checked for validity. It will be tried to be transformed into a build_utils.Version object.
+        force (bool, optional): If set tu true, the version can be equal or smaller than existing patch version version numbers
+        existing_versions (list, optional): The list of versions to be checked against
+
     Returns:
         Version: Validated version
     """
     provided_version = version
+
     if provided_version:
         version_obj = Version.get_version_from_string(provided_version)
         if version_obj is None:
-            raise Exception(
+            raise VersionInvalidFormatException(
                 "The provided version {provided_version} is not in a valid format. Valid formats include 1.0.0, 1.0.0-dev or 1.0.0-dev.foo"
             )
         for existing_version in existing_versions:
@@ -421,7 +499,7 @@ def _get_version(
                 and existing_version.patch >= version_obj.patch
                 and not force
             ):
-                raise Exception(
+                raise VersionInvalidPatchNumber(
                     f"The provided patch version {version_obj.to_string()} is equal or smaller than the existing version {existing_version.to_string()}."
                 )
     else:
@@ -430,9 +508,9 @@ def _get_version(
     return version_obj
 
 
-def _get_current_branch_dev_version(
+def _get_current_branch_version(
     existing_versions: List["Version"] = [],
-) -> Tuple[Optional["Version"], List["Version"]]:
+) -> Tuple["Version", List["Version"]]:
     """Returns a tuple of the best suiting version based on our logic and all available versions.
 
     Returns:
@@ -488,3 +566,11 @@ class Version:
             r"^v?([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?$",
             version,
         )
+
+
+class VersionInvalidFormatException(BaseException):
+    pass
+
+
+class VersionInvalidPatchNumber(BaseException):
+    pass
