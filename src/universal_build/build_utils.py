@@ -5,8 +5,6 @@ import os
 import re
 import sys
 
-from _pytest.python_api import _non_numeric_type_error
-
 ALLOWED_BRANCH_TYPES = ["release", "production"]
 MAIN_BRANCH_NAMES = ["master", "main"]
 

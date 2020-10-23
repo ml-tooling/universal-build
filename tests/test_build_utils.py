@@ -1,4 +1,4 @@
-from typing import Tuple, Optional
+from typing import Tuple
 from universal_build import build_utils
 import pytest
 import sys
