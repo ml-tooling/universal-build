@@ -113,7 +113,7 @@ def get_sanitized_arguments(
     completed_process = create_git_tag(version.to_string(), force=force_git_creation)
     if args.release and completed_process.returncode > 0:
         log(
-            "Please not that a tag cannot be overriden for a release. Consider using a different version or delete the other one."
+            "Please note that a tag cannot be overriden for a release. Consider using a different version or delete the other one."
         )
 
     args.version = version.to_string()
