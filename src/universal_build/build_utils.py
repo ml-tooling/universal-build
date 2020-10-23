@@ -81,7 +81,7 @@ def get_sanitized_arguments(
     except Exception as e:
         version = None
 
-    if args.release and version is None and not args.force:
+    if args.release and version is None:
         log("For a release a valid semantic version has to be set.")
         exit_process(EXIT_CODE_VERSION_IS_REQUIRED)
     elif args.release is False and version is None:
