@@ -437,7 +437,8 @@ def _get_version_tags() -> List["Version"]:
 
 def _get_latest_branch_version(branch_name: str = "") -> Optional["Version"]:
     result = run(
-        "git describe --tags --match 'v[0-9].*' --abbrev=0 --merged", disable_stdout_logging=True
+        "git describe --tags --match 'v[0-9].*' --abbrev=0 --merged",
+        disable_stdout_logging=True,
     )
 
     return Version.get_version_from_string(result.stdout.rstrip("\n"))
@@ -495,6 +496,7 @@ def _get_version(
                 existing_version.major == version_obj.major
                 and existing_version.minor == version_obj.minor
                 and existing_version.patch >= version_obj.patch
+                and existing_version.suffix == "" # Only consider release versions, not suffixed dev versions
                 and not force
             ):
                 raise VersionInvalidPatchNumber(
