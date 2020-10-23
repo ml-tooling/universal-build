@@ -104,14 +104,14 @@ def get_sanitized_arguments(
                 f"The found dev version {latest_branch_version.to_string()} does not belong to branch {_get_current_branch()[0]}. Please remove the tag or pass it manually."
             )
             exit_process(EXIT_CODE_DEV_VERSION_NOT_MATCHES_BRANCH)
-        else:
-            # Reset the existing dev tag to the current HEAD.
-            create_git_tag(latest_branch_version.to_string(), force=True)
 
         version = latest_branch_version
     elif args.release is False and version:
         version.suffix = _get_dev_suffix(_get_current_branch()[0])
 
+    # Reset the existing dev tag to the current HEAD.
+    force_git_creation = not args.release
+    create_git_tag(version.to_string(), force=force_git_creation)
     args.version = version.to_string()
     args._sanitized = True
     return vars(args)
@@ -205,10 +205,8 @@ def create_git_tag(version: str, push: bool = False, force: bool = False):
         disable_stderr_logging=True,
     )
 
-    if completed_process.returncode == 128:
-        log(f"Git tag v{version} already exists.")
-    elif completed_process.returncode > 0:
-        log(completed_process.stderr)
+    if completed_process.returncode > 0:
+        log(f"Executing `git tag` for version v{version} might have a problem: {completed_process.stderr}")
 
     if push:
         run(f"git push origin v{version}")
@@ -302,6 +300,8 @@ def _get_current_branch() -> Tuple[str, str]:
         Tuple: (branchname, type)
     """
     full_branch_name = run("git branch --show-current").stdout.rstrip("\n")
+    if full_branch_name == "":
+        full_branch_name = "HEAD"
     path_parts = full_branch_name.split("/")
 
     if len(path_parts) == 1:
@@ -500,7 +500,7 @@ def _get_version(
                 and not force
             ):
                 raise VersionInvalidPatchNumber(
-                    f"The provided patch version {version_obj.to_string()} is equal or smaller than the existing version {existing_version.to_string()}."
+                    f"A version ({existing_version.to_string()}) with the same or higher patch version as provided ({version_obj.to_string()}) already exists."
                 )
     else:
         raise Exception("No version is provided")
