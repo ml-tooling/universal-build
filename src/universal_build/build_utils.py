@@ -109,12 +109,8 @@ def get_sanitized_arguments(
         version.suffix = _get_dev_suffix(_get_current_branch()[0])
 
     # Reset the existing dev tag to the current HEAD.
-    force_git_creation = not args.release
-    completed_process = create_git_tag(version.to_string(), force=force_git_creation)
-    if args.release and completed_process.returncode > 0:
-        log(
-            "Please note that a tag cannot be overriden for a release. Consider using a different version or delete the other one."
-        )
+    if not args.release:
+        create_git_tag(version.to_string(), force=True)
 
     args.version = version.to_string()
     args._sanitized = True
