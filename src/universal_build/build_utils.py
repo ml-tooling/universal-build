@@ -1,11 +1,11 @@
-from typing import Dict, List, Match, Optional, Tuple, Union
 import argparse
-import subprocess
 import os
 import re
+import subprocess
 import sys
+from typing import Dict, List, Match, Optional, Tuple, Union
 
-ALLOWED_BRANCH_TYPES = ["release", "production"]
+ALLOWED_BRANCH_TYPES_FOR_RELEASE = ["release", "production"]
 MAIN_BRANCH_NAMES = ["master", "main"]
 
 FLAG_MAKE = "make"
@@ -291,8 +291,8 @@ def exit_process(code: int = 0):
     `sys.exit` seems to be a bit unreliable, process just sleeps and does not exit.
     So we are using os._exit instead and doing some manual cleanup.
     """
-    import gc
     import atexit
+    import gc
 
     gc.collect()
     atexit._run_exitfuncs()
@@ -421,11 +421,11 @@ def _is_valid_command_combination(args: argparse.Namespace) -> bool:
         current_branch, current_branch_type = _get_current_branch()
         if (
             current_branch.lower() not in MAIN_BRANCH_NAMES
-            and current_branch_type.lower() not in ALLOWED_BRANCH_TYPES
+            and current_branch_type.lower() not in ALLOWED_BRANCH_TYPES_FOR_RELEASE
             and not args.force
         ):
             log(
-                f"Release is only allowed from branches: [{', '.join(MAIN_BRANCH_NAMES)}] or in branch types: [{', '.join(ALLOWED_BRANCH_TYPES)}]"
+                f"Release is only allowed from branches: [{', '.join(MAIN_BRANCH_NAMES)}] or in branch types: [{', '.join(ALLOWED_BRANCH_TYPES_FOR_RELEASE)}]"
             )
             return False
 
