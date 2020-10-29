@@ -56,16 +56,6 @@ def get_sanitized_arguments(
     if not _is_valid_command_combination(args):
         exit_process(EXIT_CODE_INVALID_ARGUMENTS)
 
-    # Handle login when using the build container
-    if args.release and args.docker:
-        completed_process = run(
-            f"docker login -u {os.getenv('DOCKER_USERNAME')} -p {os.getenv('DOCKER_ACCESS_TOKEN')}"
-        )
-        if completed_process.returncode > 0:
-            log(
-                "Could not login into Docker repository. The environment variables DOCKER_USERNAME and DOCKER_ACCESS_TOKEN have to be set. Think about using an access token instead of your actual password."
-            )
-
     # Version detection is only needed when the component is built, but for example not for a simple "--check"
     if args.make or args.test:
         existing_versions = _get_version_tags()
