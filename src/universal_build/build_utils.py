@@ -403,17 +403,16 @@ def _create_build_cmd_from_args(module_path: str, sanitized_args: dict):
 
 
 def _is_valid_command_combination(args: argparse.Namespace) -> bool:
-    if (
-        args.release
-        and (not args.version or not args.test or not args.make)
-        and not args.force
-    ):
+    if args.release and not args.version and not args.force:
         log(
             f"Please provide a version for deployment (--{FLAG_VERSION}=MAJOR.MINOR.PATCH-TAG)"
         )
+        return False
+    if args.release and not args.test and not args.force:
         log(f"Test must be executed before the deployment (--{FLAG_TEST})")
+        return False
+    if args.release and not args.make and not args.force:
         log(f"Build must be executed before the deployment (--{FLAG_MAKE})")
-
         return False
 
     if args.release:
