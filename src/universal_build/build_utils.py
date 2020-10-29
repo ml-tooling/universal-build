@@ -16,7 +16,6 @@ FLAG_CHECK = "check"
 FLAG_SKIP_PATH = "skip_path"
 FLAG_FORCE = "force"
 FLAG_DOCKER_IMAGE_PREFIX = "docker_image_prefix"
-FLAG_DOCKER = "docker"
 FLAG_SANITIZED = "_sanitized"
 
 EXIT_CODE_GENERAL = 1
@@ -380,11 +379,6 @@ def _get_default_cli_arguments_parser(
     parser.add_argument(
         "--docker-image-prefix",
         help="With this flag you can provide a prefix for a Docker image, e.g. 'mltooling/' or even a repository path. When leaving blank, the default Dockerhub Repository is used.",
-    )
-    parser.add_argument(
-        f"--{FLAG_DOCKER}",
-        help="Build it with help of the Builder Docker container instead of locally on your machine.",
-        action="store_true",
     )
     parser.add_argument(
         f"--{FLAG_SANITIZED}",
