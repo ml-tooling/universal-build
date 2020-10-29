@@ -402,7 +402,7 @@ def _create_build_cmd_from_args(module_path: str, sanitized_args: dict):
         sanitized_args
     )
 
-    working_dir = os.path.dirname(os.path.realpath(__file__))
+    working_dir = os.getcwd()
     full_command = (
         "cd '" + module_path + "' && " + build_command + " && cd '" + working_dir + "'"
     )
