@@ -81,39 +81,42 @@ def get_sanitized_arguments(
     except Exception as e:
         version = None
 
-    if args.release and version is None:
-        log("For a release a valid semantic version has to be set.")
-        exit_process(EXIT_CODE_VERSION_IS_REQUIRED)
-    elif args.release is False and version is None:
-        latest_branch_version = _get_latest_branch_version()
-        if not latest_branch_version:
-            log(
-                "No version found in branch. Please provide the semantic version you are working on or create a tag in your current git branch."
-            )
-            exit_process(EXIT_CODE_NO_VERSION_FOUND)
-        elif latest_branch_version.suffix == "" and not args.force:
-            log(
-                f"No version was provided and the last found version in the git branch looks like a release version ({latest_branch_version.to_string()}). \
-                Please provide a dev version or create a dev version git tag in the current branch or set the '--{FLAG_FORCE}' flag."
-            )
-            exit_process(EXIT_CODE_DEV_VERSION_REQUIRED)
-        elif not _is_dev_tag_belonging_to_branch(
-            latest_branch_version, _get_current_branch()[0]
-        ):
-            log(
-                f"The found dev version {latest_branch_version.to_string()} does not belong to branch {_get_current_branch()[0]}. Please remove the tag or pass it manually via the --{FLAG_VERSION} flag."
-            )
-            exit_process(EXIT_CODE_DEV_VERSION_NOT_MATCHES_BRANCH)
+    # Version detection is only needed when the component is built, but for example not for a simple "--check"
+    if args.make:
+        if args.release and version is None:
+            log("For a release a valid semantic version has to be set.")
+            exit_process(EXIT_CODE_VERSION_IS_REQUIRED)
+        elif args.release is False and version is None:
+            latest_branch_version = _get_latest_branch_version()
+            if not latest_branch_version:
+                log(
+                    "No version found in branch. Please provide the semantic version you are working on or create a tag in your current git branch."
+                )
+                exit_process(EXIT_CODE_NO_VERSION_FOUND)
+            elif latest_branch_version.suffix == "" and not args.force:
+                log(
+                    f"No version was provided and the last found version in the git branch looks like a release version ({latest_branch_version.to_string()}). \
+                    Please provide a dev version or create a dev version git tag in the current branch or set the '--{FLAG_FORCE}' flag."
+                )
+                exit_process(EXIT_CODE_DEV_VERSION_REQUIRED)
+            elif not _is_dev_tag_belonging_to_branch(
+                latest_branch_version, _get_current_branch()[0]
+            ):
+                log(
+                    f"The found dev version {latest_branch_version.to_string()} does not belong to branch {_get_current_branch()[0]}. Please remove the tag or pass it manually via the --{FLAG_VERSION} flag."
+                )
+                exit_process(EXIT_CODE_DEV_VERSION_NOT_MATCHES_BRANCH)
 
-        version = latest_branch_version
-    elif args.release is False and version:
-        version.suffix = _get_dev_suffix(_get_current_branch()[0])
+            version = latest_branch_version
+        elif args.release is False and version:
+            version.suffix = _get_dev_suffix(_get_current_branch()[0])
 
-    # Reset the existing dev tag to the current HEAD.
-    if not args.release:
-        create_git_tag(version.to_string(), force=True)
+        # Reset the existing dev tag to the current HEAD.
+        if not args.release:
+            create_git_tag(version.to_string(), force=True)
 
-    args.version = version.to_string()
+        args.version = version.to_string()
+
     args._sanitized = True
     return vars(args)
 

@@ -194,7 +194,7 @@ class TestBuildClass:
         mock_branch(branch_name, "feature")
         mock_version("v1.2.0", suffix=build_utils._get_dev_suffix(branch_name))
 
-        sanitized_args = build_utils.get_sanitized_arguments()
+        sanitized_args = build_utils.get_sanitized_arguments([f"--{build_utils.FLAG_MAKE}"])
         assert sanitized_args[build_utils.FLAG_VERSION] == "1.2.0-dev.foo-branch"
 
     def test_build_with_wrong_dev_tag_in_branch(self):
@@ -203,7 +203,7 @@ class TestBuildClass:
         mock_version("v1.2.0", suffix=build_utils._get_dev_suffix("bar-branch"))
 
         with pytest.raises(SystemExit) as pytest_wrapped_e:
-            build_utils.get_sanitized_arguments()
+            build_utils.get_sanitized_arguments([f"--{build_utils.FLAG_MAKE}"])
 
         assert pytest_wrapped_e.type == SystemExit
         assert (
@@ -216,7 +216,7 @@ class TestBuildClass:
         mock_branch(branch_name, "feature")
 
         with pytest.raises(SystemExit) as pytest_wrapped_e:
-            build_utils.get_sanitized_arguments()
+            build_utils.get_sanitized_arguments([f"--{build_utils.FLAG_MAKE}"])
 
         assert pytest_wrapped_e.type == SystemExit
         assert pytest_wrapped_e.value.code == build_utils.EXIT_CODE_DEV_VERSION_REQUIRED
@@ -231,7 +231,7 @@ class TestBuildClass:
         mock_branch("bar-branch", "feature")
 
         with pytest.raises(SystemExit) as pytest_wrapped_e:
-            build_utils.get_sanitized_arguments()
+            build_utils.get_sanitized_arguments([f"--{build_utils.FLAG_MAKE}"])
 
         assert pytest_wrapped_e.type == SystemExit
         assert pytest_wrapped_e.value.code == build_utils.EXIT_CODE_DEV_VERSION_REQUIRED
