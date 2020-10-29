@@ -47,7 +47,7 @@ def get_sanitized_arguments(
         Dict[str, Union[bool, str]]: The parsed default arguments thar are already checked for validity.
     """
 
-    argument_parser = argument_parser or argparse.ArgumentParser(add_help=False)
+    argument_parser = argument_parser or argparse.ArgumentParser()
     parser = _get_default_cli_arguments_parser(argument_parser)
     args, unknown = parser.parse_known_args(args=arguments)
 
@@ -346,10 +346,8 @@ def _is_path_skipped(path: str, skip_paths: List[str] = []) -> bool:
 
 
 def _get_default_cli_arguments_parser(
-    initial_parser: argparse.ArgumentParser,
+    parser: argparse.ArgumentParser,
 ) -> argparse.ArgumentParser:
-
-    parser = argparse.ArgumentParser(parents=[initial_parser])
 
     # NEW FLAGS
     parser.add_argument(
