@@ -12,6 +12,7 @@ FLAG_MAKE = "make"
 FLAG_TEST = "test"
 FLAG_RELEASE = "release"
 FLAG_VERSION = "version"
+FLAG_CHECK = "check"
 FLAG_SKIP_PATH = "skip_path"
 FLAG_FORCE = "force"
 FLAG_DOCKER_IMAGE_PREFIX = "docker_image_prefix"
@@ -353,6 +354,11 @@ def _get_default_cli_arguments_parser(
     )
     parser.add_argument(
         f"--{FLAG_TEST}", help="Run unit and integration tests", action="store_true"
+    )
+    parser.add_argument(
+        f"--{FLAG_CHECK}",
+        help="When this flag is set, the module should run any checks such as linting",
+        action="store_true",
     )
     parser.add_argument(
         f"--{FLAG_RELEASE}",
