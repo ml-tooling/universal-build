@@ -177,7 +177,6 @@ def release_docker_image(
         exit_process(EXIT_CODE_GENERAL)
 
     versioned_image = name + ":" + version
-    latest_image = name + ":latest"
     remote_versioned_image = docker_image_prefix + versioned_image
     run("docker tag " + versioned_image + " " + remote_versioned_image)
     completed_process = run("docker push " + remote_versioned_image)
@@ -187,6 +186,7 @@ def release_docker_image(
 
     if "-dev" not in version:
         log("Release Docker image with latest tag as well.")
+        latest_image = name + ":latest"
         remote_latest_image = docker_image_prefix + latest_image
         run("docker tag " + latest_image + " " + remote_latest_image)
         run("docker push " + remote_latest_image)
@@ -253,6 +253,7 @@ def run(
     command: str,
     disable_stdout_logging: bool = False,
     disable_stderr_logging: bool = False,
+    exit_on_error: bool = False,
 ) -> subprocess.CompletedProcess:
     """Wrapper for subprocess.run() to print our
 
@@ -282,8 +283,9 @@ def run(
             stderr += line
 
     exitcode = process.wait()
+    if exit_on_error and exitcode != 0:
+        exit_process(exitcode)
 
-    # return completed_process
     return subprocess.CompletedProcess(
         args=command, returncode=exitcode, stdout=stdout, stderr=stderr
     )
@@ -338,11 +340,7 @@ def _is_path_skipped(path: str, skip_paths: List[str] = []) -> bool:
         bool: Return true if the path should be skipped
     """
     skip_paths = skip_paths or []
-    for skip_path in skip_paths:
-        if os.path.commonpath([path, skip_path]) != "":
-            return True
-
-    return False
+    return any(os.path.commonpath([path, skip_path]) != "" for skip_path in skip_paths)
 
 
 def _get_default_cli_arguments_parser(
@@ -464,15 +462,12 @@ def _get_latest_branch_version(branch_name: str = "") -> Optional["Version"]:
 def _is_dev_tag_belonging_to_branch(version: "Version", branch_name: str = "") -> bool:
     # The found dev-version does not belong to the current branch
     print(version.to_string(), _get_dev_suffix(branch_name))
-    if (
+    return not (
         branch_name
         and version
         and version.suffix
         and version.suffix != _get_dev_suffix(branch_name)
-    ):
-        return False
-
-    return True
+    )
 
 
 def _get_remote_git_tags() -> List[str]:
@@ -528,7 +523,7 @@ def _get_version(
 
 def _get_current_branch_version(
     existing_versions: List["Version"] = [],
-) -> Tuple["Version", List["Version"]]:
+) -> Tuple["Version" or None, List["Version"]]:
     """Returns a tuple of the best suiting version based on our logic and all available versions.
 
     Returns:
@@ -586,9 +581,9 @@ class Version:
         )
 
 
-class VersionInvalidFormatException(BaseException):
+class VersionInvalidFormatException(Exception):
     pass
 
 
-class VersionInvalidPatchNumber(BaseException):
+class VersionInvalidPatchNumber(Exception):
     pass
