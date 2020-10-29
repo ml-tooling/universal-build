@@ -68,7 +68,7 @@ def get_sanitized_arguments(
             )
 
     # Version detection is only needed when the component is built, but for example not for a simple "--check"
-    if args.make:
+    if args.make or args.test:
         existing_versions = _get_version_tags()
         try:
             version = _get_version(
