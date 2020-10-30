@@ -390,7 +390,7 @@ def _get_default_cli_arguments_parser(
     parser.add_argument(
         "--wip-notag",
         help="Experimental flag to deactivate version tagging.",
-        action="append",
+        action="store_true",
     )
 
     return parser
