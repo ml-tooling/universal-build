@@ -85,7 +85,7 @@ def get_sanitized_arguments(
                     )
                 else:
                     # higher minor version and add dev suffix
-                    latest_branch_version.minor += 1
+                    latest_branch_version.minor = latest_branch_version.minor + 1
                     latest_branch_version.suffix = _get_dev_suffix(
                         _get_current_branch()[0]
                     )
