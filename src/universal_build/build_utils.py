@@ -17,6 +17,7 @@ FLAG_SKIP_PATH = "skip_path"
 FLAG_FORCE = "force"
 FLAG_DOCKER_IMAGE_PREFIX = "docker_image_prefix"
 FLAG_SANITIZED = "_sanitized"
+FLAG_WIP_NOTAG = "wip_notag"
 
 EXIT_CODE_GENERAL = 1
 EXIT_CODE_INVALID_VERSION = 2
@@ -58,10 +59,9 @@ def get_sanitized_arguments(
 
     # Version detection is only needed when the component is built, but for example not for a simple "--check"
     if args.make or args.test:
-        existing_versions = _get_version_tags()
         try:
             version = _get_version(
-                args.version, args.force, existing_versions=existing_versions
+                args.version, args.force, existing_versions=_get_version_tags()
             )
         except VersionInvalidFormatException as e:
             log(str(e))
@@ -77,7 +77,19 @@ def get_sanitized_arguments(
             exit_process(EXIT_CODE_VERSION_IS_REQUIRED)
         elif args.release is False and version is None:
             latest_branch_version = _get_latest_branch_version()
-            if not latest_branch_version:
+            if args.wip_notag:
+                # alternative apporach to manage automatic versioning
+                if not latest_branch_version:
+                    latest_branch_version = Version(
+                        0, 0, 0, _get_dev_suffix(_get_current_branch()[0])
+                    )
+                else:
+                    # higher minor version and add dev suffix
+                    latest_branch_version.minor += 1
+                    latest_branch_version.suffix = _get_dev_suffix(
+                        _get_current_branch()[0]
+                    )
+            elif not latest_branch_version:
                 log(
                     "No version found in branch. Please provide the semantic version you are working on or create a tag in your current git branch."
                 )
@@ -101,7 +113,7 @@ def get_sanitized_arguments(
             version.suffix = _get_dev_suffix(_get_current_branch()[0])
 
         # Reset the existing dev tag to the current HEAD.
-        if not args.release:
+        if not args.release and not args.wip_notag:
             create_git_tag(version.to_string(), force=True)
 
         args.version = version.to_string()
@@ -374,6 +386,11 @@ def _get_default_cli_arguments_parser(
         f"--{FLAG_SANITIZED}",
         help="Indicates that a parent build.py script already checked the validity of the passed arguments so that subsequent scripts don't do it again.",
         action="store_true",
+    )
+    parser.add_argument(
+        "--wip-notag",
+        help="Experimental flag to deactivate version tagging.",
+        action="append",
     )
 
     return parser
