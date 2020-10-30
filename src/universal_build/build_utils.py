@@ -85,7 +85,7 @@ def get_sanitized_arguments(
                     )
                 else:
                     # higher minor version and add dev suffix
-                    latest_branch_version.minor = latest_branch_version.minor + 1
+                    latest_branch_version.minor += 1
                     latest_branch_version.suffix = _get_dev_suffix(
                         _get_current_branch()[0]
                     )
@@ -568,9 +568,9 @@ class Version:
         if version_match is None:
             return None
 
-        major = version_match.group(1)
-        minor = version_match.group(2)
-        patch = version_match.group(3)
+        major = int(version_match.group(1))
+        minor = int(version_match.group(2))
+        patch = int(version_match.group(3))
         suffix = ""
         if version_match.lastindex == 4:
             suffix = version_match.group(4)
