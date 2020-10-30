@@ -454,6 +454,10 @@ def _is_dev_tag_belonging_to_branch(version: "Version", branch_name: str = "") -
 
 
 def _get_remote_git_tags() -> List[str]:
+    if not os.getenv("GITHUB_TOKEN"):
+        # if no github token is set, don't try to get the tags from remote
+        return []
+
     result = run(
         "git ls-remote --tags --sort='-v:refname' --refs", disable_stdout_logging=True
     )
