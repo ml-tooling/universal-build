@@ -17,7 +17,6 @@ FLAG_SKIP_PATH = "skip_path"
 FLAG_FORCE = "force"
 FLAG_DOCKER_IMAGE_PREFIX = "docker_image_prefix"
 FLAG_SANITIZED = "_sanitized"
-FLAG_WIP_NOTAG = "wip_notag"
 
 EXIT_CODE_GENERAL = 1
 EXIT_CODE_INVALID_VERSION = 2
@@ -77,44 +76,16 @@ def get_sanitized_arguments(
             exit_process(EXIT_CODE_VERSION_IS_REQUIRED)
         elif args.release is False and version is None:
             latest_branch_version = _get_latest_branch_version()
-            if args.wip_notag:
-                # alternative apporach to manage automatic versioning
-                if not latest_branch_version:
-                    latest_branch_version = Version(
-                        0, 0, 0, _get_dev_suffix(_get_current_branch()[0])
-                    )
-                else:
-                    # higher minor version and add dev suffix
-                    latest_branch_version.minor += 1
-                    latest_branch_version.suffix = _get_dev_suffix(
-                        _get_current_branch()[0]
-                    )
-            elif not latest_branch_version:
-                log(
-                    "No version found in branch. Please provide the semantic version you are working on or create a tag in your current git branch."
-                )
-                exit_process(EXIT_CODE_NO_VERSION_FOUND)
-            elif latest_branch_version.suffix == "" and not args.force:
-                log(
-                    f"No version was provided and the last found version in the git branch looks like a release version ({latest_branch_version.to_string()}). \
-                    Please provide a dev version or create a dev version git tag in the current branch or set the '--{FLAG_FORCE}' flag."
-                )
-                exit_process(EXIT_CODE_DEV_VERSION_REQUIRED)
-            elif not _is_dev_tag_belonging_to_branch(
-                latest_branch_version, _get_current_branch()[0]
-            ):
-                log(
-                    f"The found dev version {latest_branch_version.to_string()} does not belong to branch {_get_current_branch()[0]}. Please remove the tag or pass it manually via the --{FLAG_VERSION} flag."
-                )
-                exit_process(EXIT_CODE_DEV_VERSION_NOT_MATCHES_BRANCH)
 
-            version = latest_branch_version
+            if not latest_branch_version:
+                version = Version(0, 0, 0, _get_dev_suffix(_get_current_branch()[0]))
+            else:
+                # higher minor version and add dev suffix
+                version = latest_branch_version
+                version.minor += 1
+                version.suffix = _get_dev_suffix(_get_current_branch()[0])
         elif args.release is False and version:
             version.suffix = _get_dev_suffix(_get_current_branch()[0])
-
-        # Reset the existing dev tag to the current HEAD.
-        if not args.release and not args.wip_notag:
-            create_git_tag(version.to_string(), force=True)
 
         args.version = version.to_string()
 
@@ -199,6 +170,7 @@ def create_git_tag(
     version: str, push: bool = False, force: bool = False
 ) -> subprocess.CompletedProcess:
     """Create an annotated git tag in the current HEAD via `git tag` and the provided version.
+
     The version will be prefixed with 'v'.
     If push is set, the tag is pushed to remote but only if the previous `git tag` command was successful.
 
@@ -385,11 +357,6 @@ def _get_default_cli_arguments_parser(
     parser.add_argument(
         f"--{FLAG_SANITIZED}",
         help="Indicates that a parent build.py script already checked the validity of the passed arguments so that subsequent scripts don't do it again.",
-        action="store_true",
-    )
-    parser.add_argument(
-        "--wip-notag",
-        help="Experimental flag to deactivate version tagging.",
         action="store_true",
     )
 
