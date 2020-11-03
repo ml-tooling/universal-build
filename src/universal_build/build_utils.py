@@ -223,7 +223,7 @@ def build(component_path: str, args: Dict[str, str]):
         exit_process(EXIT_CODE_GENERAL)
 
 
-def run(
+def run(  # type: ignore
     command: str,
     disable_stdout_logging: bool = False,
     disable_stderr_logging: bool = False,
@@ -242,15 +242,15 @@ def run(
         subprocess.CompletedProcess: State
     """
     log("Executing: " + command)
+    process = subprocess.Popen(
+        command,
+        shell=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+    )
 
     try:
-        process = subprocess.Popen(
-            command,
-            shell=True,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-        )
         stdout = ""
         stderr = ""
         with process.stdout:
@@ -274,6 +274,7 @@ def run(
         )
     except Exception as ex:
         log(f"Exception during command run: {ex}")
+        process.terminate()
         exit_process(1)
 
 
