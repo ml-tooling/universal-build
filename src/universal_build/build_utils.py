@@ -236,37 +236,45 @@ def run(
         command (str): The shell command that is executed via subprocess.Popen.
         disable_stdout_logging (bool): Disable stdout logging when it is too much or handled by the caller.
         exit_on_error (bool): Exit program if the exit code of the command is not 0.
-        timeout (Optional[int]): Optional timeout for the command.
+        timeout (Optional[int]): If the process does not terminate after timeout seconds, raise a TimeoutExpired exception.
 
     Returns:
         subprocess.CompletedProcess: State
     """
     log("Executing: " + command)
 
-    process = subprocess.Popen(
-        command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
-    )
-    stdout = ""
-    stderr = ""
-    with process.stdout:
-        for line in iter(process.stdout.readline, ""):
-            if not disable_stdout_logging:
-                log(line.rstrip("\n"))
-            stdout += line
-    with process.stderr:
-        for line in iter(process.stderr.readline, ""):
-            if not disable_stderr_logging:
-                log(line.rstrip("\n"))
-            stderr += line
+    try:
+        process = subprocess.Popen(
+            command,
+            shell=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+        stdout = ""
+        stderr = ""
+        with process.stdout:
+            for line in iter(process.stdout.readline, ""):
+                if not disable_stdout_logging:
+                    log(line.rstrip("\n"))
+                stdout += line
+        with process.stderr:
+            for line in iter(process.stderr.readline, ""):
+                if not disable_stderr_logging:
+                    log(line.rstrip("\n"))
+                stderr += line
 
-    exitcode = process.wait(timeout=timeout)
+        exitcode = process.wait(timeout=timeout)
 
-    if exit_on_error and exitcode != 0:
-        exit_process(exitcode)
+        if exit_on_error and exitcode != 0:
+            exit_process(exitcode)
 
-    return subprocess.CompletedProcess(
-        args=command, returncode=exitcode, stdout=stdout, stderr=stderr
-    )
+        return subprocess.CompletedProcess(
+            args=command, returncode=exitcode, stdout=stdout, stderr=stderr
+        )
+    except Exception as ex:
+        log(f"Exception during command run: {ex}")
+        exit_process(1)
 
 
 def exit_process(code: int = 0):
