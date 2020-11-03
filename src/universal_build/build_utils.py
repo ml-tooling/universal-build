@@ -228,12 +228,15 @@ def run(
     disable_stdout_logging: bool = False,
     disable_stderr_logging: bool = False,
     exit_on_error: bool = False,
+    timeout: Optional[int] = None,
 ) -> subprocess.CompletedProcess:
-    """Wrapper for subprocess.run() to print our
+    """Run a specified command.
 
     Args:
         command (str): The shell command that is executed via subprocess.Popen.
         disable_stdout_logging (bool): Disable stdout logging when it is too much or handled by the caller.
+        exit_on_error (bool): Exit program if the exit code of the command is not 0.
+        timeout (Optional[int]): Optional timeout for the command.
 
     Returns:
         subprocess.CompletedProcess: State
@@ -256,7 +259,8 @@ def run(
                 log(line.rstrip("\n"))
             stderr += line
 
-    exitcode = process.wait()
+    exitcode = process.wait(timeout=timeout)
+
     if exit_on_error and exitcode != 0:
         exit_process(exitcode)
 
