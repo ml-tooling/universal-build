@@ -253,6 +253,7 @@ def run(  # type: ignore
     try:
         stdout = ""
         stderr = ""
+        log("Starting listening")
         with process.stdout:
             for line in iter(process.stdout.readline, ""):
                 if not disable_stdout_logging:
@@ -263,8 +264,9 @@ def run(  # type: ignore
                 if not disable_stderr_logging:
                     log(line.rstrip("\n"))
                 stderr += line
-
+        log("Waiting")
         exitcode = process.wait(timeout=timeout)
+        log("After waiting")
 
         if exit_on_error and exitcode != 0:
             exit_process(exitcode)
@@ -273,7 +275,7 @@ def run(  # type: ignore
             args=command, returncode=exitcode, stdout=stdout, stderr=stderr
         )
     except Exception as ex:
-        log(f"Exception during command run")  # : {ex}
+        log("Exception during command run")  # : {ex}
         try:
             process.terminate()
         except Exception:
