@@ -273,8 +273,11 @@ def run(  # type: ignore
             args=command, returncode=exitcode, stdout=stdout, stderr=stderr
         )
     except Exception as ex:
-        log(f"Exception during command run: {ex}")
-        process.terminate()
+        log(f"Exception during command run")  # : {ex}
+        try:
+            process.terminate()
+        except Exception:
+            pass
         # exit_process(1)
 
 
