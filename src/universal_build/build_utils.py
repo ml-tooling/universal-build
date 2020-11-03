@@ -5,7 +5,9 @@ import re
 import select
 import subprocess
 import sys
-from threading import Timer
+from subprocess import PIPE, STDOUT, Popen
+from threading import Event, Lock, Thread, Timer
+from time import monotonic
 from typing import Dict, List, Match, Optional, Tuple, Union
 
 ALLOWED_BRANCH_TYPES_FOR_RELEASE = ["release", "production"]
@@ -245,45 +247,52 @@ def run(  # type: ignore
         subprocess.CompletedProcess: State
     """
     log("Executing: " + command)
-    process = subprocess.Popen(
+    with subprocess.Popen(
         command,
         shell=True,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         text=True,
-    )
-
-    try:
-        stdout = ""
-        stderr = ""
-        log("Starting listening")
-        with process.stdout:
-            for line in _run_with_timeout(timeout, None, process.stdout.readline):
-                if not disable_stdout_logging:
-                    log(line.rstrip("\n"))
-                stdout += line
-        with process.stderr:
-            for line in _run_with_timeout(timeout, None, process.stderr.readline):
-                if not disable_stderr_logging:
-                    log(line.rstrip("\n"))
-                stderr += line
-        log("Waiting")
-        exitcode = process.wait(timeout=timeout)
-        log("After waiting")
-
-        if exit_on_error and exitcode != 0:
-            exit_process(exitcode)
-
-        return subprocess.CompletedProcess(
-            args=command, returncode=exitcode, stdout=stdout, stderr=stderr
-        )
-    except Exception as ex:
-        log(f"Exception during command run: {ex}")  # : {ex}
+    ) as process:
         try:
-            process.terminate()
-        except Exception:
-            pass
-        # exit_process(1)
+            watchdog = None
+            if timeout:
+                watchdog = WatchdogTimer(timeout, callback=process.kill, daemon=True)
+                watchdog.start()
+            stdout = ""
+            stderr = ""
+            log("Starting listening")
+            with process.stdout:
+                for line in iter(process.stdout.readline, ""):
+                    if not disable_stdout_logging:
+                        log(line.rstrip("\n"))
+                    stdout += line
+                    if watchdog:
+                        watchdog.restart()
+            with process.stderr:
+                for line in iter(process.stderr.readline, ""):
+                    if not disable_stderr_logging:
+                        log(line.rstrip("\n"))
+                    stderr += line
+            log("Waiting")
+            exitcode = process.wait(timeout=timeout)
+            log("After waiting")
+            if watchdog:
+                watchdog.cancel()
+
+            if exit_on_error and exitcode != 0:
+                exit_process(exitcode)
+
+            return subprocess.CompletedProcess(
+                args=command, returncode=exitcode, stdout=stdout, stderr=stderr
+            )
+        except Exception as ex:
+            log(f"Exception during command run: {ex}")
+            try:
+                process.terminate()
+            except Exception:
+                pass
+            # exit_process(1)
 
 
 def exit_process(code: int = 0):
@@ -302,20 +311,6 @@ def exit_process(code: int = 0):
 
 
 # Private functions
-
-
-def _run_with_timeout(timeout, default, f, *args, **kwargs):
-    if not timeout:
-        return f(*args, **kwargs)
-    try:
-        timeout_timer = Timer(timeout, _thread.interrupt_main)
-        timeout_timer.start()
-        result = f(*args, **kwargs)
-        return result
-    except KeyboardInterrupt:
-        return default
-    finally:
-        timeout_timer.cancel()
 
 
 def _get_current_branch() -> Tuple[str, str]:
@@ -600,3 +595,33 @@ class VersionInvalidFormatException(Exception):
 
 class VersionInvalidPatchNumber(Exception):
     pass
+
+
+class WatchdogTimer(Thread):
+    """Run *callback* in *timeout* seconds unless the timer is restarted."""
+
+    def __init__(self, timeout, callback, *args, timer=monotonic, **kwargs):
+        super().__init__(**kwargs)
+        self.timeout = timeout
+        self.callback = callback
+        self.args = args
+        self.timer = timer
+        self.cancelled = Event()
+        self.blocked = Lock()
+
+    def run(self):
+        self.restart()  # don't start timer until `.start()` is called
+        # wait until timeout happens or the timer is canceled
+        while not self.cancelled.wait(self.deadline - self.timer()):
+            # don't test the timeout while something else holds the lock
+            # allow the timer to be restarted while blocked
+            with self.blocked:
+                if self.deadline <= self.timer() and not self.cancelled.is_set():
+                    return self.callback(*self.args)  # on timeout
+
+    def restart(self):
+        """Restart the watchdog timer."""
+        self.deadline = self.timer() + self.timeout
+
+    def cancel(self):
+        self.cancelled.set()
