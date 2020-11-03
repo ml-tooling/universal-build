@@ -259,6 +259,7 @@ def run(  # type: ignore
             if timeout:
                 watchdog = WatchdogTimer(timeout, callback=process.kill, daemon=True)
                 watchdog.start()
+                log("Start watchdog timer")
             stdout = ""
             stderr = ""
             log("Starting listening")
@@ -274,6 +275,8 @@ def run(  # type: ignore
                     if not disable_stderr_logging:
                         log(line.rstrip("\n"))
                     stderr += line
+                    if watchdog:
+                        watchdog.restart()
             log("Waiting")
             exitcode = process.wait(timeout=timeout)
             log("After waiting")
