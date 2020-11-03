@@ -259,36 +259,31 @@ def run(  # type: ignore
         stderr=subprocess.PIPE,
         text=True,
     ) as process:
-        stdout = ""
-        stderr = ""
-        log("Starting listening")
-        with process.stdout:
-            for line in iter(process.stdout.readline, ""):
-                if not disable_stdout_logging:
-                    log(line.rstrip("\n"))
-                stdout += line
-        with process.stderr:
-            for line in iter(process.stderr.readline, ""):
-                if not disable_stderr_logging:
-                    log(line.rstrip("\n"))
-                stderr += line
-        log("Waiting")
-        exitcode = process.wait(timeout=timeout)
-        log("After waiting")
+        try:
+            stdout = ""
+            stderr = ""
+            with process.stdout:
+                for line in iter(process.stdout.readline, ""):
+                    if not disable_stdout_logging:
+                        log(line.rstrip("\n"))
+                    stdout += line
+            with process.stderr:
+                for line in iter(process.stderr.readline, ""):
+                    if not disable_stderr_logging:
+                        log(line.rstrip("\n"))
+                    stderr += line
+            exitcode = process.wait(timeout=timeout)
 
-        if exit_on_error and exitcode != 0:
-            exit_process(exitcode)
+            if exit_on_error and exitcode != 0:
+                exit_process(exitcode)
 
-        return subprocess.CompletedProcess(
-            args=command, returncode=exitcode, stdout=stdout, stderr=stderr
-        )
-        # except Exception as ex:
-        #     log(f"Exception during command run: {ex}")
-        #     try:
-        #         process.terminate()
-        #     except Exception:
-        #         pass
-        #     # exit_process(1)
+            return subprocess.CompletedProcess(
+                args=command, returncode=exitcode, stdout=stdout, stderr=stderr
+            )
+        except Exception as ex:
+            log(f"Exception during command run: {ex}")
+            process.terminate()
+            exit_process(1)
 
 
 def exit_process(code: int = 0):
