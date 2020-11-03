@@ -1,8 +1,11 @@
+import _thread
 import argparse
 import os
 import re
+import select
 import subprocess
 import sys
+from threading import Timer
 from typing import Dict, List, Match, Optional, Tuple, Union
 
 ALLOWED_BRANCH_TYPES_FOR_RELEASE = ["release", "production"]
@@ -255,12 +258,16 @@ def run(  # type: ignore
         stderr = ""
         log("Starting listening")
         with process.stdout:
-            for line in iter(process.stdout.readline, ""):
+            for line in iter(
+                _run_with_timeout(timeout, None, process.stdout.readline), ""
+            ):
                 if not disable_stdout_logging:
                     log(line.rstrip("\n"))
                 stdout += line
         with process.stderr:
-            for line in iter(process.stderr.readline, ""):
+            for line in iter(
+                _run_with_timeout(timeout, None, process.stderr.readline), ""
+            ):
                 if not disable_stderr_logging:
                     log(line.rstrip("\n"))
                 stderr += line
@@ -299,6 +306,20 @@ def exit_process(code: int = 0):
 
 
 # Private functions
+
+
+def _run_with_timeout(timeout, default, f, *args, **kwargs):
+    if not timeout:
+        return f(*args, **kwargs)
+    try:
+        timeout_timer = Timer(timeout, _thread.interrupt_main)
+        timeout_timer.start()
+        result = f(*args, **kwargs)
+        return result
+    except KeyboardInterrupt:
+        return default
+    finally:
+        timeout_timer.cancel()
 
 
 def _get_current_branch() -> Tuple[str, str]:
