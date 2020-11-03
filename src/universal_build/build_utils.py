@@ -275,7 +275,7 @@ def run(  # type: ignore
     except Exception as ex:
         log(f"Exception during command run: {ex}")
         process.terminate()
-        exit_process(1)
+        # exit_process(1)
 
 
 def exit_process(code: int = 0):
