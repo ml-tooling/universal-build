@@ -258,16 +258,12 @@ def run(  # type: ignore
         stderr = ""
         log("Starting listening")
         with process.stdout:
-            for line in iter(
-                _run_with_timeout(timeout, None, process.stdout.readline), ""
-            ):
+            for line in _run_with_timeout(timeout, None, process.stdout.readline):
                 if not disable_stdout_logging:
                     log(line.rstrip("\n"))
                 stdout += line
         with process.stderr:
-            for line in iter(
-                _run_with_timeout(timeout, None, process.stderr.readline), ""
-            ):
+            for line in _run_with_timeout(timeout, None, process.stderr.readline):
                 if not disable_stderr_logging:
                     log(line.rstrip("\n"))
                 stderr += line
