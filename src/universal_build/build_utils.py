@@ -13,6 +13,7 @@ FLAG_TEST = "test"
 FLAG_RELEASE = "release"
 FLAG_VERSION = "version"
 FLAG_CHECK = "check"
+FLAG_RUN = "run"
 FLAG_SKIP_PATH = "skip_path"
 FLAG_FORCE = "force"
 FLAG_DOCKER_IMAGE_PREFIX = "docker_image_prefix"
@@ -288,7 +289,9 @@ def _get_current_branch() -> Tuple[str, str]:
     Returns:
         Tuple: (branchname, type)
     """
-    full_branch_name = run("git branch --show-current").stdout.rstrip("\n")
+    full_branch_name = run(
+        "git branch --show-current", disable_stdout_logging=True
+    ).stdout.rstrip("\n")
     if full_branch_name == "":
         full_branch_name = "HEAD"
     path_parts = full_branch_name.split("/")
@@ -338,6 +341,11 @@ def _get_default_cli_arguments_parser(
         action="store_true",
     )
     parser.add_argument(
+        f"--{FLAG_RUN}",
+        help="Run the component for development (e.g. dev server).",
+        action="store_true",
+    )
+    parser.add_argument(
         f"--{FLAG_VERSION}", help="Version of build (MAJOR.MINOR.PATCH-TAG)"
     )
     parser.add_argument(
@@ -383,10 +391,10 @@ def _is_valid_command_combination(args: argparse.Namespace) -> bool:
         )
         return False
     if args.release and not args.test and not args.force:
-        log(f"Test must be executed before the deployment (--{FLAG_TEST})")
+        log(f"The release steps requires test to be executed (--{FLAG_TEST})")
         return False
     if args.release and not args.make and not args.force:
-        log(f"Build must be executed before the deployment (--{FLAG_MAKE})")
+        log(f"The release steps requires make to be executed (--{FLAG_MAKE})")
         return False
 
     if args.release:
@@ -428,7 +436,6 @@ def _get_latest_branch_version(branch_name: str = "") -> Optional["Version"]:
 
 def _is_dev_tag_belonging_to_branch(version: "Version", branch_name: str = "") -> bool:
     # The found dev-version does not belong to the current branch
-    print(version.to_string(), _get_dev_suffix(branch_name))
     return not (
         branch_name
         and version
