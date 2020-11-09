@@ -1,8 +1,8 @@
-from typing import Tuple
-from universal_build import build_utils
-import pytest
 import sys
+from typing import Tuple
 
+import pytest
+from universal_build import build_utils
 from universal_build.build_utils import (
     VersionInvalidFormatException,
     VersionInvalidPatchNumber,
@@ -47,7 +47,6 @@ def mock_version(version: str = "v1.1.0", suffix: str = ""):
         version (str, optional): The version that should be returned as the latest version tag. Defaults to "v1.1.0".
         suffix (str, optional): A suffix that is appended to version in the form of `-${suffix}`. Defaults to "".
     """
-
     version = version if suffix == "" else f"{version}-{suffix}"
 
     def _mocked_get_latest_branch_version() -> "Version":
@@ -73,9 +72,9 @@ class TestGetVersionClass:
         assert isinstance(valid_version, build_utils.Version)
         version_split = valid_patch_version.split(".")
         assert (
-            valid_version.major == version_split[0]
-            and valid_version.minor == version_split[1]
-            and valid_version.patch == version_split[2]
+            valid_version.major == int(version_split[0])
+            and valid_version.minor == int(version_split[1])
+            and valid_version.patch == int(version_split[2])
             and not valid_version.suffix
         )
 
@@ -86,9 +85,9 @@ class TestGetVersionClass:
         assert isinstance(valid_version, build_utils.Version)
         version_split = valid_minor_version.split(".")
         assert (
-            valid_version.major == version_split[0]
-            and valid_version.minor == version_split[1]
-            and valid_version.patch == version_split[2]
+            valid_version.major == int(version_split[0])
+            and valid_version.minor == int(version_split[1])
+            and valid_version.patch == int(version_split[2])
             and not valid_version.suffix
         )
 
@@ -129,7 +128,7 @@ class TestGetVersionClass:
 
         for tag in invalid_git_tags:
             version = build_utils.Version.get_version_from_string(tag)
-            if version == None:
+            if version is None:
                 continue
             validated_tags.append(version)
 
@@ -189,49 +188,12 @@ class TestBuildClass:
         assert isinstance(sanitized_arguments[build_utils.FLAG_VERSION], str)
         assert sanitized_arguments[build_utils.FLAG_VERSION] == valid_patch_version
 
-    def test_build_with_dev_tag_in_branch(self):
-        branch_name = "foo-branch"
-        mock_branch(branch_name, "feature")
-        mock_version("v1.2.0", suffix=build_utils._get_dev_suffix(branch_name))
-
-        sanitized_args = build_utils.get_sanitized_arguments([f"--{build_utils.FLAG_MAKE}"])
-        assert sanitized_args[build_utils.FLAG_VERSION] == "1.2.0-dev.foo-branch"
-
-    def test_build_with_wrong_dev_tag_in_branch(self):
-        branch_name = "foo-branch"
-        mock_branch(branch_name, "feature")
-        mock_version("v1.2.0", suffix=build_utils._get_dev_suffix("bar-branch"))
-
-        with pytest.raises(SystemExit) as pytest_wrapped_e:
-            build_utils.get_sanitized_arguments([f"--{build_utils.FLAG_MAKE}"])
-
-        assert pytest_wrapped_e.type == SystemExit
-        assert (
-            pytest_wrapped_e.value.code
-            == build_utils.EXIT_CODE_DEV_VERSION_NOT_MATCHES_BRANCH
-        )
-
-    def test_build_with_release_tag_in_branch(self):
-        branch_name = "foo-branch"
-        mock_branch(branch_name, "feature")
-
-        with pytest.raises(SystemExit) as pytest_wrapped_e:
-            build_utils.get_sanitized_arguments([f"--{build_utils.FLAG_MAKE}"])
-
-        assert pytest_wrapped_e.type == SystemExit
-        assert pytest_wrapped_e.value.code == build_utils.EXIT_CODE_DEV_VERSION_REQUIRED
-
-    def test_build_with_force_without_version(self):
+    def test_build_with_force_with_version(self):
         sanitized_args = build_utils.get_sanitized_arguments(
-            [f"--{build_utils.FLAG_MAKE}", f"--{build_utils.FLAG_FORCE}"]
+            [
+                f"--{build_utils.FLAG_MAKE}",
+                f"--{build_utils.FLAG_FORCE}",
+                "--version=1.1.0",
+            ]
         )
         assert sanitized_args[build_utils.FLAG_VERSION] == "1.1.0"
-
-    def test_build_without_version_and_no_dev_tag_in_branch(self):
-        mock_branch("bar-branch", "feature")
-
-        with pytest.raises(SystemExit) as pytest_wrapped_e:
-            build_utils.get_sanitized_arguments([f"--{build_utils.FLAG_MAKE}"])
-
-        assert pytest_wrapped_e.type == SystemExit
-        assert pytest_wrapped_e.value.code == build_utils.EXIT_CODE_DEV_VERSION_REQUIRED
