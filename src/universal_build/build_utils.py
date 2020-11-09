@@ -62,38 +62,41 @@ def get_sanitized_arguments(
     if not _is_valid_command_combination(args):
         exit_process(EXIT_CODE_INVALID_ARGUMENTS)
 
-    # Version detection is only needed when the component is built, but for example not for a simple "--check"
-    if args.make or args.test:
-        try:
-            version = _get_version(
-                args.version, args.force, existing_versions=_get_version_tags()
-            )
-        except VersionInvalidFormatException as e:
-            log(str(e))
-            exit_process(EXIT_CODE_INVALID_VERSION)
-        except VersionInvalidPatchNumber as e:
-            log(str(e))
-            exit_process(EXIT_CODE_INVALID_VERSION)
-        except Exception as e:
-            version = None
+    if args.check:
+        # Version detection is not needed for check step
+        args._sanitized = True
+        return vars(args)
 
-        if args.release and version is None:
-            log("For a release a valid semantic version has to be set.")
-            exit_process(EXIT_CODE_VERSION_IS_REQUIRED)
-        elif args.release is False and version is None:
-            latest_branch_version = _get_latest_branch_version()
+    try:
+        version = _get_version(
+            args.version, args.force, existing_versions=_get_version_tags()
+        )
+    except VersionInvalidFormatException as e:
+        log(str(e))
+        exit_process(EXIT_CODE_INVALID_VERSION)
+    except VersionInvalidPatchNumber as e:
+        log(str(e))
+        exit_process(EXIT_CODE_INVALID_VERSION)
+    except Exception as e:
+        version = None
 
-            if not latest_branch_version:
-                version = Version(0, 0, 0, _get_dev_suffix(_get_current_branch()[0]))
-            else:
-                # higher minor version and add dev suffix
-                version = latest_branch_version
-                version.minor += 1
-                version.suffix = _get_dev_suffix(_get_current_branch()[0])
-        elif args.release is False and version:
+    if args.release and version is None:
+        log("For a release a valid semantic version has to be set.")
+        exit_process(EXIT_CODE_VERSION_IS_REQUIRED)
+    elif args.release is False and version is None:
+        latest_branch_version = _get_latest_branch_version()
+
+        if not latest_branch_version:
+            version = Version(0, 0, 0, _get_dev_suffix(_get_current_branch()[0]))
+        else:
+            # higher minor version and add dev suffix
+            version = latest_branch_version
+            version.minor += 1
             version.suffix = _get_dev_suffix(_get_current_branch()[0])
+    elif args.release is False and args.force is False and version:
+        version.suffix = _get_dev_suffix(_get_current_branch()[0])
 
-        args.version = version.to_string()
+    args.version = version.to_string()
 
     args._sanitized = True
     return vars(args)
@@ -147,7 +150,6 @@ def release_docker_image(
     Returns:
         subprocess.CompletedProcess: Returns the CompletedProcess object of the `docker push ...` command.
     """
-
     if not docker_image_prefix:
         log(
             f"The flag --docker-image-prefix cannot be blank when pushing a Docker image."
@@ -287,8 +289,8 @@ def run(  # type: ignore
 
 
 def exit_process(code: int = 0):
-    """
-    Exit the process with exit code.
+    """Exit the process with exit code.
+
     `sys.exit` seems to be a bit unreliable, process just sleeps and does not exit.
     So we are using os._exit instead and doing some manual cleanup.
     """
