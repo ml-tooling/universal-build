@@ -339,8 +339,12 @@ def _is_path_skipped(path: str, skip_paths: List[str] = []) -> bool:
         bool: Return true if the path should be skipped
     """
     skip_paths = skip_paths or []
-    return any(os.path.commonpath([path, skip_path]) != "" for skip_path in skip_paths)
-
+    real_path = os.path.realpath(path)
+    for skip_path in skip_paths:
+        real_skip_path = os.path.realpath(skip_path)
+        if real_path == real_skip_path or real_path.startswith(real_skip_path + os.sep):
+            return True
+    return False
 
 def _get_default_cli_arguments_parser(
     parser: argparse.ArgumentParser,
