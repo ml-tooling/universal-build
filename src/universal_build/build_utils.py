@@ -113,6 +113,9 @@ def concat_command_line_arguments(args: dict) -> str:
             if type(arg_value) == bool:
                 command_line_arguments += f" --{arg}"
             else:
+                # Underscores must be converted back to dashes, since the
+                # argparser initially transforms all dashes to underscores
+                arg = str(arg).replace("_", "-")
                 command_line_arguments += f" --{arg}={arg_value}"
     return command_line_arguments
 
