@@ -467,16 +467,6 @@ def _get_latest_branch_version(branch_name: str = "") -> Optional["Version"]:
     return Version.get_version_from_string(result.stdout.rstrip("\n"))
 
 
-def _is_dev_tag_belonging_to_branch(version: "Version", branch_name: str = "") -> bool:
-    # The found dev-version does not belong to the current branch
-    return not (
-        branch_name
-        and version
-        and version.suffix
-        and version.suffix != _get_dev_suffix(branch_name)
-    )
-
-
 def _get_remote_git_tags() -> List[str]:
     if not os.getenv("GITHUB_TOKEN"):
         # if no github token is set, don't try to get the tags from remote
