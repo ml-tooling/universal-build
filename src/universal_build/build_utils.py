@@ -275,7 +275,8 @@ def run(  # type: ignore
                         log(line.rstrip("\n"))
                     stderr += line
             exitcode = process.wait(timeout=timeout)
-
+            process.stdout.close()
+            process.stderr.close()
             if exit_on_error and exitcode != 0:
                 exit_process(exitcode)
 
