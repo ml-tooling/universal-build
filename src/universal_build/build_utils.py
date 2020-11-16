@@ -15,6 +15,7 @@ MAIN_BRANCH_NAMES = ["master", "main"]
 
 FLAG_MAKE = "make"
 FLAG_TEST = "test"
+FLAG_TEST_MARKER = "test_marker"
 FLAG_RELEASE = "release"
 FLAG_VERSION = "version"
 FLAG_CHECK = "check"
@@ -346,6 +347,7 @@ def _is_path_skipped(path: str, skip_paths: List[str] = []) -> bool:
             return True
     return False
 
+
 def _get_default_cli_arguments_parser(
     parser: argparse.ArgumentParser,
 ) -> argparse.ArgumentParser:
@@ -384,6 +386,10 @@ def _get_default_cli_arguments_parser(
         "--skip-path",
         help="Skips the build phases for all (sub)paths provided here",
         action="append",
+    )
+    parser.add_argument(
+        "--test-marker",
+        help="With this flag you can provide a custom marker, which could be used to control custom pytest.markers for example.",
     )
     parser.add_argument(
         "--docker-image-prefix",
