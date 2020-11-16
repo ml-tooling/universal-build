@@ -390,7 +390,8 @@ def _get_default_cli_arguments_parser(
     )
     parser.add_argument(
         "--test-marker",
-        help="With this flag you can provide a custom marker, which could be used to control custom pytest.markers for example.",
+        help="With this flag you can provide custom markers, which could be used to control custom pytest.markers for example.",
+        action="append",
     )
     parser.add_argument(
         "--docker-image-prefix",
