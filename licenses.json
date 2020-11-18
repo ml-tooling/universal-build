@@ -1,9 +1,0 @@
-[
-  {
-    "component": "setuptools",
-    "licensor": "Jason R Coombs",
-    "website": "https://github.com/pypa/setuptools",
-    "license": "MIT License",
-    "licenseUrl": "https://raw.githubusercontent.com/pypa/setuptools/master/LICENSE"
-  }
-]
