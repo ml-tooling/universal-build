@@ -8,6 +8,7 @@ import sys
 from subprocess import PIPE, STDOUT, Popen
 from threading import Event, Lock, Thread, Timer
 from time import monotonic
+import time
 from typing import Dict, List, Match, Optional, Tuple, Union
 
 ALLOWED_BRANCH_TYPES_FOR_RELEASE = ["release", "production"]
@@ -229,7 +230,7 @@ def build(component_path: str, args: Dict[str, str]):
     if completed_process.returncode > 0:
         error_message = completed_process.stderr or completed_process.stdout
         log(
-            f"Failed to build module {component_path}. Code: {completed_process.returncode}. Reason: {error_message}"
+            f"Failed to build module {component_path}. Code: {completed_process.returncode}."
         )
         exit_process(EXIT_CODE_GENERAL)
 
@@ -255,8 +256,8 @@ def run(  # type: ignore
     # Add timeout to command
     if timeout:
         command = f"timeout {timeout} {command}"
-
-    log("Executing: " + command)
+    timestamp = str(time.time())
+    log(f"Executing ({timestamp}): {command}")
 
     with subprocess.Popen(
         command,
@@ -281,6 +282,9 @@ def run(  # type: ignore
             exitcode = process.wait(timeout=timeout)
             process.stdout.close()
             process.stderr.close()
+
+            log(f"Finished executing ({timestamp}): {command}")
+
             if exit_on_error and exitcode != 0:
                 exit_process(exitcode)
 
