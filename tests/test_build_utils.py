@@ -4,69 +4,19 @@ from typing import Tuple
 
 import pytest
 from universal_build import build_utils
-from universal_build.build_utils import (
-    VersionInvalidFormatException,
-    VersionInvalidPatchNumber,
-    concat_command_line_arguments,
-)
 
 valid_patch_version = "1.1.4"
 valid_minor_version = "2.2.0"
 
 
-def _mocked_get_remote_git_tags() -> list:
-    return sorted(
-        ["1.0.0", "1.1.3", "2.1.0", "1.2.0-dev.foo-branch", "1.0.0-dev"], reverse=True
-    )
-
-
-def exit_process(code: int = 0):
-    sys.exit(code)
-
-
-build_utils._get_remote_git_tags = _mocked_get_remote_git_tags
-build_utils.exit_process = exit_process
-
-
-def mock_branch(branch_name: str = "main", branch_type: str = ""):
-    """Override the build_utils._get_current_branch method since the test might not run in a git repository.
-
-    Args:
-        branch_name (str, optional): Name of the branch the `_get_current_branch` method should return. Defaults to "main".
-        branch_type (str, optional): Type of the branch the `_get_current_branch` method should return. Defaults to "".
-    """
-
-    def _mocked_get_current_branch() -> Tuple[str, str]:
-        return (branch_name, branch_type)
-
+def setup_module(module):
+    build_utils._get_remote_git_tags = _mocked_get_remote_git_tags
+    build_utils.exit_process = _mocked_exit_process
     build_utils._get_current_branch = _mocked_get_current_branch
-
-
-def mock_version(version: str = "v1.1.0", suffix: str = ""):
-    """Override the build_utils._get_latest_branch_version method since the test might not run in a git repository.
-
-    Args:
-        version (str, optional): The version that should be returned as the latest version tag. Defaults to "v1.1.0".
-        suffix (str, optional): A suffix that is appended to version in the form of `-${suffix}`. Defaults to "".
-    """
-    version = version if suffix == "" else f"{version}-{suffix}"
-
-    def _mocked_get_latest_branch_version() -> "Version":
-        return build_utils.Version.get_version_from_string(version)
-
     build_utils._get_latest_branch_version = _mocked_get_latest_branch_version
 
 
-# Default version override
-mock_version()
-
-
 class TestGetVersionClass:
-    def setup_method(self):
-        """" Runs before each function. """
-        mock_branch()
-        mock_version()
-
     def test_correct_semantic_patch_version(self):
         valid_version = build_utils._get_version(
             valid_patch_version, existing_versions=build_utils._get_version_tags()
@@ -94,21 +44,23 @@ class TestGetVersionClass:
         )
 
     def test_no_semantic_version(self):
-        with pytest.raises(VersionInvalidFormatException) as pytest_wrapped_e:
+        with pytest.raises(
+            build_utils.VersionInvalidFormatException
+        ) as pytest_wrapped_e:
             build_utils._get_version(
                 "foobar", existing_versions=build_utils._get_version_tags()
             )
 
-        assert pytest_wrapped_e.type is VersionInvalidFormatException
+        assert pytest_wrapped_e.type is build_utils.VersionInvalidFormatException
 
     def test_with_too_small_patch(self):
         too_small_patch_version = "1.1.2"
-        with pytest.raises(VersionInvalidPatchNumber) as pytest_wrapped_e:
+        with pytest.raises(build_utils.VersionInvalidPatchNumber) as pytest_wrapped_e:
             build_utils._get_version(
                 version=too_small_patch_version,
                 existing_versions=build_utils._get_version_tags(),
             )
-        assert pytest_wrapped_e.type is VersionInvalidPatchNumber
+        assert pytest_wrapped_e.type is build_utils.VersionInvalidPatchNumber
 
         with pytest.raises(SystemExit) as pytest_wrapped_e:
             build_utils.get_sanitized_arguments(
@@ -138,11 +90,6 @@ class TestGetVersionClass:
 
 
 class TestBuildClass:
-    def setup_method(self):
-        """" Runs before each function. """
-        mock_branch()
-        mock_version()
-
     def test_release_without_version(self):
         with pytest.raises(SystemExit) as pytest_wrapped_e:
             build_utils.get_sanitized_arguments([f"--{build_utils.FLAG_RELEASE}"])
@@ -222,7 +169,7 @@ class TestBuildClass:
         ],
     )
     def test_concat_command_line_arguments_arg_value(self, args: dict):
-        cli_args = concat_command_line_arguments(args)
+        cli_args = build_utils.concat_command_line_arguments(args)
         arg, arg_value = args.popitem()
 
         if arg == "test":
@@ -241,3 +188,26 @@ class TestBuildClass:
 
         if arg == "pypi_token":
             assert not cli_args
+
+
+def _mocked_get_remote_git_tags() -> list:
+    return sorted(
+        ["1.0.0", "1.1.3", "2.1.0", "1.2.0-dev.foo-branch", "1.0.0-dev"], reverse=True
+    )
+
+
+def _mocked_exit_process(code: int = 0):
+    sys.exit(code)
+
+
+def _mocked_get_current_branch(
+    branch_name: str = "main", branch_type: str = ""
+) -> Tuple[str, str]:
+    return (branch_name, branch_type)
+
+
+def _mocked_get_latest_branch_version(
+    version: str = "v1.1.0", suffix: str = ""
+) -> build_utils.Version:
+    version = version if suffix == "" else f"{version}-{suffix}"
+    return build_utils.Version.get_version_from_string(version)
