@@ -1,0 +1,18 @@
+{
+  "recommendations": [
+    // General Development
+    "VisualStudioExptTeam.vscodeintellicode",
+    "ms-vscode-remote.vscode-remote-extensionpack",
+    "redhat.vscode-yaml",
+    "christian-kohler.path-intellisense",
+    "esbenp.prettier-vscode",
+    "EditorConfig.EditorConfig",
+    // Container Development
+    "ms-azuretools.vscode-docker",
+    "exiasr.hadolint",
+    // Python Development
+    "ms-python.python",
+    "ms-python.vscode-pylance",
+    "njpwerner.autodocstring"
+  ]
+}
