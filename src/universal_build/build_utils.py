@@ -41,7 +41,7 @@ def log(message: str):
 
 def get_sanitized_arguments(
     arguments: List[str] = None, argument_parser: argparse.ArgumentParser = None
-) -> Dict[str, Union[str, bool]]:
+) -> Dict[str, Union[str, bool, List[str]]]:
     """Return sanitized default arguments when they are valid.
     Sanitized means that, for example, the version is already checked and set depending on our build guidelines.
     If arguments are not valid, exit the script run.
@@ -51,7 +51,7 @@ def get_sanitized_arguments(
         argument_parser (arparse.ArgumentParser, optional): An argument parser which is passed as a parents parser to the default ArgumentParser to be able to use additional flags besides the default ones. Must be initialized with `add_help=False` flag like argparse.ArgumentParser(add_help=False)!
 
     Returns:
-        Dict[str, Union[bool, str]]: The parsed default arguments thar are already checked for validity.
+        Dict[str, Union[str, bool, List[str]]]: The parsed default arguments thar are already checked for validity.
     """
 
     argument_parser = argument_parser or argparse.ArgumentParser()
@@ -104,20 +104,25 @@ def get_sanitized_arguments(
     return vars(args)
 
 
-def concat_command_line_arguments(args: dict) -> str:
+def concat_command_line_arguments(args: Dict[str, Union[str, bool, List[str]]]) -> str:
     command_line_arguments = ""
 
     for arg in args:
         arg_value = args[arg]  # getattr(args, arg)
+        # Underscores must be converted back to dashes, since the
+        # argparser initially transforms all dashes to underscores
+        cli_arg_name = str(arg).replace("_", "-")
         if arg_value:
             # For boolean types, the existence of the flag is enough
             if type(arg_value) == bool:
-                command_line_arguments += f" --{arg}"
+                command_line_arguments += f" --{cli_arg_name}"
+            elif isinstance(arg_value, list):
+                for single_arg_value in arg_value:
+                    command_line_arguments += f" --{cli_arg_name}={single_arg_value}"
             else:
-                # Underscores must be converted back to dashes, since the
-                # argparser initially transforms all dashes to underscores
-                arg = str(arg).replace("_", "-")
-                command_line_arguments += f" --{arg}={arg_value}"
+                command_line_arguments += f" --{cli_arg_name}={arg_value}"
+
+        command_line_arguments = command_line_arguments.lstrip()
     return command_line_arguments
 
 
@@ -212,7 +217,7 @@ def create_git_tag(
     return completed_process
 
 
-def build(component_path: str, args: Dict[str, str]):
+def build(component_path: str, args: Dict[str, Union[str, bool, List[str]]]):
     """Run the build logic of the specified component, except if the path is a (sub-)path in skipped-paths.
 
     Args:
@@ -337,16 +342,20 @@ def _get_current_branch() -> Tuple[str, str]:
         return (path_parts[0], merged_branch_name)
 
 
-def _is_path_skipped(path: str, skip_paths: List[str] = []) -> bool:
+def _is_path_skipped(path: str, args: dict) -> bool:
     """Check whether the path is itself defined as a skip_path or is a sub-path of a skipped path.
 
     Args:
         path (str): The path to be checked
-        skip_path (list, optional): The pathes to be skipped. Sub-pathes of these skip-pathes will be skipped as well. Defaults to [].
+        args (dict): The cli arguments that might contain paths to be skipped. Sub-pathes of these skip-pathes will be skipped as well.
 
     Returns:
         bool: Return true if the path should be skipped
     """
+    if FLAG_SKIP_PATH not in args:
+        return False
+
+    skip_paths: list = args[FLAG_SKIP_PATH]
     skip_paths = skip_paths or []
     real_path = os.path.realpath(path)
     for skip_path in skip_paths:

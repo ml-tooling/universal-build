@@ -1,4 +1,5 @@
 import sys
+from argparse import ArgumentDefaultsHelpFormatter
 from typing import Tuple
 
 import pytest
@@ -6,6 +7,7 @@ from universal_build import build_utils
 from universal_build.build_utils import (
     VersionInvalidFormatException,
     VersionInvalidPatchNumber,
+    concat_command_line_arguments,
 )
 
 valid_patch_version = "1.1.4"
@@ -197,3 +199,45 @@ class TestBuildClass:
             ]
         )
         assert sanitized_args[build_utils.FLAG_VERSION] == "1.1.0"
+
+    @pytest.mark.parametrize(
+        "args",
+        [{"test": True}, {"test_2": True}, {"test-3": True}],
+    )
+    def test_concat_command_line_arguments_arg(self, args: dict):
+        cli_args = build_utils.concat_command_line_arguments(args)
+        assert "_" not in cli_args
+        arg, arg_value = args.popitem()
+        if "_" not in arg:
+            assert f"--{arg}" == cli_args
+
+    @pytest.mark.parametrize(
+        "args",
+        [
+            {"test": True},
+            {"docker_image_prefix": "test"},
+            {"skip_path": ["awesome-frontend"]},
+            {"skip_path2": ["awesome-frontend", "awesome-backend"]},
+            {"pypi_token": False},
+        ],
+    )
+    def test_concat_command_line_arguments_arg_value(self, args: dict):
+        cli_args = concat_command_line_arguments(args)
+        arg, arg_value = args.popitem()
+
+        if arg == "test":
+            assert cli_args == "--test"
+
+        if arg == "docker_image_prefix":
+            assert cli_args == "--docker-image-prefix=test"
+
+        if arg == "skip_path":
+            assert cli_args == "--skip-path=awesome-frontend"
+
+        if arg == "skip_path2":
+            assert (
+                cli_args == "--skip-path2=awesome-frontend --skip-path2=awesome-backend"
+            )
+
+        if arg == "pypi_token":
+            assert not cli_args
