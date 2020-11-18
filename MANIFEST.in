@@ -1,2 +1,10 @@
-include *.rst *.txt *.md
-recursive-include docs *.rst *.txt *.md
+include pyproject.toml
+include README.md
+include LICENSE
+include requirements.txt
+
+# Include documentation
+recursive-include docs *
+
+# Include data files (if needed)
+# recursive-include data *
