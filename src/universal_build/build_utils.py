@@ -5,10 +5,10 @@ import re
 import select
 import subprocess
 import sys
+import time
 from subprocess import PIPE, STDOUT, Popen
 from threading import Event, Lock, Thread, Timer
 from time import monotonic
-import time
 from typing import Dict, List, Match, Optional, Tuple, Union
 
 ALLOWED_BRANCH_TYPES_FOR_RELEASE = ["release", "production"]
@@ -226,7 +226,7 @@ def build(component_path: str, args: Dict[str, Union[str, bool, List[str]]]):
             script are passed down to the component.
     """
 
-    if _is_path_skipped(component_path, args[FLAG_SKIP_PATH]) is True:
+    if _is_path_skipped(component_path, args):
         return
 
     build_command = _create_build_cmd_from_args(component_path, args)
