@@ -42,29 +42,50 @@ if sys.version_info[:2] < (2, 7) or (
 ):
     raise Exception("This package needs Python 2.7 or 3.5 or later.")  # Python 2.7,
 
-here = os.path.abspath(os.path.dirname(__file__))
+PWD = os.path.abspath(os.path.dirname(__file__))
+
+
+def load_requirements(path_dir=PWD, file_name="requirements.txt", comment_char="#"):
+    """Read requirements file and return packages and git repos separately."""
+    requirements = []
+    dependency_links = []
+    with open(os.path.join(path_dir, file_name), "r", encoding="utf-8") as file:
+        lines = [ln.strip() for ln in file.readlines()]
+    for ln in lines:
+        if not ln:
+            continue
+        if comment_char in ln:
+            ln = ln[: ln.index(comment_char)].strip()
+        if ln.startswith("git+"):
+            dependency_links.append(ln.replace("git+", ""))
+        else:
+            requirements.append(ln)
+    return requirements, dependency_links
+
+
+# Read the requirements.txt and use it for the setup.py requirements
+requirements, dependency_links = load_requirements()
+if dependency_links:
+    print(
+        "Cannot install some dependencies. "
+        "Dependency links are currently not supported: " + str(dependency_links)
+    )
+dev_requirements, _ = load_requirements(file_name="requirements-dev.txt")
 
 # Import the README and use it as the long-description.
 # Note: this will only work if 'README.md' is present in your MANIFEST.in file!
-
-#
-
-with io.open(os.path.join(here, "README.md"), encoding="utf-8") as f:
+with io.open(os.path.join(PWD, "README.md"), encoding="utf-8") as f:
     long_description = "\n" + f.read()
 
-# Read the requirements.txt and use it as the setup.py requirements
-with io.open(os.path.join(here, "requirements.txt"), encoding="utf-8") as f:
-    requirements = [line.rstrip() for line in f.readlines()]
-
 # Load the package's __version__.py module as a dictionary.
-about = {}
+about = {}  # type: dict
 if not VERSION:
-    with open(os.path.join(here, os.path.join("src", MAIN_PACKAGE), "about.py")) as f:
+    with open(os.path.join(PWD, os.path.join("src", MAIN_PACKAGE), "about.py")) as f:
         exec(f.read(), about)
 else:
     about["__version__"] = VERSION
 
-# Where the magic happens:
+# where the magic happens:
 setup(
     name=NAME,
     version=about["__version__"],
@@ -101,7 +122,7 @@ setup(
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
     package_data={
-        # If there are data files included in your packages that need to be
+        # If tPWD are data files included in your packages that need to be
         # 'sample': ['package_data.dat'],
     },
     project_urls={
@@ -115,6 +136,9 @@ setup(
     keywords=[
         # eg: 'keyword1', 'keyword2', 'keyword3',
     ],
-    extras_require={},
+    extras_require={
+        # extras can be installed via: pip install package[dev]
+        "dev": [dev_requirements],
+    },
     setup_requires=[],
 )
