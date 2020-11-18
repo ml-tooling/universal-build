@@ -1,5 +1,3 @@
 # Changelog
 
-## 0.0.0 (YYYY/MM/DD)
-
- - TBD
+You can find the changelog of this project in the [Github release section](https://github.com/ml-tooling/universal-build/releases).
