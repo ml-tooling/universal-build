@@ -1,3 +1,4 @@
+import os
 import sys
 
 from universal_build import build_utils
@@ -17,9 +18,12 @@ def install_build_env() -> None:
 def lint_markdown() -> None:
     """Run markdownlint on markdown documentation."""
     build_utils.log("Run linters and style checks:")
-    build_utils.run(
-        "markdownlint --config='.markdown-lint.yml' ./docs", exit_on_error=True
-    )
+
+    config_file_arg = ""
+    if os.path.exists(".markdown-lint.yml"):
+        config_file_arg = "--config='.markdown-lint.yml'"
+
+    build_utils.run(f"markdownlint {config_file_arg} ./docs", exit_on_error=True)
 
 
 def build_mkdocs(command_prefix: str = PIPENV_RUN) -> None:
