@@ -37,7 +37,9 @@ def main(args: dict) -> None:
             dist_file = glob.glob(f"./dist/{dist_name}-*.tar.gz")[0]
             shutil.copy(
                 dist_file,
-                os.path.join(HERE, "build-environment", dist_name + ".tar.gz"),
+                os.path.join(
+                    HERE, "build-environment", "resources", dist_name + ".tar.gz"
+                ),
             )
         except Exception:
             build_utils.log("Failed to copy distribution to build container.")
