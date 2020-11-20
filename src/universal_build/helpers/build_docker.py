@@ -1,6 +1,40 @@
+import argparse
 import subprocess
+from typing import Dict, List, Optional, Union
 
 from universal_build import build_utils
+
+FLAG_DOCKER_IMAGE_PREFIX = "docker_image_prefix"
+
+
+def get_sanitized_arguments(
+    arguments: List[str] = None, argument_parser: argparse.ArgumentParser = None
+) -> Dict[str, Union[str, bool, List[str]]]:
+    """Return sanitized default arguments when they are valid.
+
+    Sanitized means that, for example, the version is already checked and set depending on our build guidelines.
+    If arguments are not valid, exit the script run.
+
+    Args:
+        arguments (List[str], optional): List of arguments that are used instead of the arguments passed to the process. Defaults to `None`.
+        argument_parser (arparse.ArgumentParser, optional): An argument parser which is passed as a parents parser to the default ArgumentParser to be able to use additional flags besides the default ones. Must be initialized with `add_help=False` flag like argparse.ArgumentParser(add_help=False)!
+
+    Returns:
+        Dict[str, Union[str, bool, List[str]]]: The parsed default arguments thar are already checked for validity.
+    """
+    if argument_parser is None:
+        argument_parser = argparse.ArgumentParser()
+
+    argument_parser.add_argument(
+        "--" + FLAG_DOCKER_IMAGE_PREFIX.replace("_", "-"),
+        help="With this flag you can provide a prefix for a Docker image, e.g. 'mltooling/' or even a repository path. When leaving blank, the default Dockerhub Repository is used.",
+        required=False,
+        default=None,
+    )
+
+    return build_utils.get_sanitized_arguments(
+        arguments=arguments, argument_parser=argument_parser
+    )
 
 
 def build_docker_image(
