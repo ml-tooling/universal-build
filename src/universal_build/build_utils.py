@@ -98,11 +98,6 @@ def get_sanitized_arguments(
     if not _is_valid_command_combination(args):
         exit_process(EXIT_CODE_INVALID_ARGUMENTS)
 
-    if args.check:
-        # Version detection is not needed for check step
-        args._sanitized = True
-        return vars(args)
-
     try:
         version: Optional[Version] = _get_version(
             args.version, args.force, existing_versions=_get_version_tags()
@@ -308,11 +303,11 @@ def _get_current_branch() -> Tuple[str, str]:
 
     if len(path_parts) == 1:
         return (path_parts[0], "")
-    else:
-        # if a branch name consists of multiple slashes, the parts are concatenated; otherwise it just consists of the normal branch name
-        # Example: "feature/foo/bar" -> (feature, foo-bar); "feature/foo" -> (feature, foo)
-        merged_branch_name = "-".join(path_parts[1:])
-        return (path_parts[0], merged_branch_name)
+
+    # if a branch name consists of multiple slashes, the parts are concatenated; otherwise it just consists of the normal branch name
+    # Example: "feature/foo/bar" -> (feature, foo-bar); "feature/foo" -> (feature, foo)
+    merged_branch_name = "-".join(path_parts[1:])
+    return (path_parts[0], merged_branch_name)
 
 
 def _is_path_skipped(path: str, args: dict) -> bool:
