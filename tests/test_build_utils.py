@@ -1,8 +1,8 @@
 import sys
-from argparse import ArgumentDefaultsHelpFormatter
 from typing import Tuple
 
 import pytest
+
 from universal_build import build_utils
 
 valid_patch_version = "1.1.4"
@@ -76,7 +76,7 @@ class TestGetVersionClass:
         validated_tags = []
         for tag in git_tags:
             version = build_utils.Version.get_version_from_string(tag)
-            if version == None:
+            if version is None:
                 continue
             validated_tags.append(version)
 

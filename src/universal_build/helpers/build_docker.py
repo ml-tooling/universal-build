@@ -1,6 +1,6 @@
 import argparse
 import subprocess
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Union
 
 from universal_build import build_utils
 
@@ -52,6 +52,8 @@ def build_docker_image(
         + " ./",
         exit_on_error=exit_on_error,
     )
+
+    # TODO tag prefixed image names
 
     if completed_process.returncode > 0:
         build_utils.log(f"Failed to build Docker image {name}:{version}")

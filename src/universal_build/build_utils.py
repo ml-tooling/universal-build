@@ -113,7 +113,7 @@ def get_sanitized_arguments(
     except VersionInvalidPatchNumber as e:
         log(str(e))
         exit_process(EXIT_CODE_INVALID_VERSION)
-    except Exception as e:
+    except Exception:
         version = None
 
     if args.release and version is None:
@@ -210,7 +210,6 @@ def build(component_path: str, args: Dict[str, Union[str, bool, List[str]]]) -> 
     completed_process = run(build_command)
 
     if completed_process.returncode > 0:
-        error_message = completed_process.stderr or completed_process.stdout
         log(
             f"Failed to build module {component_path}. Code: {completed_process.returncode}."
         )
