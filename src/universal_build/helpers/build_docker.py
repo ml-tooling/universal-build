@@ -81,6 +81,8 @@ def release_docker_image(
         )
         build_utils.exit_process(build_utils.EXIT_CODE_GENERAL)
 
+    docker_image_prefix = docker_image_prefix.rstrip("/") + "/"
+
     versioned_image = name + ":" + version
     remote_versioned_image = docker_image_prefix + versioned_image
     build_utils.run(

@@ -119,7 +119,7 @@ def publish_pypi_distribution(
         build_utils.exit_process(1)
 
     pypi_repository_args = ""
-    if not pypi_repository:
+    if pypi_repository:
         pypi_repository_args = f'--repository-url "{pypi_repository}"'
 
     # Publish on pypi
