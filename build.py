@@ -91,6 +91,7 @@ if __name__ == "__main__":
             build_utils.FLAG_MAKE: False,
             build_utils.FLAG_CHECK: False,
             build_utils.FLAG_TEST: False,
+            build_utils.FLAG_RELEASE: True,
             build_utils.FLAG_FORCE: True,
         }
     main(args)
