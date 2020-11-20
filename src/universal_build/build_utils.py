@@ -17,8 +17,9 @@ FLAG_CHECK = "check"
 FLAG_RUN = "run"
 FLAG_SKIP_PATH = "skip_path"
 FLAG_FORCE = "force"
-FLAG_DOCKER_IMAGE_PREFIX = "docker_image_prefix"
 FLAG_SANITIZED = "_sanitized"
+
+TEST_MARKER_SLOW = "slow"
 
 EXIT_CODE_GENERAL = 1
 EXIT_CODE_INVALID_VERSION = 2
@@ -87,7 +88,6 @@ def get_sanitized_arguments(
     Returns:
         Dict[str, Union[str, bool, List[str]]]: The parsed default arguments thar are already checked for validity.
     """
-
     argument_parser = argument_parser or argparse.ArgumentParser()
     parser = _get_default_cli_arguments_parser(argument_parser)
     args, _ = parser.parse_known_args(args=arguments)
@@ -374,18 +374,14 @@ def _get_default_cli_arguments_parser(
         action="store_true",
     )
     parser.add_argument(
-        "--skip-path",
+        "--" + FLAG_SKIP_PATH.replace("_", "-"),
         help="Skips the build phases for all (sub)paths provided here",
         action="append",
     )
     parser.add_argument(
-        "--test-marker",
+        "--" + FLAG_TEST_MARKER.replace("_", "-"),
         help="With this flag you can provide custom markers, which could be used to control custom pytest.markers for example.",
         action="append",
-    )
-    parser.add_argument(
-        "--docker-image-prefix",
-        help="With this flag you can provide a prefix for a Docker image, e.g. 'mltooling/' or even a repository path. When leaving blank, the default Dockerhub Repository is used.",
     )
     parser.add_argument(
         f"--{FLAG_SANITIZED}",
