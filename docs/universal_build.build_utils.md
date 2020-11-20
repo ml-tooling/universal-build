@@ -1,3 +1,4 @@
+<!-- markdownlint-disable -->
 
 <a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/build_utils.py#L0"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 

@@ -1,3 +1,4 @@
+<!-- markdownlint-disable -->
 
 # API Overview
 
@@ -26,6 +27,7 @@
 - [`run`](./universal_build.build_utils.md#function-run): Run a specified command.
 - [`build_docker_image`](./universal_build.helpers.build_docker.md#function-build_docker_image)
 - [`get_sanitized_arguments`](./universal_build.helpers.build_docker.md#function-get_sanitized_arguments): Return sanitized default arguments when they are valid.
+- [`lint_dockerfile`](./universal_build.helpers.build_docker.md#function-lint_dockerfile): Run hadolint on the Dockerfile.
 - [`release_docker_image`](./universal_build.helpers.build_docker.md#function-release_docker_image): Push a Docker image to a repository.
 - [`build_mkdocs`](./universal_build.helpers.build_mkdocs.md#function-build_mkdocs): Build mkdocs markdown documentation.
 - [`deploy_gh_pages`](./universal_build.helpers.build_mkdocs.md#function-deploy_gh_pages): Deploy mkdocs documentation to Github pages.
