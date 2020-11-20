@@ -75,7 +75,7 @@ def install_build_env() -> None:
     """Installs a new virtual environment via pipenv."""
     build_utils.run("pipenv --rm")
     build_utils.run(
-        f"pipenv install --dev --python={sys.executable} --skip-lock --site-packages",
+        f"pipenv install --dev --python={sys.executable} --skip-lock",
         exit_on_error=True,
     )
 
