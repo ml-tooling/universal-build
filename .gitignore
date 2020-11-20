@@ -41,6 +41,8 @@ dist/
 *.egg
 reqlib-metadata
 .mypy_cache/
+.venv
+venv/
 
 # Byte-compiled / optimized / DLL files
 *.pyc
