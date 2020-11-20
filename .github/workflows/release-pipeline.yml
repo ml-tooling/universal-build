@@ -75,12 +75,6 @@ jobs:
           commit_user_email: actions@github.com
           commit_message: Apply automatic release changes
           tagging_message: v${{ env.VERSION  }}
-      #- if: ${{ env.GITHUB_TOKEN }}
-      #  name: create-release-tag
-      #  uses: tvdias/github-tagger@v0.0.2
-      #  with:
-      #    repo-token: "${{ secrets.GITHUB_TOKEN }}"
-      #    tag: v${{ env.VERSION  }}
       - if: ${{ env.GITHUB_TOKEN }}
         name: pull-request
         uses: repo-sync/pull-request@v2
