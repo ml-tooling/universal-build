@@ -1,4 +1,5 @@
 import argparse
+import os
 import subprocess
 from typing import Dict, List, Union
 
@@ -35,6 +36,17 @@ def get_sanitized_arguments(
     return build_utils.get_sanitized_arguments(
         arguments=arguments, argument_parser=argument_parser
     )
+
+
+def lint_dockerfile() -> None:
+    """Run hadolint on the Dockerfile."""
+    build_utils.log("Run linters and style checks:")
+
+    config_file_arg = ""
+    if os.path.exists(".hadolint.yml"):
+        config_file_arg = "--config=.hadolint.yml"
+
+    build_utils.run(f"hadolint {config_file_arg} Dockerfile", exit_on_error=True)
 
 
 def build_docker_image(
