@@ -23,8 +23,7 @@ def main(args: dict) -> None:
         )
 
     if args.get(build_utils.FLAG_CHECK):
-        # TODO: Run hadolint
-        pass
+        build_docker.lint_dockerfile()
 
     if args.get(build_utils.FLAG_RELEASE):
         build_docker.release_docker_image(
