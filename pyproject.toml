@@ -1,3 +1,5 @@
+# Support for PEP 517
+# https://setuptools.readthedocs.io/en/latest/setuptools.html#setup-cfg-only-projects
 [build-system]
 build-backend = "setuptools.build_meta"
 requires = [
