@@ -69,6 +69,7 @@ RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Python
+# hadolint ignore=DL3013
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         python3 \
@@ -116,9 +117,6 @@ RUN apt-get update \
 # Install markdown lint tool
 RUN npm install -g markdownlint@^0.21.1 markdownlint-cli@^0.24.0
 
-# Install hadolint
-# RUN curl -fsSL https://github.com/hadolint/hadolint/releases/download/v1.16.3/hadolint-Linux-x86_64 -o /bin/hadolint
-
 # Workaround to get ssh working in act and github actions
 RUN mkdir -p /github/home/.ssh/ \
     # create empty config file if not exists
@@ -136,11 +134,17 @@ ENV \
 
 # Install universal build from distribution
 # hadolint ignore=DL3010
-COPY universal-build.tar.gz $RESOURCES_PATH/universal-build.tar.gz
+COPY ./resources/universal-build.tar.gz $RESOURCES_PATH/universal-build.tar.gz
 # hadolint ignore=DL3013
 RUN pip install $RESOURCES_PATH/universal-build.tar.gz
 
-COPY entrypoint.sh /entrypoint.sh
+# Install hadolint
+RUN curl -fsSL https://github.com/hadolint/hadolint/releases/download/v1.16.3/hadolint-Linux-x86_64 -o /bin/hadolint \
+    && chmod +x /bin/hadolint
+
+RUN hadolint --help
+
+COPY ./resources/entrypoint.sh /entrypoint.sh
 
 RUN chmod +x /entrypoint.sh
 
