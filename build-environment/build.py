@@ -4,6 +4,7 @@ from universal_build import build_utils
 from universal_build.helpers import build_docker
 
 COMPONENT_NAME = "build-environment"
+DOCKER_IMAGE_PREFIX = "mltooling"
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 
@@ -11,6 +12,10 @@ HERE = os.path.abspath(os.path.dirname(__file__))
 def main(args: dict) -> None:
     # set current path as working dir
     os.chdir(HERE)
+
+    docker_image_prefix = DOCKER_IMAGE_PREFIX
+    if args.get(build_docker.FLAG_DOCKER_IMAGE_PREFIX):
+        docker_image_prefix = args.get(build_docker.FLAG_DOCKER_IMAGE_PREFIX)  # type: ignore
 
     if args.get(build_utils.FLAG_MAKE):
         build_docker.build_docker_image(
@@ -25,7 +30,8 @@ def main(args: dict) -> None:
         build_docker.release_docker_image(
             COMPONENT_NAME,
             args.get(build_utils.FLAG_VERSION),
-            args.get(build_docker.FLAG_DOCKER_IMAGE_PREFIX),
+            docker_image_prefix,
+            exit_on_error=True,
         )
 
 
