@@ -1,5 +1,6 @@
+import glob
 import os
-from typing import Dict, List, Union
+import shutil
 
 from universal_build import build_utils
 from universal_build.helpers import build_python
@@ -30,6 +31,17 @@ def main(args: dict) -> None:
         build_python.generate_api_docs(github_url=GITHUB_URL, main_package=MAIN_PACKAGE)
         # Build distribution via setuptools
         build_python.build_distribution()
+
+        try:
+            dist_name = MAIN_PACKAGE.replace("_", "-")
+            dist_file = glob.glob(f"./dist/{dist_name}-*.tar.gz")[0]
+            shutil.copy(
+                dist_file,
+                os.path.join(HERE, "build-environment", dist_name + ".tar.gz"),
+            )
+        except Exception:
+            build_utils.log("Failed to copy distribution to build container.")
+            build_utils.exit_process(1)
 
     if args.get(build_utils.FLAG_CHECK):
         build_python.code_checks(exit_on_error=True)

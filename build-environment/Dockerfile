@@ -117,7 +117,7 @@ RUN apt-get update \
 RUN npm install -g markdownlint@^0.21.1 markdownlint-cli@^0.24.0
 
 # Install hadolint
-#RUN curl -fsSL https://github.com/hadolint/hadolint/releases/download/v1.16.3/hadolint-Linux-x86_64 -o /bin/hadolint
+# RUN curl -fsSL https://github.com/hadolint/hadolint/releases/download/v1.16.3/hadolint-Linux-x86_64 -o /bin/hadolint
 
 # Workaround to get ssh working in act and github actions
 RUN mkdir -p /github/home/.ssh/ \
@@ -134,9 +134,11 @@ ENV \
     # Flush log message immediately to stdout
     PYTHONUNBUFFERED=true
 
-# Install Universal-Build
+# Install universal build from distribution
+# hadolint ignore=DL3010
+COPY universal-build.tar.gz $RESOURCES_PATH/universal-build.tar.gz
 # hadolint ignore=DL3013
-RUN pip install git+https://github.com/ml-tooling/universal-build.git
+RUN pip install $RESOURCES_PATH/universal-build.tar.gz
 
 COPY entrypoint.sh /entrypoint.sh
 
