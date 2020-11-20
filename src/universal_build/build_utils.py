@@ -1,14 +1,8 @@
-import _thread
 import argparse
 import os
 import re
-import select
 import subprocess
 import sys
-import time
-from subprocess import PIPE, STDOUT, Popen
-from threading import Event, Lock, Thread, Timer
-from time import monotonic
 from typing import Dict, List, Match, Optional, Tuple, Union
 
 ALLOWED_BRANCH_TYPES_FOR_RELEASE = ["release", "production"]
@@ -35,7 +29,46 @@ EXIT_CODE_DEV_VERSION_NOT_MATCHES_BRANCH = 6
 EXIT_CODE_INVALID_ARGUMENTS = 7
 
 
-def log(message: str):
+class Version:
+    major: int
+    minor: int
+    patch: int
+    suffix: str
+
+    def __init__(self, major: int, minor: int, patch: int, suffix: str):
+        self.major = major
+        self.minor = minor
+        self.patch = patch
+        self.suffix = suffix
+
+    def to_string(self) -> str:
+        suffix = "" if not self.suffix else "-" + self.suffix
+        return f"{self.major}.{self.minor}.{self.patch}{suffix}"
+
+    @staticmethod
+    def get_version_from_string(version: str) -> Optional["Version"]:
+        version_match = Version.is_valid_version_format(version)
+        if version_match is None:
+            return None
+
+        major = int(version_match.group(1))
+        minor = int(version_match.group(2))
+        patch = int(version_match.group(3))
+        suffix = ""
+        if version_match.lastindex == 4:
+            suffix = version_match.group(4)
+
+        return Version(major, minor, patch, suffix)
+
+    @staticmethod
+    def is_valid_version_format(version: str) -> Optional[Match[str]]:
+        return re.match(
+            r"^v?([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?$",
+            version,
+        )
+
+
+def log(message: str) -> None:
     print(message, flush=True)
 
 
@@ -43,6 +76,7 @@ def get_sanitized_arguments(
     arguments: List[str] = None, argument_parser: argparse.ArgumentParser = None
 ) -> Dict[str, Union[str, bool, List[str]]]:
     """Return sanitized default arguments when they are valid.
+
     Sanitized means that, for example, the version is already checked and set depending on our build guidelines.
     If arguments are not valid, exit the script run.
 
@@ -56,7 +90,7 @@ def get_sanitized_arguments(
 
     argument_parser = argument_parser or argparse.ArgumentParser()
     parser = _get_default_cli_arguments_parser(argument_parser)
-    args, unknown = parser.parse_known_args(args=arguments)
+    args, _ = parser.parse_known_args(args=arguments)
 
     if args._sanitized:
         return vars(args)
@@ -70,7 +104,7 @@ def get_sanitized_arguments(
         return vars(args)
 
     try:
-        version = _get_version(
+        version: Optional[Version] = _get_version(
             args.version, args.force, existing_versions=_get_version_tags()
         )
     except VersionInvalidFormatException as e:
@@ -98,6 +132,7 @@ def get_sanitized_arguments(
     elif args.release is False and args.force is False and version:
         version.suffix = _get_dev_suffix(_get_current_branch()[0])
 
+    assert version is not None
     args.version = version.to_string()
 
     args._sanitized = True
@@ -124,64 +159,6 @@ def concat_command_line_arguments(args: Dict[str, Union[str, bool, List[str]]]) 
 
         command_line_arguments = command_line_arguments.lstrip()
     return command_line_arguments
-
-
-def build_docker_image(
-    name: str, version: str, build_args: str = ""
-) -> subprocess.CompletedProcess:
-    versioned_image = name + ":" + version
-    latest_image = name + ":latest"
-    completed_process = run(
-        "docker build -t "
-        + versioned_image
-        + " -t "
-        + latest_image
-        + " "
-        + build_args
-        + " ./"
-    )
-
-    if completed_process.returncode > 0:
-        log(f"Failed to build Docker image {name}:{version}")
-
-    return completed_process
-
-
-def release_docker_image(
-    name: str, version: str, docker_image_prefix: str = ""
-) -> subprocess.CompletedProcess:
-    """Push a Docker image to a repository.
-
-    Args:
-        name (str): The name of the image. Must not be prefixed!
-        version (str): The tag used for the image.
-        docker_image_prefix (str, optional): The prefix added to the name to indicate an organization on DockerHub or a completely different repository. Defaults to "".
-
-    Returns:
-        subprocess.CompletedProcess: Returns the CompletedProcess object of the `docker push ...` command.
-    """
-    if not docker_image_prefix:
-        log(
-            f"The flag --docker-image-prefix cannot be blank when pushing a Docker image."
-        )
-        exit_process(EXIT_CODE_GENERAL)
-
-    versioned_image = name + ":" + version
-    remote_versioned_image = docker_image_prefix + versioned_image
-    run("docker tag " + versioned_image + " " + remote_versioned_image)
-    completed_process = run("docker push " + remote_versioned_image)
-
-    if completed_process.returncode > 0:
-        log(f"Failed to release Docker image {name}:{version}")
-
-    if "-dev" not in version:
-        log("Release Docker image with latest tag as well.")
-        latest_image = name + ":latest"
-        remote_latest_image = docker_image_prefix + latest_image
-        run("docker tag " + latest_image + " " + remote_latest_image)
-        run("docker push " + remote_latest_image)
-
-    return completed_process
 
 
 def create_git_tag(
@@ -217,7 +194,7 @@ def create_git_tag(
     return completed_process
 
 
-def build(component_path: str, args: Dict[str, Union[str, bool, List[str]]]):
+def build(component_path: str, args: Dict[str, Union[str, bool, List[str]]]) -> None:
     """Run the build logic of the specified component, except if the path is a (sub-)path in skipped-paths.
 
     Args:
@@ -261,10 +238,9 @@ def run(  # type: ignore
     # Add timeout to command
     if timeout:
         command = f"timeout {timeout} {command}"
-    timestamp = str(time.time())
-    log(f"Executing ({timestamp}): {command}")
+    log(f"Executing: {command}")
 
-    with subprocess.Popen(
+    with subprocess.Popen(  # type: ignore
         command,
         shell=True,
         stdout=subprocess.PIPE,
@@ -288,8 +264,6 @@ def run(  # type: ignore
             process.stdout.close()
             process.stderr.close()
 
-            log(f"Finished executing ({timestamp}): {command}")
-
             if exit_on_error and exitcode != 0:
                 exit_process(exitcode)
 
@@ -302,7 +276,7 @@ def run(  # type: ignore
             exit_process(1)
 
 
-def exit_process(code: int = 0):
+def exit_process(code: int = 0) -> None:
     """Exit the process with exit code.
 
     `sys.exit` seems to be a bit unreliable, process just sleeps and does not exit.
@@ -422,8 +396,8 @@ def _get_default_cli_arguments_parser(
     return parser
 
 
-def _create_build_cmd_from_args(module_path: str, sanitized_args: dict):
-    build_command = "python -u build.py " + concat_command_line_arguments(
+def _create_build_cmd_from_args(module_path: str, sanitized_args: dict) -> str:
+    build_command = f"{sys.executable} -u build.py " + concat_command_line_arguments(
         sanitized_args
     )
 
@@ -516,33 +490,32 @@ def _get_version(
     """
     provided_version = version
 
-    if provided_version:
-        version_obj = Version.get_version_from_string(provided_version)
-        if version_obj is None:
-            raise VersionInvalidFormatException(
-                "The provided version {provided_version} is not in a valid format. Valid formats include 1.0.0, 1.0.0-dev or 1.0.0-dev.foo"
-            )
-        for existing_version in existing_versions:
-            if (
-                existing_version.major == version_obj.major
-                and existing_version.minor == version_obj.minor
-                and existing_version.patch >= version_obj.patch
-                and existing_version.suffix
-                == ""  # Only consider release versions, not suffixed dev versions
-                and not force
-            ):
-                raise VersionInvalidPatchNumber(
-                    f"A version ({existing_version.to_string()}) with the same or higher patch version as provided ({version_obj.to_string()}) already exists."
-                )
-    else:
+    if not provided_version:
         raise Exception("No version is provided")
 
+    version_obj = Version.get_version_from_string(provided_version)
+    if version_obj is None:
+        raise VersionInvalidFormatException(
+            "The provided version {provided_version} is not in a valid format. Valid formats include 1.0.0, 1.0.0-dev or 1.0.0-dev.foo"
+        )
+    for existing_version in existing_versions:
+        if (
+            existing_version.major == version_obj.major
+            and existing_version.minor == version_obj.minor
+            and existing_version.patch >= version_obj.patch
+            and existing_version.suffix
+            == ""  # Only consider release versions, not suffixed dev versions
+            and not force
+        ):
+            raise VersionInvalidPatchNumber(
+                f"A version ({existing_version.to_string()}) with the same or higher patch version as provided ({version_obj.to_string()}) already exists."
+            )
     return version_obj
 
 
 def _get_current_branch_version(
-    existing_versions: List["Version"] = [],
-) -> Tuple["Version" or None, List["Version"]]:
+    existing_versions: List[Version] = [],
+) -> Tuple[Optional[Version], List[Version]]:
     """Returns a tuple of the best suiting version based on our logic and all available versions.
 
     Returns:
@@ -556,48 +529,9 @@ def _get_current_branch_version(
     return (None, existing_versions)
 
 
-def _get_dev_suffix(branch_name: Optional[str]):
+def _get_dev_suffix(branch_name: Optional[str]) -> str:
     branch_name = branch_name or ""
     return "dev." + branch_name
-
-
-class Version:
-    major: int
-    minor: int
-    patch: int
-    suffix: str
-
-    def __init__(self, major, minor, patch, suffix):
-        self.major = major
-        self.minor = minor
-        self.patch = patch
-        self.suffix = suffix
-
-    def to_string(self):
-        suffix = "" if not self.suffix else "-" + self.suffix
-        return f"{self.major}.{self.minor}.{self.patch}{suffix}"
-
-    @staticmethod
-    def get_version_from_string(version: str) -> Optional["Version"]:
-        version_match = Version.is_valid_version_format(version)
-        if version_match is None:
-            return None
-
-        major = int(version_match.group(1))
-        minor = int(version_match.group(2))
-        patch = int(version_match.group(3))
-        suffix = ""
-        if version_match.lastindex == 4:
-            suffix = version_match.group(4)
-
-        return Version(major, minor, patch, suffix)
-
-    @staticmethod
-    def is_valid_version_format(version: str) -> Optional[Match[str]]:
-        return re.match(
-            r"^v?([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?$",
-            version,
-        )
 
 
 class VersionInvalidFormatException(Exception):
