@@ -35,7 +35,7 @@ exclude-labels:
   - "skip changelog"
 change-template: "- $TITLE (#$NUMBER) by @$AUTHOR"
 replacers:
-  - search: '/(?:and )?@github-actions(?:\[bot\])?,?/g'
+  - search: '/(?:and)?(,)?(\s)*@github-actions(?:\[bot\])?,?/g'
     replace: ""
 template: |
   $CHANGES
