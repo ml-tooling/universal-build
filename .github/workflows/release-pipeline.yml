@@ -53,7 +53,7 @@ jobs:
       - name: run-component-tests
         uses: ./.github/actions/build-environment
         with:
-          build_args: --test --force --version=${{ env.VERSION  }}
+          build_args: --test --force --test-marker=slow --version=${{ env.VERSION  }}
       - name: release-components
         uses: ./.github/actions/build-environment
         env:
