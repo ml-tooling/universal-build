@@ -91,6 +91,9 @@ RUN apt-get update \
         docker==4.* \
         nox==2020.8.* \
         pipenv==2020.11.* \
+        # Fix safety problems
+        cryptography>3.2\
+        lxml>4.6.0 \
     # Clean up
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
@@ -114,7 +117,7 @@ RUN apt-get update \
 RUN npm install -g markdownlint@^0.21.1 markdownlint-cli@^0.24.0
 
 # Install hadolint
-RUN curl -fsSL https://github.com/hadolint/hadolint/releases/download/v1.16.3/hadolint-Linux-x86_64 -o /bin/hadolint
+#RUN curl -fsSL https://github.com/hadolint/hadolint/releases/download/v1.16.3/hadolint-Linux-x86_64 -o /bin/hadolint
 
 # Workaround to get ssh working in act and github actions
 RUN mkdir -p /github/home/.ssh/ \
