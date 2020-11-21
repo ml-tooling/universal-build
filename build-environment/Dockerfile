@@ -92,6 +92,7 @@ RUN apt-get update \
         docker==4.* \
         nox==2020.8.* \
         pipenv==2020.11.* \
+        better-exceptions==0.* \
         # Fix safety problems
         cryptography>3.2\
         lxml>4.6.0 \
@@ -130,7 +131,9 @@ ENV \
     # Use local folder as pipenv virtualenv
     PIPENV_VENV_IN_PROJECT=true \
     # Flush log message immediately to stdout
-    PYTHONUNBUFFERED=true
+    PYTHONUNBUFFERED=true \
+    # Activate better exceptions (for python)
+    BETTER_EXCEPTIONS=1
 
 # Install universal build from distribution
 # hadolint ignore=DL3010
