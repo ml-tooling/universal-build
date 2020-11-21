@@ -3,6 +3,7 @@
 import argparse
 import os
 import re
+import shutil
 import subprocess
 import sys
 from typing import Dict, List, Match, Optional, Tuple, Union
@@ -292,6 +293,19 @@ def exit_process(code: int = 0) -> None:
     atexit._run_exitfuncs()
     sys.stdout.flush()
     os._exit(code)
+
+
+def duplicate_folder(src_path: str, target_path: str) -> None:
+    """Duplicate a folder into another folder.
+
+    Args:
+        src_path (str): Source path to duplicate.
+        target_path (str): Target path to move the source folder.
+            The existing content in the folder will be deleted.
+    """
+    if os.path.exists(target_path):
+        shutil.rmtree(target_path)
+    shutil.copytree(src_path, target_path)
 
 
 # Private functions

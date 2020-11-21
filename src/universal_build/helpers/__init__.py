@@ -1,1 +1,1 @@
-"""Collection of helper modules with build utilities for specific technoligies."""
+"""Collection of helper modules with build utilities for specific technologies."""
