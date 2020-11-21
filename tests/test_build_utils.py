@@ -152,7 +152,7 @@ class TestBuildClass:
         [{"test": True}, {"test_2": True}, {"test-3": True}],
     )
     def test_concat_command_line_arguments_arg(self, args: dict):
-        cli_args = build_utils.concat_command_line_arguments(args)
+        cli_args = build_utils._concat_command_line_arguments(args)
         assert "_" not in cli_args
         arg, arg_value = args.popitem()
         if "_" not in arg:
@@ -169,7 +169,7 @@ class TestBuildClass:
         ],
     )
     def test_concat_command_line_arguments_arg_value(self, args: dict):
-        cli_args = build_utils.concat_command_line_arguments(args)
+        cli_args = build_utils._concat_command_line_arguments(args)
         arg, arg_value = args.popitem()
 
         if arg == "test":
