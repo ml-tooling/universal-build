@@ -1,3 +1,5 @@
+"""Utilities to help building Python libraries."""
+
 import argparse
 import re
 import sys

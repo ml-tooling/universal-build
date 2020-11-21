@@ -1,3 +1,5 @@
+"""Universal build utilities."""
+
 import argparse
 import os
 import re
@@ -31,6 +33,8 @@ EXIT_CODE_INVALID_ARGUMENTS = 7
 
 
 class Version:
+    """Parsed semantic version."""
+
     major: int
     minor: int
     patch: int
@@ -70,6 +74,11 @@ class Version:
 
 
 def log(message: str) -> None:
+    """Log message to stdout.
+
+    Args:
+        message (str): Message to log.
+    """
     print(message, flush=True)
 
 
@@ -134,7 +143,7 @@ def get_sanitized_arguments(
     return vars(args)
 
 
-def concat_command_line_arguments(args: Dict[str, Union[str, bool, List[str]]]) -> str:
+def _concat_command_line_arguments(args: Dict[str, Union[str, bool, List[str]]]) -> str:
     command_line_arguments = ""
 
     for arg in args:
@@ -387,7 +396,7 @@ def _get_default_cli_arguments_parser(
 
 
 def _create_build_cmd_from_args(module_path: str, sanitized_args: dict) -> str:
-    build_command = f"{sys.executable} -u build.py " + concat_command_line_arguments(
+    build_command = f"{sys.executable} -u build.py " + _concat_command_line_arguments(
         sanitized_args
     )
 
@@ -525,8 +534,12 @@ def _get_dev_suffix(branch_name: Optional[str]) -> str:
 
 
 class VersionInvalidFormatException(Exception):
+    """Raised when the provided version's format is not valid."""
+
     pass
 
 
 class VersionInvalidPatchNumber(Exception):
+    """Raised when existing or higher version in the patch branch exists."""
+
     pass

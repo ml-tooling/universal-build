@@ -1,3 +1,5 @@
+"""Utilities to help building Docker images."""
+
 import argparse
 import os
 import subprocess
@@ -52,6 +54,17 @@ def lint_dockerfile() -> None:
 def build_docker_image(
     name: str, version: str, build_args: str = "", exit_on_error: bool = False
 ) -> subprocess.CompletedProcess:
+    """Build a docker image from a Dockerfile in the working directory.
+
+    Args:
+        name (str): Name of the docker image.
+        version (str): Version to use as tag.
+        build_args (str, optional): Add additional build arguments for docker build.
+        exit_on_error (bool, optional): If `True`, exit process as soon as an error occurs.
+
+    Returns:
+        subprocess.CompletedProcess: Returns the CompletedProcess object of the
+    """
     versioned_image = name + ":" + version
     latest_image = name + ":latest"
     completed_process = build_utils.run(

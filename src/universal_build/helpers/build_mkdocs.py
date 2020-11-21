@@ -1,3 +1,5 @@
+"""Utilities to help building MkDocs documentations."""
+
 import os
 import sys
 
