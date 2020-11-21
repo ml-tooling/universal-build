@@ -3,9 +3,7 @@
 <a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/build_utils.py#L0"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 # <kbd>module</kbd> `universal_build.build_utils`
-
-
-
+Universal build utilities. 
 
 **Global Variables**
 ---------------
@@ -32,7 +30,7 @@
 
 ---
 
-<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/build_utils.py#L72"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/build_utils.py#L77"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `log`
 
@@ -40,14 +38,18 @@
 log(message: str) → None
 ```
 
+Log message to stdout. 
 
 
 
+**Args:**
+ 
+ - <b>`message`</b> (str):  Message to log. 
 
 
 ---
 
-<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/build_utils.py#L76"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/build_utils.py#L86"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `get_sanitized_arguments`
 
@@ -78,24 +80,7 @@ Sanitized means that, for example, the version is already checked and set depend
 
 ---
 
-<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/build_utils.py#L137"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
-
-## <kbd>function</kbd> `concat_command_line_arguments`
-
-```python
-concat_command_line_arguments(
-    args: Dict[str, Union[str, bool, List[str]]]
-) → str
-```
-
-
-
-
-
-
----
-
-<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/build_utils.py#L159"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/build_utils.py#L169"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `create_git_tag`
 
@@ -128,7 +113,7 @@ The version will be prefixed with 'v'. If push is set, the tag is pushed to remo
 
 ---
 
-<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/build_utils.py#L192"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/build_utils.py#L202"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `build`
 
@@ -148,7 +133,7 @@ Run the build logic of the specified component, except if the path is a (sub-)pa
 
 ---
 
-<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/build_utils.py#L214"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/build_utils.py#L224"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `run`
 
@@ -182,7 +167,7 @@ Run a specified command.
 
 ---
 
-<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/build_utils.py#L273"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/build_utils.py#L283"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `exit_process`
 
@@ -197,15 +182,33 @@ Exit the process with exit code.
 
 ---
 
-<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/build_utils.py#L33"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/build_utils.py#L298"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+
+## <kbd>function</kbd> `duplicate_folder`
+
+```python
+duplicate_folder(src_path: str, target_path: str) → None
+```
+
+Duplicate a folder into another folder. 
+
+
+
+**Args:**
+ 
+ - <b>`src_path`</b> (str):  Source path to duplicate. 
+ - <b>`target_path`</b> (str):  Target path to move the source folder.  The existing content in the folder will be deleted. 
+
+
+---
+
+<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/build_utils.py#L36"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>class</kbd> `Version`
+Parsed semantic version. 
 
 
-
-
-
-<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/build_utils.py#L39"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/build_utils.py#L44"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `__init__`
 
@@ -221,7 +224,7 @@ __init__(major: int, minor: int, patch: int, suffix: str)
 
 ---
 
-<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/build_utils.py#L49"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/build_utils.py#L54"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `get_version_from_string`
 
@@ -235,7 +238,7 @@ get_version_from_string(version: str) → Union[ForwardRef('Version'), NoneType]
 
 ---
 
-<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/build_utils.py#L64"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/build_utils.py#L69"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `is_valid_version_format`
 
@@ -249,7 +252,7 @@ is_valid_version_format(version: str) → Union[Match[str], NoneType]
 
 ---
 
-<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/build_utils.py#L45"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/build_utils.py#L50"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `to_string`
 
@@ -264,12 +267,10 @@ to_string() → str
 
 ---
 
-<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/build_utils.py#L527"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/build_utils.py#L550"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>class</kbd> `VersionInvalidFormatException`
-
-
-
+Raised when the provided version's format is not valid. 
 
 
 ### <kbd>method</kbd> `__init__`
@@ -285,12 +286,10 @@ Initialize self.  See help(type(self)) for accurate signature.
 
 ---
 
-<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/build_utils.py#L531"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/build_utils.py#L556"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>class</kbd> `VersionInvalidPatchNumber`
-
-
-
+Raised when existing or higher version in the patch branch exists. 
 
 
 ### <kbd>method</kbd> `__init__`

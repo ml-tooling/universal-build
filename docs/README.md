@@ -4,28 +4,28 @@
 
 ## Modules
 
-- [`universal_build.build_utils`](./universal_build.build_utils.md#module-universal_buildbuild_utils)
-- [`universal_build.helpers`](./universal_build.helpers.md#module-universal_buildhelpers)
-- [`universal_build.helpers.build_docker`](./universal_build.helpers.build_docker.md#module-universal_buildhelpersbuild_docker)
-- [`universal_build.helpers.build_mkdocs`](./universal_build.helpers.build_mkdocs.md#module-universal_buildhelpersbuild_mkdocs)
-- [`universal_build.helpers.build_python`](./universal_build.helpers.build_python.md#module-universal_buildhelpersbuild_python)
+- [`universal_build.build_utils`](./universal_build.build_utils.md#module-universal_buildbuild_utils): Universal build utilities.
+- [`universal_build.helpers`](./universal_build.helpers.md#module-universal_buildhelpers): Collection of helper modules with build utilities for specific technologies.
+- [`universal_build.helpers.build_docker`](./universal_build.helpers.build_docker.md#module-universal_buildhelpersbuild_docker): Utilities to help building Docker images.
+- [`universal_build.helpers.build_mkdocs`](./universal_build.helpers.build_mkdocs.md#module-universal_buildhelpersbuild_mkdocs): Utilities to help building MkDocs documentations.
+- [`universal_build.helpers.build_python`](./universal_build.helpers.build_python.md#module-universal_buildhelpersbuild_python): Utilities to help building Python libraries.
 
 ## Classes
 
-- [`Version`](./universal_build.build_utils.md#class-version)
-- [`VersionInvalidFormatException`](./universal_build.build_utils.md#class-versioninvalidformatexception)
-- [`VersionInvalidPatchNumber`](./universal_build.build_utils.md#class-versioninvalidpatchnumber)
+- [`Version`](./universal_build.build_utils.md#class-version): Parsed semantic version.
+- [`VersionInvalidFormatException`](./universal_build.build_utils.md#class-versioninvalidformatexception): Raised when the provided version's format is not valid.
+- [`VersionInvalidPatchNumber`](./universal_build.build_utils.md#class-versioninvalidpatchnumber): Raised when existing or higher version in the patch branch exists.
 
 ## Functions
 
 - [`build`](./universal_build.build_utils.md#function-build): Run the build logic of the specified component, except if the path is a (sub-)path in skipped-paths.
-- [`concat_command_line_arguments`](./universal_build.build_utils.md#function-concat_command_line_arguments)
 - [`create_git_tag`](./universal_build.build_utils.md#function-create_git_tag): Create an annotated git tag in the current HEAD via `git tag` and the provided version.
+- [`duplicate_folder`](./universal_build.build_utils.md#function-duplicate_folder): Duplicate a folder into another folder.
 - [`exit_process`](./universal_build.build_utils.md#function-exit_process): Exit the process with exit code.
 - [`get_sanitized_arguments`](./universal_build.build_utils.md#function-get_sanitized_arguments): Return sanitized default arguments when they are valid.
-- [`log`](./universal_build.build_utils.md#function-log)
+- [`log`](./universal_build.build_utils.md#function-log): Log message to stdout.
 - [`run`](./universal_build.build_utils.md#function-run): Run a specified command.
-- [`build_docker_image`](./universal_build.helpers.build_docker.md#function-build_docker_image)
+- [`build_docker_image`](./universal_build.helpers.build_docker.md#function-build_docker_image): Build a docker image from a Dockerfile in the working directory.
 - [`get_sanitized_arguments`](./universal_build.helpers.build_docker.md#function-get_sanitized_arguments): Return sanitized default arguments when they are valid.
 - [`lint_dockerfile`](./universal_build.helpers.build_docker.md#function-lint_dockerfile): Run hadolint on the Dockerfile.
 - [`release_docker_image`](./universal_build.helpers.build_docker.md#function-release_docker_image): Push a Docker image to a repository.
