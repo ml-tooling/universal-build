@@ -446,7 +446,17 @@ RUN apt-get update \
 
 **Extend the entrypoint of the build-environment:**
 
-_TODO_
+You can overwrite the default entrypoint script as shown below to run your custom code at startup:
+
+```Dockerfile
+FROM mltooling/build-environment:0.2.6
+
+COPY ./resources/entrypoint.sh /entrypoint.sh
+
+RUN chmod +x /entrypoint.sh
+```
+
+However, you need to make sure to still implement most of the logic in the [original entrypoint script](https://github.com/ml-tooling/universal-build/blob/main/build-environment/resources/entrypoint.sh) as well.
 
 **Support additional build arguments:**
 
@@ -467,11 +477,18 @@ deployment_token = args.get("deployment_token")
 
 **Use custom test markers to select tests for execution:**
 
-_TODO_
+You can provide any number of custom test markers via the `--test-marker` build argument. The following example shows how to react to custom test markers in your build script:
+
+```python
+if args.get(build_utils.FLAG_TEST):
+  # Run your default tests
+  if "integration" in args.get(build_utils.FLAG_TEST_MARKER):
+    # Run integration tests
+```
 
 ### Containerized Development
 
-The [build-environment](./build-environment) can also be used for full development inside a container. It is fully compatible with the [devcontainer](https://code.visualstudio.com/docs/remote/containers#_create-a-devcontainerjson-file) standard that is used by VS Code and Github Codespaces. The big advantage of using the build-environment for containerized development is that you only have to define your project dependencies in one location, and use this for development, local builds, and automated CI / CD pipelines.
+The [build-environment](./build-environment) can also be used for development inside a container. It is fully compatible with the [devcontainer](https://code.visualstudio.com/docs/remote/containers#_create-a-devcontainerjson-file) standard that is used by VS Code and Github Codespaces. The big advantage of using the build-environment for containerized development is that you only have to define your project dependencies in one location, and use this for development, local builds, and automated CI / CD pipelines.
 
 To use the build-environment for containerized development, just define a `.devcontainer/devcontainer.json` configuration inside your repository and link the `build.dockerfile` to the build-environment action in the `.github/actions/build-environment/Dockerfile` folder. A minimal `devcontainer.json` configuration could look like this:
 
