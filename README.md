@@ -25,11 +25,16 @@
   <a href="https://github.com/ml-tooling/universal-build/releases">Changelog</a>
 </p>
 
-_TBD: Add Description_
+> _**WIP**: This project is still an alpha version and not ready for general usage._
+
+Universal Build allows to implement your build and release pipeline with Python scripts once and run it either on your local machine, in a containerized environment via [Act](https://github.com/nektos/act), or automated via [Github Actions](https://github.com/features/actions). It supports a monorepo or polyrepo setup and can be used with any programming language or technology. It also provides a full release pipeline for automated releases with changelog generation.
 
 ## Highlights
 
-- ⏱&nbsp; Add highlights
+- 🧰&nbsp; Build utilities for Python, Docker, React & MkDocs
+- 🔗&nbsp; Predefined Github Action Workflows for CI & CD
+- 🛠&nbsp; Integrated with [devcontainer](https://code.visualstudio.com/docs/remote/containers) for containerized development.
+- 🐳&nbsp; Run builds locally, containerized via Act, or on Github Actions
 
 ## Getting Started
 
@@ -43,7 +48,52 @@ pip install universal-build
 
 ### Usage
 
-_TBD_
+To make use of universal build for your project, create a build script with the name `build.py` in your project root. The example below is for a single yarn-based webapp component:
+
+```python
+from universal_build import build_utils
+
+args = build_utils.get_sanitized_arguments()
+
+version = args[build_utils.FLAG_VERSION]
+
+if args.get(build_utils.FLAG_MAKE):
+    build_utils.log("Build the componet")
+    build_utils.run("yarn build", exit_on_error=True)
+
+if args.get(build_utils.FLAG_CHECK):
+    build_utils.log("Run linters and checks:")
+    build_utils.run("yarn run lint:js", exit_on_error=True)
+    build_utils.run("yarn run lint:css", exit_on_error=True)
+
+if args.get(build_utils.FLAG_TEST):
+    build_utils.log("Test the component:")
+    build_utils.run("yarn test", exit_on_error=True)
+
+if args.get(build_utils.FLAGE_RELEASE):
+    build_utils.log("Release the component:")
+    # TODO: release the component to npm with version
+
+```
+
+Next, copy the build and release-pipeline workflows into your repo into the `.github/workflows` folder. Once you have pushed the build and release pipelines, you have the following options to trigger your build pipeline:
+
+On your local machine via the build script (you need to have all dependencies for the build installed):
+
+```bash
+python build.py --make --check --test
+```
+
+In a containerized environment on your local machine via [Act](https://github.com/nektos/act):
+
+```bash
+act -b -s BUILD_ARGS="--check --make --test" -j build
+```
+
+On Github via Github Actions: In the Github UI, go to `Actions` -> select `build-pipeline` -> select `Run Workflow` and provide the build arguments, e.g. `--check --make --test`. You build pipeline will also run via Github Actions automatically on any push to your repository.
+
+You can find more information on the release pipeline or other features in the [features](#features) section.
+
 ## Support & Feedback
 
 This project is maintained by [Benjamin Räthlein](https://twitter.com/raethlein), [Lukas Masuch](https://twitter.com/LukasMasuch), and [Jan Kalkan](https://www.linkedin.com/in/jan-kalkan-b5390284/). Please understand that we won't be able to provide individual support via email. We also believe that help is much more valuable if it's shared publicly so that more people can benefit from it.
@@ -59,14 +109,41 @@ This project is maintained by [Benjamin Räthlein](https://twitter.com/raethlein
 ## Features
 
 <p align="center">
-  <a href="#feature">Feature</a> •
+  <a href="#automated-release-pipeline">Automated Build Pipeline</a> •
+  <a href="#automated-release-pipeline">Automated Release Pipeline</a> •
+  <a href="#containerized-development">Containerized Development</a> •
+  <a href="#mkdocs-utilities">MkDocs Utilities</a> •
+  <a href="#docker-utilities">Python Utilities</a> •
+  <a href="#docker-utilities">Docker Utilities</a>
 </p>
 
-### Feature
+### Automated Build Pipeline
+
+_TBD_
+
+### Automated Release Pipeline
+
+_TBD_
+
+### Containerized Development
+
+_TBD_
+
+### MkDocs Utilities
+
+_TBD_
+
+### Python Utilities
+
+_TBD_
+
+### Docker Utilities
+
+_TBD_
 
 ## Documentation
 
-_TBD: Add documentation_
+_TBD:_
 
 ## Contributors
 
