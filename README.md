@@ -184,7 +184,7 @@ In addition to argument parsing capabilities, universal-build also contains a va
 
 ### Update Universal Build
 
-To update the universal-build version of your project, simply look up the most recent version of build-enviornment on [DockerHub](https://hub.docker.com/repository/docker/mltooling/build-environment) and set this version in the `.github/actions/build-environment/Dockerfile` file of your repository:
+To update the universal-build version of your project, simply look up the most recent version of build-environment on [DockerHub](https://hub.docker.com/repository/docker/mltooling/build-environment) and set this version in the `.github/actions/build-environment/Dockerfile` file of your repository:
 
 ```Dockerfile
 FROM mltooling/build-environment:<UPDATED_VERSION>
@@ -424,9 +424,9 @@ _TODO_
 
 ### Containerized Development
 
-The [build-environment](./build-environment) can also be used for full development inside a container. It is fully compatible with the [devcontainer](https://code.visualstudio.com/docs/remote/containers#_create-a-devcontainerjson-file) standard that is used by VS Code and Github Codespaces. The big advantage of using the build-environment for containerized development is that you only have to define your projects dependencies in one location, and use this for development, local builds, and CI / CD pipelines.
+The [build-environment](./build-environment) can also be used for full development inside a container. It is fully compatible with the [devcontainer](https://code.visualstudio.com/docs/remote/containers#_create-a-devcontainerjson-file) standard that is used by VS Code and Github Codespaces. The big advantage of using the build-environment for containerized development is that you only have to define your project dependencies in one location, and use this for development, local builds, and automated CI / CD pipelines.
 
-To use the build-environment for containerized development, just define a `.devcontainer/devcontainer.json` configuration inside your repository and link the `build.dockerfile` to the build-enviornment action in the `.github/actions/build-environment/Dockerfile` folder. A minimal `devcontainer.json` configuration could look like this:
+To use the build-environment for containerized development, just define a `.devcontainer/devcontainer.json` configuration inside your repository and link the `build.dockerfile` to the build-environment action in the `.github/actions/build-environment/Dockerfile` folder. A minimal `devcontainer.json` configuration could look like this:
 
 ```
 {
