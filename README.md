@@ -76,9 +76,23 @@ if args.get(build_utils.FLAGE_RELEASE):
 
 ```
 
-Next, copy the [build-](https://github.com/ml-tooling/universal-build/blob/main/workflows/build-pipeline.yml) and [release-pipeline](https://github.com/ml-tooling/universal-build/blob/main/workflows/release-pipeline.yml) workflows from the [workflows](https://github.com/ml-tooling/universal-build/tree/main/workflows) folder into the  `.github/workflows` folder in your repository. Once you have pushed the [build-](https://github.com/ml-tooling/universal-build/blob/main/workflows/build-pipeline.yml) and [release-pipelines](https://github.com/ml-tooling/universal-build/blob/main/workflows/release-pipeline.yml), you have the following options to trigger your build pipeline:
+Next, copy the [`build-environment`](https://github.com/ml-tooling/universal-build/blob/main/actions/build-environment) action from the [actions](https://github.com/ml-tooling/universal-build/tree/main/actions) folder into the  `.github/actions` folder in your repository. In additon, you need to copy the [build-](https://github.com/ml-tooling/universal-build/blob/main/workflows/build-pipeline.yml) and [release-pipeline](https://github.com/ml-tooling/universal-build/blob/main/workflows/release-pipeline.yml) workflows from the [workflows](https://github.com/ml-tooling/universal-build/tree/main/workflows) folder into the  `.github/workflows` folder in your repository as well. Your repository should now contain the following files:
 
-_TODO: Copy build environment._
+```
+your-repository
+  - build.py
+  - .github:
+    - actions:
+      - build-enviornment:
+        - Dockerfile
+        - actions.yaml
+    - workflows:
+      - release-pipeline.yml
+      - build-pipeline.yml
+```
+
+
+Once you have pushed the `build-environment` action and the [build-](https://github.com/ml-tooling/universal-build/blob/main/workflows/build-pipeline.yml) and [release-pipelines](https://github.com/ml-tooling/universal-build/blob/main/workflows/release-pipeline.yml), you have the following options to trigger your build pipeline:
 
 1) On your local machine via the build script (you need to have all dependencies for the build installed):
   
@@ -92,9 +106,9 @@ python build.py --make --check --test
 act -b -s BUILD_ARGS="--check --make --test" -j build
 ```
 
-3) On Github via Github Actions: In the Github UI, go to `Actions` -> select `build-pipeline` -> select `Run Workflow` and provide the build arguments, e.g. `--check --make --test`. You build pipeline will also run via Github Actions automatically on any push to your repository.
+3) On Github via Github Actions: In the Github UI, go to `Actions` -> select `build-pipeline` -> select `Run Workflow` and provide the build arguments, e.g. `--check --make --test`. As default, your build pipeline will also run via Github Actions automatically on any push to your repository.
 
-You can find more information on the release pipeline or other features in the [features](#features) section.
+You can find additional information in the [documentation](#documentation) and [features](#features) section.
 
 ## Support & Feedback
 
@@ -169,6 +183,9 @@ The following list contains all of the default flags currently supported by univ
 
 In addition to argument parsing capabilities, universal-build also contains a variety of utility functions to make building complex projects with different technologies easy. You can find all utilities in the Python API documentation [here](https://github.com/ml-tooling/universal-build/tree/main/docs).
 
+### Update Universal Build
+
+
 ## Features
 
 <p align="center">
@@ -233,6 +250,12 @@ act -b -s BUILD_ARGS="[BUILD_ARGUMENTS]" -s WORKING_DIRECTORY="./docs" -j build
 
 Or directly from the Github UI: `Actions` -> `build-pipeline` -> `Run workflow`. The Github UI will allow you to set the build arguments and working directory.
 
+### Simplified Versioning
+
+> Only [semantic versioning](https://semver.org/) is supported at the moment.
+
+If you do not provide an explicit version via the build arguments (`--version`), universal-build will automatically detect the latest version via Git tags and pass a dev version to your build scripts. The dev version will have the following format: `<MAJOR>.<MINOR>.<PATCH>-dev.<BRANCH>`. This should be sufficient for the majority of development builds. However, the release step still requires to have a valid semantic version provided via the arguments.
+
 ### Automated Build Pipeline
 
 _TBD_
@@ -240,12 +263,6 @@ _TBD_
 ### Automated Release Pipeline
 
 _TBD_
-
-### Simplified Versioning
-
-> Only [semantic versioning](https://semver.org/) is supported at the moment.
-
-If you do not provide an explicit version via the build arguments (`--version`), universal-build will automatically detect the latest version via Git tags and pass a dev version to your build scripts. The dev version will have the following format: `<MAJOR>.<MINOR>.<PATCH>-dev.<BRANCH>`. This should be sufficient for the majority of development builds. However, the release step still requires to have a valid semantic version provided via the arguments.
 
 ### Python Utilities
 
