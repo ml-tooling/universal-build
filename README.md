@@ -32,8 +32,8 @@ Universal-build allows to implement your build and release pipeline with Python 
 ## Highlights
 
 - 🐳&nbsp; Implement once and run locally, containerized, or on Github Actions.
-- 🧰&nbsp; Build utilities for Python, Docker, React & MkDocs
-- 🔗&nbsp; Predefined Github Action Workflows for CI & CD
+- 🧰&nbsp; Build utilities for Python, Docker, React & MkDocs.
+- 🔗&nbsp; Predefined Github Action Workflows for CI & CD.
 - 🛠&nbsp; Integrated with [devcontainer](https://code.visualstudio.com/docs/remote/containers) for containerized development.
 
 ## Getting Started
@@ -78,19 +78,19 @@ if args.get(build_utils.FLAGE_RELEASE):
 
 Next, copy the [build-](https://github.com/ml-tooling/universal-build/blob/main/workflows/build-pipeline.yml) and [release-pipeline](https://github.com/ml-tooling/universal-build/blob/main/workflows/release-pipeline.yml) workflows from the [workflows](https://github.com/ml-tooling/universal-build/tree/main/workflows) folder into the  `.github/workflows` folder in your repository. Once you have pushed the [build-](https://github.com/ml-tooling/universal-build/blob/main/workflows/build-pipeline.yml) and [release-pipelines](https://github.com/ml-tooling/universal-build/blob/main/workflows/release-pipeline.yml), you have the following options to trigger your build pipeline:
 
-On your local machine via the build script (you need to have all dependencies for the build installed):
+1) On your local machine via the build script (you need to have all dependencies for the build installed):
+  
+  ```bash
+  python build.py --make --check --test
+  ```
 
-```bash
-python build.py --make --check --test
-```
-
-In a containerized environment on your local machine via [Act](https://github.com/nektos/act):
+2) In a containerized environment on your local machine via [Act](https://github.com/nektos/act):
 
 ```bash
 act -b -s BUILD_ARGS="--check --make --test" -j build
 ```
 
-On Github via Github Actions: In the Github UI, go to `Actions` -> select `build-pipeline` -> select `Run Workflow` and provide the build arguments, e.g. `--check --make --test`. You build pipeline will also run via Github Actions automatically on any push to your repository.
+3) On Github via Github Actions: In the Github UI, go to `Actions` -> select `build-pipeline` -> select `Run Workflow` and provide the build arguments, e.g. `--check --make --test`. You build pipeline will also run via Github Actions automatically on any push to your repository.
 
 You can find more information on the release pipeline or other features in the [features](#features) section.
 
