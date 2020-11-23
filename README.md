@@ -78,6 +78,8 @@ if args.get(build_utils.FLAGE_RELEASE):
 
 Next, copy the [build-](https://github.com/ml-tooling/universal-build/blob/main/workflows/build-pipeline.yml) and [release-pipeline](https://github.com/ml-tooling/universal-build/blob/main/workflows/release-pipeline.yml) workflows from the [workflows](https://github.com/ml-tooling/universal-build/tree/main/workflows) folder into the  `.github/workflows` folder in your repository. Once you have pushed the [build-](https://github.com/ml-tooling/universal-build/blob/main/workflows/build-pipeline.yml) and [release-pipelines](https://github.com/ml-tooling/universal-build/blob/main/workflows/release-pipeline.yml), you have the following options to trigger your build pipeline:
 
+_TODO: Copy build environment._
+
 1) On your local machine via the build script (you need to have all dependencies for the build installed):
   
 ```bash
@@ -239,10 +241,6 @@ _TBD_
 
 _TBD_
 
-### Containerized Development
-
-_TBD_
-
 ### Simplified Versioning
 
 > Only [semantic versioning](https://semver.org/) is supported at the moment.
@@ -396,6 +394,30 @@ deployment_token = args.get("deployment_token")
 **Use custom test markers to select tests for execution:**
 
 _TODO_
+
+### Containerized Development
+
+The [build-environment](./build-environment) can also be used for full development inside a container. It is fully compatible with the [devcontainer](https://code.visualstudio.com/docs/remote/containers#_create-a-devcontainerjson-file) standard that is used by VS Code and Github Codespaces. The big advantage of using the build-environment for containerized development is that you only have to define your projects dependencies in one location, and use this for development, local builds, and CI / CD pipelines.
+
+To use the build-environment for containerized development, just define a `.devcontainer/devcontainer.json` configuration inside your repository and link the `build.dockerfile` to the build-enviornment action in the `.github/actions/build-environment/Dockerfile` folder. A minimal `devcontainer.json` configuration could look like this:
+
+```json
+{
+  "name": "build-environment",
+  "build": {
+    "dockerfile": "../.github/actions/build-environment/Dockerfile"
+  },
+  "settings": {
+    // Set default container specific vs code settings
+    "terminal.integrated.shell.linux": "/bin/bash"
+  },
+  "extensions": [
+    // Add required extensions
+  ]
+}
+```
+
+You can find a full example [here](https://github.com/ml-tooling/universal-build/blob/main/.devcontainer/devcontainer.json).
 
 ## Contributors
 

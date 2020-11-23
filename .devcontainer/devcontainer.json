@@ -1,5 +1,5 @@
 {
-	"name": "Build Environment",
+	"name": "build-environment",
 	"build": {
 		"dockerfile": "../.github/actions/build-environment/Dockerfile"
 	},
@@ -13,7 +13,7 @@
 	"extensions": [
 		// General Development
 		"esbenp.prettier-vscode",
-     	"EditorConfig.EditorConfig",
+    "EditorConfig.EditorConfig",
 		"mutantdino.resourcemonitor",
 		"redhat.vscode-yaml",
 		// Collaboration
