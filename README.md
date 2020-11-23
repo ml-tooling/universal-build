@@ -76,7 +76,7 @@ if args.get(build_utils.FLAGE_RELEASE):
 
 ```
 
-Next, copy the build and release-pipeline workflows into your repo into the `.github/workflows` folder. Once you have pushed the build and release pipelines, you have the following options to trigger your build pipeline:
+Next, copy the [build-](https://github.com/ml-tooling/universal-build/blob/main/workflows/build-pipeline.yml) and [release-pipeline](https://github.com/ml-tooling/universal-build/blob/main/workflows/release-pipeline.yml) workflows from the [workflows](https://github.com/ml-tooling/universal-build/tree/main/workflows) folder into the  `.github/workflows` folder in your repository. Once you have pushed the [build-](https://github.com/ml-tooling/universal-build/blob/main/workflows/build-pipeline.yml) and [release-pipelines](https://github.com/ml-tooling/universal-build/blob/main/workflows/release-pipeline.yml), you have the following options to trigger your build pipeline:
 
 On your local machine via the build script (you need to have all dependencies for the build installed):
 
@@ -175,7 +175,8 @@ In addition to argument parsing capabilities, universal-build also contains a va
   <a href="#containerized-development">Containerized Development</a> •
   <a href="#mkdocs-utilities">MkDocs Utilities</a> •
   <a href="#docker-utilities">Python Utilities</a> •
-  <a href="#docker-utilities">Docker Utilities</a>
+  <a href="#docker-utilities">Docker Utilities</a> •
+  <a href="#extensibility">Extensibility</a>
 </p>
 
 ### Automated Build Pipeline
@@ -259,6 +260,35 @@ if args.get(build_utils.FLAG_CHECK):
 if args.get(build_utils.FLAG_RELEASE):
   # Deploy to Github pages
   build_mkdocs.deploy_gh_pages()
+```
+
+### Extensibility
+
+**Extend your build-environment image with additional tools:**
+
+Install the tools in the Dockerfile in your `.github/actions/build-environment/Dockerfile` as demonstrated in this example:
+
+```Dockerfile
+FROM mltooling/build-environment:0.2.6
+
+# Install Go Runtime
+RUN apt-get update \
+    && apt-get install -y golang-go
+```
+
+**Support additional build arguments:**
+
+```python
+import argparse
+
+from universal_build import build_utils
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--deployment-token", help="Token to deploy component.")
+
+args = build_utils.get_sanitized_arguments(argument_parser=parser)
+
+deployment_token = args.get("deployment_token")
 ```
 
 ## Contributors
