@@ -184,6 +184,17 @@ In addition to argument parsing capabilities, universal-build also contains a va
 
 ### Update Universal Build
 
+To update the universal-build version of your project, simply look up the most recent version of build-enviornment on [DockerHub](https://hub.docker.com/repository/docker/mltooling/build-environment) and set this version in the `.github/actions/build-environment/Dockerfile` file of your repository:
+
+```Dockerfile
+FROM mltooling/build-environment:<UPDATED_VERSION>
+```
+
+In case you also run your build outside of the build-environment (locally), make sure to also upgrade universal-build from [pypi](https://pypi.org/project/universal-build/):
+
+```bash
+pip install --upgrade universal-build
+```
 
 ## Features
 
