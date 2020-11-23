@@ -76,7 +76,7 @@ if args.get(build_utils.FLAGE_RELEASE):
 
 ```
 
-Next, copy the [`build-environment`](https://github.com/ml-tooling/universal-build/blob/main/actions/build-environment) action from the [actions](https://github.com/ml-tooling/universal-build/tree/main/actions) folder into the  `.github/actions` folder in your repository. In addition, you need to copy the [build-](https://github.com/ml-tooling/universal-build/blob/main/workflows/build-pipeline.yml) and [release-pipeline](https://github.com/ml-tooling/universal-build/blob/main/workflows/release-pipeline.yml) workflows from the [workflows](https://github.com/ml-tooling/universal-build/tree/main/workflows) folder into the `.github/workflows` folder in your repository as well. Your repository should now contain atleast the following files:
+Next, copy the [`build-environment`](https://github.com/ml-tooling/universal-build/blob/main/actions/build-environment) action from the [actions](https://github.com/ml-tooling/universal-build/tree/main/actions) folder into the  `.github/actions` folder of your repository. In addition, you need to copy the [build-](https://github.com/ml-tooling/universal-build/blob/main/workflows/build-pipeline.yml) and [release-pipeline](https://github.com/ml-tooling/universal-build/blob/main/workflows/release-pipeline.yml) workflows from the [workflows](https://github.com/ml-tooling/universal-build/tree/main/workflows) folder into the `.github/workflows` folder of your repository as well. Your repository should now contain atleast the following files:
 
 ```
 your-repository
@@ -268,7 +268,35 @@ If you do not provide an explicit version via the build arguments (`--version`),
 
 ### Automated Build Pipeline
 
-_TBD_
+Universal-build enables you to run your build pipeline on your local machine, in a containerized environment via [Act](https://github.com/nektos/act), or automated via [Github Actions](https://github.com/features/actions).
+
+**Local machine via build scripts:**
+
+> _Requirements: All build requirements need to be installed on your machine._
+
+Execute the following command in the root folder of a component that has a `build.py` script:
+
+```bash
+python build.py --make --check --test
+```
+
+**Containerized environment via Act:**
+
+> _Requirements: [Docker](https://docs.docker.com/get-docker/) and [Act](https://github.com/nektos/act#installation) are required to be installed on your machine._
+
+Execute this command in the root folder for your repository:
+
+```bash
+act -b -s BUILD_ARGS="--check --make --test" -j build
+```
+
+**Manually via Github Actions:**
+
+In the Github UI, go to `Actions` -> select `build-pipeline` -> select `Run Workflow` and provide the build arguments, e.g. `--check --make --test`.
+
+**Automated via Github Actions:**
+
+As default, the build pipeline will run automatically via Github Actions on any `push` event to your repository. You can also change the events that trigger the build-pipeline by modifying the `on` section in the `.github/workflows/build-pipeline.yml` file. You can find more information about Github Actions events [here](https://docs.github.com/en/free-pro-team@latest/actions/reference/events-that-trigger-workflows).
 
 ### Automated Release Pipeline
 
