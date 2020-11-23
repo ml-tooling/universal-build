@@ -128,9 +128,12 @@ def get_sanitized_arguments(
         if not latest_branch_version:
             version = _Version(0, 0, 0, _get_dev_suffix(_get_current_branch()[0]))
         else:
-            # higher minor version and add dev suffix
             version = latest_branch_version
+            # higher minor version and add dev suffix
             version.minor += 1
+            # Set patch to 0 since its a new minor version
+            version.patch = 0
+            # Apply dev prefix
             version.suffix = _get_dev_suffix(_get_current_branch()[0])
     elif args.release is False and args.force is False and version:
         version.suffix = _get_dev_suffix(_get_current_branch()[0])
