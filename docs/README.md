@@ -12,9 +12,6 @@
 
 ## Classes
 
-- [`Version`](./universal_build.build_utils.md#class-version): Parsed semantic version.
-- [`VersionInvalidFormatException`](./universal_build.build_utils.md#class-versioninvalidformatexception): Raised when the provided version's format is not valid.
-- [`VersionInvalidPatchNumber`](./universal_build.build_utils.md#class-versioninvalidpatchnumber): Raised when existing or higher version in the patch branch exists.
 
 ## Functions
 
