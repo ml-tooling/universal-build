@@ -106,45 +106,6 @@ This project is maintained by [Benjamin Räthlein](https://twitter.com/raethlein
 | 🗯&nbsp; **General Discussion** | <a href="https://gitter.im/ml-tooling/universal-build" title="Chat on Gitter"><img src="https://badges.gitter.im/ml-tooling/universal-build.svg"></a> <a href="https://twitter.com/mltooling" title="ML Tooling on Twitter"><img src="https://img.shields.io/twitter/follow/mltooling.svg?style=social"></a>|
 | ❓&nbsp; **Other Requests** | <a href="mailto:team@mltooling.org" title="Email ML Tooling Team"><img src="https://img.shields.io/badge/email-ML Tooling-green?logo=mail.ru&style=flat-square&logoColor=white"></a> |
 
-## Features
-
-<p align="center">
-  <a href="#automated-release-pipeline">Automated Build Pipeline</a> •
-  <a href="#automated-release-pipeline">Automated Release Pipeline</a> •
-  <a href="#containerized-development">Containerized Development</a> •
-  <a href="#mkdocs-utilities">MkDocs Utilities</a> •
-  <a href="#docker-utilities">Python Utilities</a> •
-  <a href="#docker-utilities">Docker Utilities</a>
-</p>
-
-### Automated Build Pipeline
-
-_TBD_
-
-### Automated Release Pipeline
-
-_TBD_
-
-### Containerized Development
-
-_TBD_
-
-### Simplified Versioning
-
-_TBD_
-
-### MkDocs Utilities
-
-_TBD_
-
-### Python Utilities
-
-_TBD_
-
-### Docker Utilities
-
-_TBD_
-
 ## Documentation
 
 ### Build Script CLI
@@ -157,16 +118,16 @@ python build.py [OPTIONS]
 
 **Options**:
 
-*  `--make`: Make/compile/package all artifacts.
-*  `--test`: Run unit and integration tests.
-*  `--check`: Run linting and style checks.
-*  `--release`: Release all artifacts (e.g. to  registries like DockerHub or NPM).
-*  `--run`: Run the component in development mode (e.g. dev server).
-*  `--version VERSION`: Version of the build (`MAJOR.MINOR.PATCH-TAG`).
-*  `--force`: Ignore all enforcements and warnings.
-*  `--skip-path SKIP_PATH`: Skips the build phases for all (sub)paths provided here.
-*  `--test-marker TEST_MARKER`: Provide custom markers for testing. The default marker for slow tests is `slow`.
-*  `-h, --help`: Show the help message and exit.
+- `--make`: Make/compile/package all artifacts.
+- `--test`: Run unit and integration tests.
+- `--check`: Run linting and style checks.
+- `--release`: Release all artifacts (e.g. to  registries like DockerHub or NPM).
+- `--run`: Run the component in development mode (e.g. dev server).
+- `--version VERSION`: Version of the build (`MAJOR.MINOR.PATCH-TAG`).
+- `--force`: Ignore all enforcements and warnings.
+- `--skip-path SKIP_PATH`: Skips the build phases for all (sub)paths provided here.
+- `--test-marker TEST_MARKER`: Provide custom markers for testing. The default marker for slow tests is `slow`.
+- `-h, --help`: Show the help message and exit.
 
 ### Default Flags
 
@@ -205,6 +166,100 @@ The following list contains all of the default flags currently supported by univ
 ### API Reference
 
 In addition to argument parsing capabilities, universal-build also contains a variety of utility functions to make building complex projects with different technologies easy. You can find all utilities in the Python API documentation [here](https://github.com/ml-tooling/universal-build/tree/main/docs).
+
+## Features
+
+<p align="center">
+  <a href="#automated-release-pipeline">Automated Build Pipeline</a> •
+  <a href="#automated-release-pipeline">Automated Release Pipeline</a> •
+  <a href="#containerized-development">Containerized Development</a> •
+  <a href="#mkdocs-utilities">MkDocs Utilities</a> •
+  <a href="#docker-utilities">Python Utilities</a> •
+  <a href="#docker-utilities">Docker Utilities</a>
+</p>
+
+### Automated Build Pipeline
+
+_TBD_
+
+### Automated Release Pipeline
+
+_TBD_
+
+### Containerized Development
+
+_TBD_
+
+### Simplified Versioning
+
+_TBD_
+
+### Python Utilities
+
+The [`build_python`](https://github.com/ml-tooling/universal-build/blob/main/docs/universal_build.helpers.build_python.md) module of universal-build provides a collection of utilities to simplify the process of building and releasing Python packages. Refer to the [API documentation](https://github.com/ml-tooling/universal-build/blob/main/docs/universal_build.helpers.build_python.md) for full documentation on all python utilities. An example for a build script for a Python package is shown below:
+
+```python
+# TBD
+```
+
+### Docker Utilities
+
+The [`build_docker`](https://github.com/ml-tooling/universal-build/blob/main/docs/universal_build.helpers.build_docker.md) module of universal-build provides a collection of utilities to simplify the process of building and releasing Docker images. Refer to the [API documentation](https://github.com/ml-tooling/universal-build/blob/main/docs/universal_build.helpers.build_docker.md) for full documentation on all docker utilities. An example for a build script for a Docker image is shown below:
+
+```python
+from universal_build import build_utils
+from universal_build.helpers import build_docker
+
+IMAGE_NAME = "build-environment"
+DOCKER_IMAGE_PREFIX = "mltooling"
+
+args = build_docker.get_sanitized_arguments()
+
+version = args.get(build_utils.FLAG_VERSION)
+
+if args.get(build_utils.FLAG_MAKE):
+  build_docker.build_docker_image(COMPONENT_NAME, version, exit_on_error=True)
+
+if args.get(build_utils.FLAG_CHECK):
+  build_docker.lint_dockerfile(exit_on_error=True)
+
+if args.get(build_utils.FLAG_RELEASE):
+  build_docker.release_docker_image(IMAGE_NAME, version, DOCKER_IMAGE_PREFIX, exit_on_error=True)
+```
+
+The [`build_docker.get_sanitized_arguments()`](https://github.com/ml-tooling/universal-build/blob/main/docs/universal_build.helpers.build_docker.md#function-get_sanitized_arguments) argument parser has the following additional flags:
+
+| Flag  |  Type  | Description |
+| --- | --- | --- |
+|  `FLAG_DOCKER_IMAGE_PREFIX`  | `str` | Docker image prefix. This should be used to define the container registry where the image should be pushed to. |
+
+And the following additional CLI options:
+
+- `--docker-image-prefix`: Docker image prefix. This should be used to define the container registry where the image should be pushed to.
+
+### MkDocs Utilities
+
+The [`build_mkdocs`](https://github.com/ml-tooling/universal-build/blob/main/docs/universal_build.helpers.build_mkdocs.md) module of universal-build provides a collection of utilities to simplify the process of building and releasing MkDocs documentation. Refer to the [API documentation](https://github.com/ml-tooling/universal-build/blob/main/docs/universal_build.helpers.build_mkdocs.md) for full documentation on all MkDocs utilities. An example for a build script for  MkDocs documentation is shown below:
+
+```python
+from universal_build import build_utils
+from universal_build.helpers import build_mkdocs
+
+args = build_utils.get_sanitized_arguments()
+
+if args.get(build_utils.FLAG_MAKE):
+  # Install pipenv dev requirements
+  build_mkdocs.install_build_env()
+  # Build mkdocs documentation
+  build_mkdocs.build_mkdocs()
+
+if args.get(build_utils.FLAG_CHECK):
+  build_mkdocs.lint_markdown()
+
+if args.get(build_utils.FLAG_RELEASE):
+  # Deploy to Github pages
+  build_mkdocs.deploy_gh_pages()
+```
 
 ## Contributors
 
