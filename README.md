@@ -205,7 +205,9 @@ example:
     - build.py
 ```
 
-Every component needs its own `build.py` script in the component root folder that implements all the logic to build, check, test, and release the given component. The `build.py` script in the repo root folder contains the build logic that orchestrates all component builds. Universal-build provides the [`build_utilities.build()`](https://github.com/ml-tooling/universal-build/blob/main/docs/universal_build.build_utils.md#function-build) function that allows to call the build script of a sub-component with the parsed arguments (find more info on `build` function in the [API documentation](https://github.com/ml-tooling/universal-build/blob/main/docs/universal_build.build_utils.md#function-build)). In between the build steps, you can execute any required operations, for example, duplicating build artifacts from one component to another. The following example, shows the `build.py` script that would support the `example` repository structure:
+Every component needs its own `build.py` script in the component root folder that implements all the logic to build, check, test, and release the given component. The `build.py` script in the repo root folder contains the build logic that orchestrates all component builds. Universal-build provides the [`build_utils.build()`](https://github.com/ml-tooling/universal-build/blob/main/docs/universal_build.build_utils.md#function-build) function that allows to call the build script of a sub-component with the parsed arguments (find more info on `build` function in the [API documentation](https://github.com/ml-tooling/universal-build/blob/main/docs/universal_build.build_utils.md#function-build)).
+
+In between the build steps, you can execute any required operations, for example, duplicating build artifacts from one component to another. The following example, shows the `build.py` script that would support the `example` repository structure:
 
 ```python
 from universal_build import build_utils
@@ -221,7 +223,7 @@ build_utils.build("docs", args)
 
 With this setup, you can execute the build pipeline for the full project or any individual component. In case you only apply changes to a single component, you only need to execute the `build.py` script of the given component. This is a major advantage since it might massively speed up your development time.
 
-To run the build pipeline on you local machine for a specific component, navigate to the component and run the `build.py` script in the component root folder (you can find all CLI build arguments [here](#build-script-cli)):
+To run the build pipeline on you local machine only for a specific component, navigate to the component and run the `build.py` script in the component root folder (you can find all CLI build arguments [here](#build-script-cli)):
 
 ```bash
 cd "./docs" && python build.py [BUILD_ARGUMENTS]
@@ -233,7 +235,7 @@ Alternatively, you can also run the component build containerized via Act:
 act -b -s BUILD_ARGS="[BUILD_ARGUMENTS]" -s WORKING_DIRECTORY="./docs" -j build
 ```
 
-Or directly from the Github UI: `Actions` -> `build-pipeline` -> `Run workflow` and set the build arguments and working directory in the UI.
+Or directly from the Github UI: `Actions` -> `build-pipeline` -> `Run workflow`. The Github UI will allow you to set the build arguments and working directory.
 
 ### Containerized Development
 
