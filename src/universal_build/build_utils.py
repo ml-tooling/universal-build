@@ -8,8 +8,8 @@ import subprocess
 import sys
 from typing import Dict, List, Match, Optional, Tuple, Union
 
-ALLOWED_BRANCH_TYPES_FOR_RELEASE = ["release", "production"]
-MAIN_BRANCH_NAMES = ["master", "main"]
+_ALLOWED_BRANCH_TYPES_FOR_RELEASE = ["release", "production"]
+_MAIN_BRANCH_NAMES = ["master", "main"]
 
 FLAG_MAKE = "make"
 FLAG_TEST = "test"
@@ -18,9 +18,10 @@ FLAG_RELEASE = "release"
 FLAG_VERSION = "version"
 FLAG_CHECK = "check"
 FLAG_RUN = "run"
-FLAG_SKIP_PATH = "skip_path"
 FLAG_FORCE = "force"
-FLAG_SANITIZED = "_sanitized"
+
+_FLAG_SKIP_PATH = "skip_path"
+_FLAG_SANITIZED = "_sanitized"
 
 TEST_MARKER_SLOW = "slow"
 
@@ -33,7 +34,7 @@ EXIT_CODE_DEV_VERSION_NOT_MATCHES_BRANCH = 6
 EXIT_CODE_INVALID_ARGUMENTS = 7
 
 
-class Version:
+class _Version:
     """Parsed semantic version."""
 
     major: int
@@ -52,8 +53,8 @@ class Version:
         return f"{self.major}.{self.minor}.{self.patch}{suffix}"
 
     @staticmethod
-    def get_version_from_string(version: str) -> Optional["Version"]:
-        version_match = Version.is_valid_version_format(version)
+    def get_version_from_string(version: str) -> Optional["_Version"]:
+        version_match = _Version.is_valid_version_format(version)
         if version_match is None:
             return None
 
@@ -64,7 +65,7 @@ class Version:
         if version_match.lastindex == 4:
             suffix = version_match.group(4)
 
-        return Version(major, minor, patch, suffix)
+        return _Version(major, minor, patch, suffix)
 
     @staticmethod
     def is_valid_version_format(version: str) -> Optional[Match[str]]:
@@ -109,13 +110,10 @@ def get_sanitized_arguments(
         exit_process(EXIT_CODE_INVALID_ARGUMENTS)
 
     try:
-        version: Optional[Version] = _get_version(
+        version: Optional[_Version] = _get_version(
             args.version, args.force, existing_versions=_get_version_tags()
         )
-    except VersionInvalidFormatException as e:
-        log(str(e))
-        exit_process(EXIT_CODE_INVALID_VERSION)
-    except VersionInvalidPatchNumber as e:
+    except _VersionInvalidFormatException as e:
         log(str(e))
         exit_process(EXIT_CODE_INVALID_VERSION)
     except Exception:
@@ -128,7 +126,7 @@ def get_sanitized_arguments(
         latest_branch_version = _get_latest_branch_version()
 
         if not latest_branch_version:
-            version = Version(0, 0, 0, _get_dev_suffix(_get_current_branch()[0]))
+            version = _Version(0, 0, 0, _get_dev_suffix(_get_current_branch()[0]))
         else:
             # higher minor version and add dev suffix
             version = latest_branch_version
@@ -343,10 +341,10 @@ def _is_path_skipped(path: str, args: dict) -> bool:
     Returns:
         bool: Return true if the path should be skipped
     """
-    if FLAG_SKIP_PATH not in args:
+    if _FLAG_SKIP_PATH not in args:
         return False
 
-    skip_paths: list = args[FLAG_SKIP_PATH]
+    skip_paths: list = args[_FLAG_SKIP_PATH]
     skip_paths = skip_paths or []
     real_path = os.path.realpath(path)
     for skip_path in skip_paths:
@@ -362,46 +360,46 @@ def _get_default_cli_arguments_parser(
 
     # NEW FLAGS
     parser.add_argument(
-        f"--{FLAG_MAKE}", help="Make/compile/package all artefacts", action="store_true"
+        f"--{FLAG_MAKE}", help="Make/compile/package all artifacts", action="store_true"
     )
     parser.add_argument(
         f"--{FLAG_TEST}", help="Run unit and integration tests", action="store_true"
     )
     parser.add_argument(
         f"--{FLAG_CHECK}",
-        help="When this flag is set, the module should run any checks such as linting",
+        help="Run linting and style checks.",
         action="store_true",
     )
     parser.add_argument(
         f"--{FLAG_RELEASE}",
-        help="Release all artefacts to respective remote registries (e.g. DockerHub)",
+        help="Release all artifacts (e.g. to  registries like DockerHub or NPM)",
         action="store_true",
     )
     parser.add_argument(
         f"--{FLAG_RUN}",
-        help="Run the component for development (e.g. dev server).",
+        help="Run the component in development mode (e.g. dev server).",
         action="store_true",
     )
     parser.add_argument(
-        f"--{FLAG_VERSION}", help="Version of build (MAJOR.MINOR.PATCH-TAG)"
+        f"--{FLAG_VERSION}", help="Version of the build (`MAJOR.MINOR.PATCH-TAG`)"
     )
     parser.add_argument(
         f"--{FLAG_FORCE}",
-        help="Ignore all enforcements and warnings and run the action",
+        help="Ignore all enforcements and warnings.",
         action="store_true",
     )
     parser.add_argument(
-        "--" + FLAG_SKIP_PATH.replace("_", "-"),
+        "--" + _FLAG_SKIP_PATH.replace("_", "-"),
         help="Skips the build phases for all (sub)paths provided here",
         action="append",
     )
     parser.add_argument(
         "--" + FLAG_TEST_MARKER.replace("_", "-"),
-        help="With this flag you can provide custom markers, which could be used to control custom pytest.markers for example.",
+        help="Provide custom markers for testing. The default marker for slow tests is `slow`.",
         action="append",
     )
     parser.add_argument(
-        f"--{FLAG_SANITIZED}",
+        f"--{_FLAG_SANITIZED}",
         help="Indicates that a parent build.py script already checked the validity of the passed arguments so that subsequent scripts don't do it again.",
         action="store_true",
     )
@@ -438,38 +436,38 @@ def _is_valid_command_combination(args: argparse.Namespace) -> bool:
     if args.release:
         current_branch, current_branch_type = _get_current_branch()
         if (
-            current_branch.lower() not in MAIN_BRANCH_NAMES
-            and current_branch_type.lower() not in ALLOWED_BRANCH_TYPES_FOR_RELEASE
+            current_branch.lower() not in _MAIN_BRANCH_NAMES
+            and current_branch_type.lower() not in _ALLOWED_BRANCH_TYPES_FOR_RELEASE
             and not args.force
         ):
             log(
-                f"Release is only allowed from branches: [{', '.join(MAIN_BRANCH_NAMES)}] or in branch types: [{', '.join(ALLOWED_BRANCH_TYPES_FOR_RELEASE)}]"
+                f"Release is only allowed from branches: [{', '.join(_MAIN_BRANCH_NAMES)}] or in branch types: [{', '.join(_ALLOWED_BRANCH_TYPES_FOR_RELEASE)}]"
             )
             return False
 
     return True
 
 
-def _get_version_tags() -> List["Version"]:
+def _get_version_tags() -> List["_Version"]:
     unformatted_tags = _get_remote_git_tags()
     versions = []
     for tag in unformatted_tags:
         tag_parts = tag.split("/")
         tag = tag_parts[-1]
         # only consider tags that resemble versions
-        version = Version.get_version_from_string(tag)
+        version = _Version.get_version_from_string(tag)
         if version is not None:
             versions.append(version)
     return versions
 
 
-def _get_latest_branch_version(branch_name: str = "") -> Optional["Version"]:
+def _get_latest_branch_version(branch_name: str = "") -> Optional["_Version"]:
     result = run(
         "git describe --tags --match 'v[0-9].*' --abbrev=0",
         disable_stdout_logging=True,
     )
 
-    return Version.get_version_from_string(result.stdout.rstrip("\n"))
+    return _Version.get_version_from_string(result.stdout.rstrip("\n"))
 
 
 def _get_remote_git_tags() -> List[str]:
@@ -484,13 +482,12 @@ def _get_remote_git_tags() -> List[str]:
 
 
 def _get_version(
-    version: str, force: bool = False, existing_versions: List["Version"] = []
-) -> "Version":
+    version: str, force: bool = False, existing_versions: List["_Version"] = []
+) -> "_Version":
     """Get validated version. If force is set to True, the version is allowed to be equal or smaller than the existing patch version.
 
     Raises:
-        VersionInvalidFormatException: Raised when the provided version's format is not valid
-        VersionInvalidPatchNumber: Raised when existing or higher version in the patch branch exists
+        _VersionInvalidFormatException: Raised when the provided version's format is not valid
         Exception: Raised when no version is passed
 
     Args:
@@ -506,9 +503,9 @@ def _get_version(
     if not provided_version:
         raise Exception("No version is provided")
 
-    version_obj = Version.get_version_from_string(provided_version)
+    version_obj = _Version.get_version_from_string(provided_version)
     if version_obj is None:
-        raise VersionInvalidFormatException(
+        raise _VersionInvalidFormatException(
             "The provided version {provided_version} is not in a valid format. Valid formats include 1.0.0, 1.0.0-dev or 1.0.0-dev.foo"
         )
     for existing_version in existing_versions:
@@ -520,15 +517,15 @@ def _get_version(
             == ""  # Only consider release versions, not suffixed dev versions
             and not force
         ):
-            raise VersionInvalidPatchNumber(
+            raise _VersionInvalidFormatException(
                 f"A version ({existing_version.to_string()}) with the same or higher patch version as provided ({version_obj.to_string()}) already exists."
             )
     return version_obj
 
 
 def _get_current_branch_version(
-    existing_versions: List[Version] = [],
-) -> Tuple[Optional[Version], List[Version]]:
+    existing_versions: List[_Version] = [],
+) -> Tuple[Optional[_Version], List[_Version]]:
     """Returns a tuple of the best suiting version based on our logic and all available versions.
 
     Returns:
@@ -547,13 +544,7 @@ def _get_dev_suffix(branch_name: Optional[str]) -> str:
     return "dev." + branch_name
 
 
-class VersionInvalidFormatException(Exception):
+class _VersionInvalidFormatException(Exception):
     """Raised when the provided version's format is not valid."""
-
-    pass
-
-
-class VersionInvalidPatchNumber(Exception):
-    """Raised when existing or higher version in the patch branch exists."""
 
     pass

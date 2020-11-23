@@ -21,7 +21,7 @@ class TestGetVersionClass:
         valid_version = build_utils._get_version(
             valid_patch_version, existing_versions=build_utils._get_version_tags()
         )
-        assert isinstance(valid_version, build_utils.Version)
+        assert isinstance(valid_version, build_utils._Version)
         version_split = valid_patch_version.split(".")
         assert (
             valid_version.major == int(version_split[0])
@@ -34,7 +34,7 @@ class TestGetVersionClass:
         valid_version = build_utils._get_version(
             valid_minor_version, existing_versions=build_utils._get_version_tags()
         )
-        assert isinstance(valid_version, build_utils.Version)
+        assert isinstance(valid_version, build_utils._Version)
         version_split = valid_minor_version.split(".")
         assert (
             valid_version.major == int(version_split[0])
@@ -45,22 +45,24 @@ class TestGetVersionClass:
 
     def test_no_semantic_version(self):
         with pytest.raises(
-            build_utils.VersionInvalidFormatException
+            build_utils._VersionInvalidFormatException
         ) as pytest_wrapped_e:
             build_utils._get_version(
                 "foobar", existing_versions=build_utils._get_version_tags()
             )
 
-        assert pytest_wrapped_e.type is build_utils.VersionInvalidFormatException
+        assert pytest_wrapped_e.type is build_utils._VersionInvalidFormatException
 
     def test_with_too_small_patch(self):
         too_small_patch_version = "1.1.2"
-        with pytest.raises(build_utils.VersionInvalidPatchNumber) as pytest_wrapped_e:
+        with pytest.raises(
+            build_utils._VersionInvalidFormatException
+        ) as pytest_wrapped_e:
             build_utils._get_version(
                 version=too_small_patch_version,
                 existing_versions=build_utils._get_version_tags(),
             )
-        assert pytest_wrapped_e.type is build_utils.VersionInvalidPatchNumber
+        assert pytest_wrapped_e.type is build_utils._VersionInvalidFormatException
 
         with pytest.raises(SystemExit) as pytest_wrapped_e:
             build_utils.get_sanitized_arguments(
@@ -75,13 +77,13 @@ class TestGetVersionClass:
         invalid_git_tags = ["f1.0.0", "f1.0.0-dev-foo"]
         validated_tags = []
         for tag in git_tags:
-            version = build_utils.Version.get_version_from_string(tag)
+            version = build_utils._Version.get_version_from_string(tag)
             if version is None:
                 continue
             validated_tags.append(version)
 
         for tag in invalid_git_tags:
-            version = build_utils.Version.get_version_from_string(tag)
+            version = build_utils._Version.get_version_from_string(tag)
             if version is None:
                 continue
             validated_tags.append(version)
@@ -208,6 +210,6 @@ def _mocked_get_current_branch(
 
 def _mocked_get_latest_branch_version(
     version: str = "v1.1.0", suffix: str = ""
-) -> build_utils.Version:
+) -> build_utils._Version:
     version = version if suffix == "" else f"{version}-{suffix}"
-    return build_utils.Version.get_version_from_string(version)
+    return build_utils._Version.get_version_from_string(version)
