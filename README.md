@@ -401,7 +401,7 @@ The [build-environment](./build-environment) can also be used for full developme
 
 To use the build-environment for containerized development, just define a `.devcontainer/devcontainer.json` configuration inside your repository and link the `build.dockerfile` to the build-enviornment action in the `.github/actions/build-environment/Dockerfile` folder. A minimal `devcontainer.json` configuration could look like this:
 
-```json
+```
 {
   "name": "build-environment",
   "build": {
