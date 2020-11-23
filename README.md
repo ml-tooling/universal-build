@@ -91,23 +91,7 @@ your-repository
       - build-pipeline.yml
 ```
 
-Once you have pushed the `build-environment` action and the [build-](https://github.com/ml-tooling/universal-build/blob/main/workflows/build-pipeline.yml) and [release-pipelines](https://github.com/ml-tooling/universal-build/blob/main/workflows/release-pipeline.yml), you have the following options to trigger your build pipeline:
-
-1) On your local machine via the build script (you need to have all dependencies for the build installed):
-  
-```bash
-python build.py --make --check --test
-```
-
-2) In a containerized environment on your local machine via [Act](https://github.com/nektos/act):
-
-```bash
-act -b -s BUILD_ARGS="--check --make --test" -j build
-```
-
-3) On Github via Github Actions: In the Github UI, go to `Actions` -> select `build-pipeline` -> select `Run Workflow` and provide the build arguments, e.g. `--check --make --test`. As default, your build pipeline will also run via Github Actions automatically on any push to your repository.
-
-You can find additional information in the [documentation](#documentation) and [features](#features) section.
+Once you have pushed the `build-environment` action and the [build-](https://github.com/ml-tooling/universal-build/blob/main/workflows/build-pipeline.yml) and [release-pipelines](https://github.com/ml-tooling/universal-build/blob/main/workflows/release-pipeline.yml), please look into the [Automated Build Pipeline (CI)](#) and [Automated Release Pipeline (CD)](#) sections for information on how to run your build- and release-pipelines.
 
 ## Support & Feedback
 
@@ -266,7 +250,7 @@ Or directly from the Github UI: `Actions` -> `build-pipeline` -> `Run workflow`.
 
 If you do not provide an explicit version via the build arguments (`--version`), universal-build will automatically detect the latest version via Git tags and pass a dev version to your build scripts. The dev version will have the following format: `<MAJOR>.<MINOR>.<PATCH>-dev.<BRANCH>`. This should be sufficient for the majority of development builds. However, the release step still requires to have a valid semantic version provided via the arguments.
 
-### Automated Build Pipeline
+### Automated Build Pipeline (CI)
 
 Universal-build enables you to run your build pipeline on your local machine, in a containerized environment via [Act](https://github.com/nektos/act), or automated via [Github Actions](https://github.com/features/actions).
 
@@ -274,7 +258,7 @@ Universal-build enables you to run your build pipeline on your local machine, in
 
 > _Requirements: All build requirements need to be installed on your machine._
 
-Execute the following command in the root folder of a component that has a `build.py` script:
+Execute the following command in the root folder of any component with a valid `build.py` script:
 
 ```bash
 python build.py --make --check --test
@@ -284,7 +268,7 @@ python build.py --make --check --test
 
 > _Requirements: [Docker](https://docs.docker.com/get-docker/) and [Act](https://github.com/nektos/act#installation) are required to be installed on your machine._
 
-Execute this command in the root folder for your repository:
+Execute this command in the root folder of your repository:
 
 ```bash
 act -b -s BUILD_ARGS="--check --make --test" -j build
@@ -298,7 +282,7 @@ In the Github UI, go to `Actions` -> select `build-pipeline` -> select `Run Work
 
 As default, the build pipeline will run automatically via Github Actions on any `push` event to your repository. You can also change the events that trigger the build-pipeline by modifying the `on` section in the `.github/workflows/build-pipeline.yml` file. You can find more information about Github Actions events [here](https://docs.github.com/en/free-pro-team@latest/actions/reference/events-that-trigger-workflows).
 
-### Automated Release Pipeline
+### Automated Release Pipeline (CD)
 
 _TBD_
 
