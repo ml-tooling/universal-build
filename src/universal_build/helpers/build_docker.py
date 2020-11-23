@@ -40,7 +40,7 @@ def get_sanitized_arguments(
     )
 
 
-def lint_dockerfile() -> None:
+def lint_dockerfile(exit_on_error: bool = True) -> None:
     """Run hadolint on the Dockerfile."""
     build_utils.log("Run linters and style checks:")
 
@@ -48,7 +48,9 @@ def lint_dockerfile() -> None:
     if os.path.exists(".hadolint.yml"):
         config_file_arg = "--config=.hadolint.yml"
 
-    build_utils.run(f"hadolint {config_file_arg} Dockerfile", exit_on_error=True)
+    build_utils.run(
+        f"hadolint {config_file_arg} Dockerfile", exit_on_error=exit_on_error
+    )
 
 
 def build_docker_image(
