@@ -103,6 +103,20 @@ def get_sanitized_arguments(
     parser = _get_default_cli_arguments_parser(argument_parser)
     args, _ = parser.parse_known_args(args=arguments)
 
+    if args.test_marker is None:
+        # Set test marker to an empty list for better access
+        args.test_marker = []
+
+    if args.skip_path is None:
+        # Set skip path to an empty list for better access
+        args.skip_path = []
+
+    if len(sys.argv) <= 1:
+        # Set default configuration if called without any arguments
+        args.make = True
+        args.check = True
+        args.test = True
+
     if args._sanitized:
         return vars(args)
 
