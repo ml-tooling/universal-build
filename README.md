@@ -55,14 +55,14 @@ from universal_build import build_utils
 
 args = build_utils.get_sanitized_arguments()
 
-version = args[build_utils.FLAG_VERSION]
+version = args.get(build_utils.FLAG_VERSION)
 
 if args.get(build_utils.FLAG_MAKE):
-    build_utils.log("Build the componet")
+    build_utils.log("Build the componet:")
     build_utils.run("yarn build", exit_on_error=True)
 
 if args.get(build_utils.FLAG_CHECK):
-    build_utils.log("Run linters and checks:")
+    build_utils.log("Run linters and style checks:")
     build_utils.run("yarn run lint:js", exit_on_error=True)
     build_utils.run("yarn run lint:css", exit_on_error=True)
 
@@ -129,6 +129,10 @@ _TBD_
 
 _TBD_
 
+### Simplified Versioning
+
+_TBD_
+
 ### MkDocs Utilities
 
 _TBD_
@@ -143,7 +147,64 @@ _TBD_
 
 ## Documentation
 
-_TBD:_
+### Build Script CLI
+
+Any build script that utilizes the `build_utils.get_sanitized_arguments()` method to parse the CLI arguments can be executed with the following options:
+
+```bash
+python build.py [OPTIONS]
+```
+
+**Options**:
+
+*  `--make`: Make/compile/package all artifacts.
+*  `--test`: Run unit and integration tests.
+*  `--check`: Run linting and style checks.
+*  `--release`: Release all artifacts (e.g. to  registries like DockerHub or NPM).
+*  `--run`: Run the component in development mode (e.g. dev server).
+*  `--version VERSION`: Version of the build (`MAJOR.MINOR.PATCH-TAG`).
+*  `--force`: Ignore all enforcements and warnings.
+*  `--skip-path SKIP_PATH`: Skips the build phases for all (sub)paths provided here.
+*  `--test-marker TEST_MARKER`: Provide custom markers for testing. The default marker for slow tests is `slow`.
+*  `-h, --help`: Show the help message and exit.
+
+### Default Flags
+
+At its core, universal-build will parse all arguments provided to the build script via `build_utils.get_sanitized_arguments()` and returns a sanitized and augmented list of arguments. Those arguments are the building blocks for your build script. You can utilize those arguments in whatever way to like. Here is an example on how to use those arguments in a `build.py` script:
+
+```python
+from universal_build import build_utils
+
+args = build_utils.get_sanitized_arguments()
+
+version = args.get(build_utils.FLAG_VERSION)
+
+if args.get(build_utils.FLAG_MAKE):
+  # Run all relevant build commands.
+
+if args.get(build_utils.FLAG_TEST):
+  # Run all relevant commands for testing
+  test_markers = args.get(build_utils.FLAG_TEST_MARKER)
+  if "slow" in test_markers:
+    # Run additional slow tests.
+```
+
+The following list contains all of the default flags currently supported by universal-build:
+
+| Flag  | Type | Description |
+| --- | --- | --- |
+|  `FLAG_MAKE`  | `bool` | Build/compile/package all artifacts. |
+|  `FLAG_CHECK`  | `bool` | Run linting and style checks. |
+|  `FLAG_TEST`  | `bool` | Run unit and integration tests. |
+|  `FLAG_RELEASE`  | `bool` | Release all artifacts (e.g. to  registries like DockerHub or NPM). |
+|  `FLAG_RUN`  | `bool` | Run the component in development mode (e.g. dev server). |
+|  `FLAG_FORCE`  | `bool` | Ignore all enforcements and warnings. |
+|  `FLAG_VERSION`  | `str` | Semantic version for the build. If not provided via CLI arguments, a valid dev version will be automatically calculated. |
+|  `FLAG_TEST_MARKER`  | `List[str]` | Custom markers for testing. Can be used to skip or execute certain tests. |
+
+### API Reference
+
+In addition to argument parsing capabilities, universal-build also contains a variety of utility functions to make building complex projects with different technologies easy. You can find all utilities in the Python API documentation [here](https://github.com/ml-tooling/universal-build/tree/main/docs).
 
 ## Contributors
 
