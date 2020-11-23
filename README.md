@@ -27,14 +27,14 @@
 
 > _**WIP**: This project is still an alpha version and not ready for general usage._
 
-Universal Build allows to implement your build and release pipeline with Python scripts once and run it either on your local machine, in a containerized environment via [Act](https://github.com/nektos/act), or automated via [Github Actions](https://github.com/features/actions). It supports a monorepo or polyrepo setup and can be used with any programming language or technology. It also provides a full release pipeline for automated releases with changelog generation.
+Universal-build allows to implement your build and release pipeline with Python scripts once and run it either on your local machine, in a containerized environment via [Act](https://github.com/nektos/act), or automated via [Github Actions](https://github.com/features/actions). It supports a monorepo or polyrepo setup and can be used with any programming language or technology. It also provides a full release pipeline for automated releases with changelog generation. All of your build scripts are written with plain Python, which gives you the full power of a generic programming language for your build pipelines.
 
 ## Highlights
 
+- 🐳&nbsp; Implement once and run locally, containerized, or on Github Actions.
 - 🧰&nbsp; Build utilities for Python, Docker, React & MkDocs
 - 🔗&nbsp; Predefined Github Action Workflows for CI & CD
 - 🛠&nbsp; Integrated with [devcontainer](https://code.visualstudio.com/docs/remote/containers) for containerized development.
-- 🐳&nbsp; Run builds locally, containerized via Act, or on Github Actions
 
 ## Getting Started
 
