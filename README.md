@@ -91,7 +91,7 @@ your-repository
       - build-pipeline.yml
 ```
 
-Once you have pushed the `build-environment` action and the [build-](https://github.com/ml-tooling/universal-build/blob/main/workflows/build-pipeline.yml) and [release-pipelines](https://github.com/ml-tooling/universal-build/blob/main/workflows/release-pipeline.yml), please look into the [Automated Build Pipeline (CI)](#) and [Automated Release Pipeline (CD)](#) sections for information on how to run your build- and release-pipelines.
+Once you have pushed the `build-environment` action and the [build-](https://github.com/ml-tooling/universal-build/blob/main/workflows/build-pipeline.yml) and [release-pipelines](https://github.com/ml-tooling/universal-build/blob/main/workflows/release-pipeline.yml), please look into the [Automated Build Pipeline (CI)](#automated-build-pipeline-ci) and [Automated Release Pipeline (CD)](#automated-release-pipeline-cd) sections for information on how to run your build- and release-pipelines.
 
 ## Support & Feedback
 
@@ -184,8 +184,8 @@ pip install --upgrade universal-build
 
 <p align="center">
   <a href="#support-for-nested-components">Support for Nested Components</a> •
-  <a href="#automated-build-pipeline">Automated Build Pipeline</a> •
-  <a href="#automated-release-pipeline">Automated Release Pipeline</a> •
+  <a href="#automated-build-pipeline-ci">Automated Build Pipeline</a> •
+  <a href="#automated-release-pipeline-cd">Automated Release Pipeline</a> •
   <a href="#containerized-development">Containerized Development</a> •
   <a href="#simplified-versioning">Simplified Versioning</a> •
   <a href="#mkdocs-utilities">MkDocs Utilities</a> •
@@ -193,7 +193,6 @@ pip install --upgrade universal-build
   <a href="#docker-utilities">Docker Utilities</a> •
   <a href="#extensibility">Extensibility</a>
 </p>
-
 
 ### Support for Nested Components
 
