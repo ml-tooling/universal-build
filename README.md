@@ -170,12 +170,12 @@ In addition to argument parsing capabilities, universal-build also contains a va
 ## Features
 
 <p align="center">
-  <a href="#automated-release-pipeline">Automated Build Pipeline</a> •
+  <a href="#automated-build-pipeline">Automated Build Pipeline</a> •
   <a href="#automated-release-pipeline">Automated Release Pipeline</a> •
   <a href="#containerized-development">Containerized Development</a> •
-  <a href="#containerized-development">Support for Nested Components</a> •
+  <a href="#support-for-nested-components">Support for Nested Components</a> •
   <a href="#mkdocs-utilities">MkDocs Utilities</a> •
-  <a href="#docker-utilities">Python Utilities</a> •
+  <a href="#python-utilities">Python Utilities</a> •
   <a href="#docker-utilities">Docker Utilities</a> •
   <a href="#extensibility">Extensibility</a>
 </p>
