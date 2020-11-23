@@ -80,9 +80,9 @@ Next, copy the [build-](https://github.com/ml-tooling/universal-build/blob/main/
 
 1) On your local machine via the build script (you need to have all dependencies for the build installed):
   
-  ```bash
-  python build.py --make --check --test
-  ```
+```bash
+python build.py --make --check --test
+```
 
 2) In a containerized environment on your local machine via [Act](https://github.com/nektos/act):
 
@@ -170,23 +170,17 @@ In addition to argument parsing capabilities, universal-build also contains a va
 ## Features
 
 <p align="center">
+  <a href="#support-for-nested-components">Support for Nested Components</a> •
   <a href="#automated-build-pipeline">Automated Build Pipeline</a> •
   <a href="#automated-release-pipeline">Automated Release Pipeline</a> •
   <a href="#containerized-development">Containerized Development</a> •
-  <a href="#support-for-nested-components">Support for Nested Components</a> •
+  <a href="#simplified-versioning">Simplified Versioning</a> •
   <a href="#mkdocs-utilities">MkDocs Utilities</a> •
   <a href="#python-utilities">Python Utilities</a> •
   <a href="#docker-utilities">Docker Utilities</a> •
   <a href="#extensibility">Extensibility</a>
 </p>
 
-### Automated Build Pipeline
-
-_TBD_
-
-### Automated Release Pipeline
-
-_TBD_
 
 ### Support for Nested Components
 
@@ -237,20 +231,60 @@ act -b -s BUILD_ARGS="[BUILD_ARGUMENTS]" -s WORKING_DIRECTORY="./docs" -j build
 
 Or directly from the Github UI: `Actions` -> `build-pipeline` -> `Run workflow`. The Github UI will allow you to set the build arguments and working directory.
 
+### Automated Build Pipeline
+
+_TBD_
+
+### Automated Release Pipeline
+
+_TBD_
+
 ### Containerized Development
 
 _TBD_
 
 ### Simplified Versioning
 
-_TBD_
+> Only [semantic versioning](https://semver.org/) is supported at the moment.
+
+If you do not provide an explicit version via the build arguments (`--version`), universal-build will automatically detect the latest version via Github tags and pass a dev version to your build scripts. The dev version will have the following format: `<MAJOR>.<MINOR>.<PATCH>-dev.<BRANCH>`. This should be sufficient for the majority of development builds. However, the release step still requires to have a valid semantic version provided via the arguments.
 
 ### Python Utilities
 
 The [`build_python`](https://github.com/ml-tooling/universal-build/blob/main/docs/universal_build.helpers.build_python.md) module of universal-build provides a collection of utilities to simplify the process of building and releasing Python packages. Refer to the [API documentation](https://github.com/ml-tooling/universal-build/blob/main/docs/universal_build.helpers.build_python.md) for full documentation on all python utilities. An example for a build script for a Python package is shown below:
 
 ```python
-# TBD
+from universal_build import build_utils
+from universal_build.helpers import build_python
+
+# Project specific configuration
+MAIN_PACKAGE = "template_package"
+
+args = build_python.get_sanitized_arguments()
+
+version = args.get(build_utils.FLAG_VERSION)
+
+# Update version in __version__.py
+build_python.update_version(os.path.join(HERE, f"src/{MAIN_PACKAGE}/__version__.py"), str(version))
+
+if args.get(build_utils.FLAG_MAKE):
+  # Install pipenv dev requirements
+  build_python.install_build_env()
+  # Build distribution via setuptools
+  build_python.build_distribution()
+
+if args.get(build_utils.FLAG_CHECK):
+  build_python.code_checks(exit_on_error=True)
+
+if args.get(build_utils.FLAG_TEST):
+  build_utils.run('pipenv run pytest -m "not slow"', exit_on_error=True)
+
+  if "slow" in args.get(build_utils.FLAG_TEST_MARKER):
+    build_python.test_with_py_version(python_version="3.6.12")
+
+if args.get(build_utils.FLAG_RELEASE):
+  # Publish distribution on pypi
+  build_python.publish_pypi_distribution(pypi_token=args.get(build_python.FLAG_PYPI_TOKEN),pypi_repository=args.get(build_python.FLAG_PYPI_REPOSITORY))
 ```
 
 ### Docker Utilities
