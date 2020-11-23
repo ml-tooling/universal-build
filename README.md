@@ -247,7 +247,7 @@ _TBD_
 
 > Only [semantic versioning](https://semver.org/) is supported at the moment.
 
-If you do not provide an explicit version via the build arguments (`--version`), universal-build will automatically detect the latest version via Github tags and pass a dev version to your build scripts. The dev version will have the following format: `<MAJOR>.<MINOR>.<PATCH>-dev.<BRANCH>`. This should be sufficient for the majority of development builds. However, the release step still requires to have a valid semantic version provided via the arguments.
+If you do not provide an explicit version via the build arguments (`--version`), universal-build will automatically detect the latest version via Git tags and pass a dev version to your build scripts. The dev version will have the following format: `<MAJOR>.<MINOR>.<PATCH>-dev.<BRANCH>`. This should be sufficient for the majority of development builds. However, the release step still requires to have a valid semantic version provided via the arguments.
 
 ### Python Utilities
 
@@ -286,6 +286,18 @@ if args.get(build_utils.FLAG_RELEASE):
   # Publish distribution on pypi
   build_python.publish_pypi_distribution(pypi_token=args.get(build_python.FLAG_PYPI_TOKEN),pypi_repository=args.get(build_python.FLAG_PYPI_REPOSITORY))
 ```
+
+The [`build_python.get_sanitized_arguments()`](https://github.com/ml-tooling/universal-build/blob/main/docs/universal_build.helpers.build_python.md#function-get_sanitized_arguments) argument parser has the following additional flags:
+
+| Flag  |  Type  | Description |
+| --- | --- | --- |
+|  `FLAG_PYPI_TOKEN`  | `str` | Personal access token for PyPI account. |
+|  `FLAG_PYPI_REPOSITORY`  | `str` | PyPI repository for publishing artifacts. |
+
+And the following additional CLI options:
+
+- `--pypi-token`: Personal access token for PyPI account.
+- `--pypi-repository`: PyPI repository for publishing artifacts.
 
 ### Docker Utilities
 
