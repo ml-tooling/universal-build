@@ -25,9 +25,9 @@
   <a href="https://github.com/ml-tooling/universal-build/releases">Changelog</a>
 </p>
 
-> _**WIP**: This project is still an alpha version and not ready for general usage._
-
 Universal-build allows to implement your build and release pipeline with Python scripts once and run it either on your local machine, in a containerized environment via [Act](https://github.com/nektos/act), or automated via [Github Actions](https://github.com/features/actions). It supports a monorepo or polyrepo setup and can be used with any programming language or technology. It also provides a full release pipeline for automated releases with changelog generation. All of your build scripts are written with plain Python, which gives you the full power of a generic programming language for your build pipelines.
+
+> _**WIP**: This project is still an alpha version and not ready for general usage._
 
 ## Highlights
 
@@ -130,7 +130,7 @@ python build.py [OPTIONS]
 
 ### Default Flags
 
-At its core, universal-build will parse all arguments provided to the build script via `build_utils.get_sanitized_arguments()` and returns a sanitized and augmented list of arguments. Those arguments are the building blocks for your build script. You can utilize those arguments in whatever way to like. Here is an example on how to use those arguments in a `build.py` script:
+At its core, universal-build will parse all arguments provided to the build script via `build_utils.get_sanitized_arguments()` and returns a sanitized and augmented list of arguments. Those arguments are the building blocks for your build script. You can utilize those arguments in whatever way you like. Here is an example on how to use those arguments in a `build.py` script:
 
 ```python
 from universal_build import build_utils
@@ -174,7 +174,7 @@ To update the universal-build version of your project, simply look up the most r
 FROM mltooling/build-environment:<UPDATED_VERSION>
 ```
 
-In case you also run your build outside of the build-environment (locally), make sure to also upgrade universal-build from [pypi](https://pypi.org/project/universal-build/):
+In case you also run your build outside of the build-environment (locally), make sure to also upgrade universal-build on your local machine from [PyPi](https://pypi.org/project/universal-build/):
 
 ```bash
 pip install --upgrade universal-build
@@ -193,61 +193,6 @@ pip install --upgrade universal-build
   <a href="#docker-utilities">Docker Utilities</a> •
   <a href="#extensibility">Extensibility</a>
 </p>
-
-### Support for Nested Components
-
-Universal-build has excellent support for repositories that contain multiple nested components (aka Monorepo). The following `example` repository has four components: `docs`, `webapp`, `backend`, and `python-lib`:
-
-```plain
-example:
-  - build.py
-  - docs:
-    - build.py
-  - webapp:
-    - build.py
-  - backend:
-    - build.py
-  - python-lib:
-    - build.py
-```
-
-Every component needs its own `build.py` script in the component root folder that implements all the logic to build, check, test, and release the given component. The `build.py` script in the repo root folder contains the build logic that orchestrates all component builds. Universal-build provides the [`build_utils.build()`](https://github.com/ml-tooling/universal-build/blob/main/docs/universal_build.build_utils.md#function-build) function that allows to call the build script of a sub-component with the parsed arguments (find more info on `build` function in the [API documentation](https://github.com/ml-tooling/universal-build/blob/main/docs/universal_build.build_utils.md#function-build)).
-
-In between the build steps, you can execute any required operations, for example, duplicating build artifacts from one component to another. The following example, shows the `build.py` script that would support the `example` repository structure:
-
-```python
-from universal_build import build_utils
-
-args = build_utils.get_sanitized_arguments()
-
-build_utils.build("webapp", args)
-build_utils.build("backend", args)
-build_utils.build("python-lib", args)
-build_utils.duplicate_folder("./python-lib/docs/", "./docs/docs/api-docs/")
-build_utils.build("docs", args)
-```
-
-With this setup, you can execute the build pipeline for the full project or any individual component. In case you only apply changes to a single component, you only need to execute the `build.py` script of the given component. This is a major advantage since it might massively speed up your development time.
-
-To run the build pipeline on you local machine only for a specific component, navigate to the component and run the `build.py` script in the component root folder (you can find all CLI build arguments [here](#build-script-cli)):
-
-```bash
-cd "./docs" && python build.py [BUILD_ARGUMENTS]
-```
-
-Alternatively, you can also run the component build containerized via Act:
-
-```bash
-act -b -s BUILD_ARGS="[BUILD_ARGUMENTS]" -s WORKING_DIRECTORY="./docs" -j build
-```
-
-Or directly from the Github UI: `Actions` -> `build-pipeline` -> `Run workflow`. The Github UI will allow you to set the build arguments and working directory.
-
-### Simplified Versioning
-
-> Only [semantic versioning](https://semver.org/) is supported at the moment.
-
-If you do not provide an explicit version via the build arguments (`--version`), universal-build will automatically detect the latest version via Git tags and pass a dev version to your build scripts. The dev version will have the following format: `<MAJOR>.<MINOR>.<PATCH>-dev.<BRANCH>`. This should be sufficient for the majority of development builds. However, the release step still requires to have a valid semantic version provided via the arguments.
 
 ### Automated Build Pipeline (CI)
 
@@ -320,6 +265,61 @@ After successful execution of the release pipeline, the following steps are requ
 **Resolve an unsuccessful release:**
 
 In case the release pipeline fails at any step, we suggest to fix the problem based on the release pipeline logs and create a new release with an incremented `patch` version. To clean up the unsuccessful release, make sure to delete the following artifacts (if they exist): the release branch, the release PR, the version tag, the draft release, and any release artifact that was already published (e.g. on DockerHub, NPM or PyPi).
+
+### Support for Nested Components
+
+Universal-build has excellent support for repositories that contain multiple nested components (aka Monorepo). The following `example` repository has four components: `docs`, `webapp`, `backend`, and `python-lib`:
+
+```plain
+example:
+  - build.py
+  - docs:
+    - build.py
+  - webapp:
+    - build.py
+  - backend:
+    - build.py
+  - python-lib:
+    - build.py
+```
+
+Every component needs its own `build.py` script in the component root folder that implements all the logic to build, check, test, and release the given component. The `build.py` script in the repo root folder contains the build logic that orchestrates all component builds. Universal-build provides the [`build_utils.build()`](https://github.com/ml-tooling/universal-build/blob/main/docs/universal_build.build_utils.md#function-build) function that allows to call the build script of a sub-component with the parsed arguments (find more info on `build` function in the [API documentation](https://github.com/ml-tooling/universal-build/blob/main/docs/universal_build.build_utils.md#function-build)).
+
+In between the build steps, you can execute any required operations, for example, duplicating build artifacts from one component to another. The following example, shows the `build.py` script that would support the `example` repository structure:
+
+```python
+from universal_build import build_utils
+
+args = build_utils.get_sanitized_arguments()
+
+build_utils.build("webapp", args)
+build_utils.build("backend", args)
+build_utils.build("python-lib", args)
+build_utils.duplicate_folder("./python-lib/docs/", "./docs/docs/api-docs/")
+build_utils.build("docs", args)
+```
+
+With this setup, you can execute the build pipeline for the full project or any individual component. In case you only apply changes to a single component, you only need to execute the `build.py` script of the given component. This is a major advantage since it might massively speed up your development time.
+
+To run the build pipeline on you local machine only for a specific component, navigate to the component and run the `build.py` script in the component root folder (you can find all CLI build arguments [here](#build-script-cli)):
+
+```bash
+cd "./docs" && python build.py [BUILD_ARGUMENTS]
+```
+
+Alternatively, you can also run the component build containerized via Act:
+
+```bash
+act -b -s BUILD_ARGS="[BUILD_ARGUMENTS]" -s WORKING_DIRECTORY="./docs" -j build
+```
+
+Or directly from the Github UI: `Actions` -> `build-pipeline` -> `Run workflow`. The Github UI will allow you to set the build arguments and working directory.
+
+### Simplified Versioning
+
+> Only [semantic versioning](https://semver.org/) is supported at the moment.
+
+If you do not provide an explicit version via the build arguments (`--version`), universal-build will automatically detect the latest version via Git tags and pass a dev version to your build scripts. The dev version will have the following format: `<MAJOR>.<MINOR>.<PATCH>-dev.<BRANCH>`. This should be sufficient for the majority of development builds. However, the release step still requires to have a valid semantic version provided via the arguments.
 
 ### Python Utilities
 
