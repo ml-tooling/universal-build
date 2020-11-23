@@ -253,7 +253,7 @@ If you do not provide an explicit version via the build arguments (`--version`),
 
 Universal-build enables you to run your build pipeline on your local machine, in a containerized environment via [Act](https://github.com/nektos/act), or automated via [Github Actions](https://github.com/features/actions).
 
-**Local machine via build scripts:**
+**Local machine via build script:**
 
 > _Requirements: All build requirements need to be installed on your machine._
 
@@ -279,11 +279,47 @@ In the Github UI, go to `Actions` -> select `build-pipeline` -> select `Run Work
 
 **Automated via Github Actions:**
 
-As default, the build pipeline will run automatically via Github Actions on any `push` event to your repository. You can also change the events that trigger the build-pipeline by modifying the `on` section in the `.github/workflows/build-pipeline.yml` file. You can find more information about Github Actions events [here](https://docs.github.com/en/free-pro-team@latest/actions/reference/events-that-trigger-workflows).
+With the default configuration, the build pipeline will run automatically via Github Actions on any `push` event to your repository. You can also change the events that trigger the build-pipeline by modifying the `on` section in the `.github/workflows/build-pipeline.yml` file. You can find more information about Github Actions events [here](https://docs.github.com/en/free-pro-team@latest/actions/reference/events-that-trigger-workflows).
 
 ### Automated Release Pipeline (CD)
 
-_TBD_
+To release a new version and publish all relevant artifacts to the respective registries (e.g. Docker image to DockerHub) you can either trigger our release pipeline on your local machine, in a containerized environment via [Act](https://github.com/nektos/act), or automated via [Github Actions](https://github.com/features/actions).
+
+**Local machine via build script:**
+
+> _Requirements: All build requirements need to be installed on your machine._
+
+Execute the following command in the root folder of any component with a valid `build.py` script (a valid semantic version is required):
+
+```bash
+python build.py --make --check --test --release --version="<MAJOR.MINOR.PATCH>"
+```
+
+**Containerized environment via Act:**
+
+> _Requirements: [Docker](https://docs.docker.com/get-docker/) and [Act](https://github.com/nektos/act#installation) are required to be installed on your machine._
+
+Execute this command in the root folder of your repository:
+
+```bash
+act -b -s VERSION="<MAJOR.MINOR.PATCH>" -j release
+```
+
+In case you also want to automatically create a valid Github release, you also need to provide a valid `GITHUB_TOKEN` as a secret (`-s GITHUB_TOKEN=<token>`). Please refer to the next section for information on how to finish and publish the release.
+
+**Manually via Github Actions:**
+
+To trigger our release pipeline from Github UI, you can either close a milestone that has a valid version name (`vMAJOR.MINOR.PATCH`) or execute the release pipeline manually via the `workflow_dispatch` UI in the Action Tab (`Actions -> release-pipeline -> Run Workflow`). The release pipeline will automatically create a pull request for the new version as well as a draft release on Github.
+
+After successful execution of the release pipeline, the following steps are required to finish the release:
+
+1. Merge the release PR into `main`. Preferably via merge commit to keep the version tag in the `main` branch. We suggest to use the following message for the merge commit: `Finalize release for version <VERSION> (#<PR>)`.
+2. Adapt the changelog of the draft release on Github (in the release section). Mention all other changes that are not covered by pull requests.
+3. Publish the release.
+
+**Resolve an unsuccessful release:**
+
+In case the release pipeline fails at any step, we suggest to fix the problem based on the release pipeline logs and create a new release with an incremented `patch` version. To clean up the unsuccessful release, make sure to delete the following artifacts (if they exist): the release branch, the release PR, the version tag, the draft release, and any release artifact that was already published (e.g. on DockerHub, NPM or PyPi).
 
 ### Python Utilities
 
