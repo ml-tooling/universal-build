@@ -12,7 +12,7 @@ Utilities to help building Python libraries.
 
 ---
 
-<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/helpers/build_python.py#L15"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/helpers/build_python.py#L16"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `parse_arguments`
 
@@ -43,7 +43,22 @@ Sanitized means that, for example, the version is already checked and set depend
 
 ---
 
-<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/helpers/build_python.py#L51"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/helpers/build_python.py#L52"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+
+## <kbd>function</kbd> `is_pipenv_environment`
+
+```python
+is_pipenv_environment() → bool
+```
+
+
+
+
+
+
+---
+
+<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/helpers/build_python.py#L56"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `test_with_py_version`
 
@@ -63,20 +78,26 @@ Run pytest in a environment wiht the specified python version.
 
 ---
 
-<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/helpers/build_python.py#L76"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/helpers/build_python.py#L88"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `install_build_env`
 
 ```python
-install_build_env() → None
+install_build_env(exit_on_error: bool = True) → None
 ```
 
 Installs a new virtual environment via pipenv. 
 
 
+
+**Args:**
+ 
+ - <b>`exit_on_error`</b> (bool, optional):  Exit process if an error occurs. Defaults to `True`. 
+
+
 ---
 
-<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/helpers/build_python.py#L88"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/helpers/build_python.py#L109"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `generate_api_docs`
 
@@ -84,7 +105,6 @@ Installs a new virtual environment via pipenv.
 generate_api_docs(
     github_url: str,
     main_package: str,
-    command_prefix: str = 'pipenv run',
     exit_on_error: bool = True
 ) → None
 ```
@@ -97,13 +117,12 @@ Generates API documentation via lazydocs.
  
  - <b>`github_url`</b> (str):  Github URL 
  - <b>`main_package`</b> (str):  The main package name to use for docs generation. 
- - <b>`command_prefix`</b> (str, optional):  Prefix to use for all commands. Defaults to `pipenv run`. 
  - <b>`exit_on_error`</b> (bool, optional):  Exit process if an error occurs. Defaults to `True`. 
 
 
 ---
 
-<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/helpers/build_python.py#L109"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/helpers/build_python.py#L133"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `publish_pypi_distribution`
 
@@ -111,7 +130,8 @@ Generates API documentation via lazydocs.
 publish_pypi_distribution(
     pypi_token: str,
     pypi_user: str = '__token__',
-    pypi_repository: Optional[str] = None
+    pypi_repository: Optional[str] = None,
+    exit_on_error: bool = True
 ) → None
 ```
 
@@ -124,17 +144,17 @@ Publish distribution to pypi.
  - <b>`pypi_token`</b> (str):  Token of PyPi repository. 
  - <b>`pypi_user`</b> (str, optional):  User of PyPi repository. Defaults to "__token__". 
  - <b>`pypi_repository`</b> (Optional[str], optional):  PyPi repository. If `None` provided, use the production instance. 
+ - <b>`exit_on_error`</b> (bool, optional):  Exit process if an error occurs. Defaults to `True`. 
 
 
 ---
 
-<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/helpers/build_python.py#L134"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/helpers/build_python.py#L164"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `code_checks`
 
 ```python
 code_checks(
-    command_prefix: str = 'pipenv run',
     black: bool = True,
     isort: bool = True,
     pydocstyle: bool = True,
@@ -151,7 +171,6 @@ Run linting and style checks.
 
 **Args:**
  
- - <b>`command_prefix`</b> (str, optional):  Prefix to use for all check commands. Defaults to `pipenv run`. 
  - <b>`black`</b> (bool, optional):  Activate black formatting check. Defaults to True. 
  - <b>`isort`</b> (bool, optional):  Activate isort import sorting check. Defaults to True. 
  - <b>`pydocstyle`</b> (bool, optional):  Activate pydocstyle docstring check. Defaults to True. 
@@ -163,12 +182,16 @@ Run linting and style checks.
 
 ---
 
-<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/helpers/build_python.py#L196"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/helpers/build_python.py#L229"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `update_version`
 
 ```python
-update_version(module_path: str, version: str) → None
+update_version(
+    module_path: str,
+    version: str,
+    exit_on_error: bool = True
+) → None
 ```
 
 Update version in specified module. 
@@ -179,19 +202,26 @@ Update version in specified module.
  
  - <b>`module_path`</b> (str):  Python module with a `__version__` attribute. 
  - <b>`version`</b> (str):  New version number to write into `__version__` attribute. 
+ - <b>`exit_on_error`</b> (bool, optional):  If `True`, exit process as soon as error occures. Defaults to True. 
 
 
 ---
 
-<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/helpers/build_python.py#L214"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/helpers/build_python.py#L256"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `build_distribution`
 
 ```python
-build_distribution() → None
+build_distribution(exit_on_error: bool = True) → None
 ```
 
 Build python package distribution. 
+
+
+
+**Args:**
+ 
+ - <b>`exit_on_error`</b> (bool, optional):  If `True`, exit process as soon as error occures. Defaults to True. 
 
 
 
