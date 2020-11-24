@@ -19,8 +19,10 @@
 - [`create_git_tag`](./universal_build.build_utils.md#function-create_git_tag): Create an annotated git tag in the current HEAD via `git tag` and the provided version.
 - [`duplicate_folder`](./universal_build.build_utils.md#function-duplicate_folder): Duplicate a folder into another folder.
 - [`exit_process`](./universal_build.build_utils.md#function-exit_process): Exit the process with exit code.
+- [`get_latest_version`](./universal_build.build_utils.md#function-get_latest_version): Returns the latest version based on Git tags.
 - [`log`](./universal_build.build_utils.md#function-log): Log message to stdout.
 - [`parse_arguments`](./universal_build.build_utils.md#function-parse_arguments): Parses all arguments and returns a sanitized & augmented list of arguments.
+- [`replace_in_files`](./universal_build.build_utils.md#function-replace_in_files): Replaces a string or regex occurence in a collection of files.
 - [`run`](./universal_build.build_utils.md#function-run): Run a specified command.
 - [`build_docker_image`](./universal_build.helpers.build_docker.md#function-build_docker_image): Build a docker image from a Dockerfile in the working directory.
 - [`lint_dockerfile`](./universal_build.helpers.build_docker.md#function-lint_dockerfile): Run hadolint on the Dockerfile.

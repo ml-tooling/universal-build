@@ -53,7 +53,7 @@ Log message to stdout.
 parse_arguments(
     input_args: List[str] = None,
     argument_parser: ArgumentParser = None
-) → Dict[str, Union[str, bool, List[str]]]
+) → dict
 ```
 
 Parses all arguments and returns a sanitized & augmented list of arguments. 
@@ -71,7 +71,7 @@ Sanitized means that, for example, the version is already checked and set depend
 
 **Returns:**
  
- - <b>`Dict[str, Union[str, bool, List[str]]]`</b>:  The parsed default arguments thar are already checked for validity. 
+ - <b>`dict`</b>:  The parsed default arguments thar are already checked for validity. 
 
 
 ---
@@ -180,6 +180,48 @@ Exit the process with exit code.
 ---
 
 <a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/build_utils.py#L353"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+
+## <kbd>function</kbd> `replace_in_files`
+
+```python
+replace_in_files(
+    find: str,
+    replace: str,
+    file_paths: List[str],
+    regex: bool = False,
+    exit_on_error: bool = True
+) → None
+```
+
+Replaces a string or regex occurence in a collection of files. 
+
+
+
+**Args:**
+ 
+ - <b>`find`</b> (str):  A string to find and replace in the files. 
+ - <b>`replace`</b> (str):  The string to replace it with. 
+ - <b>`file_paths`</b> (List[str]):  Collection of file paths. 
+ - <b>`regex`</b> (bool, optional):  If `True`, apply the find string as a regex notation. Defaults to `False`. 
+ - <b>`exit_on_error`</b> (bool, optional):  If `True`, exit process as soon as error occures. Defaults to True. 
+
+
+---
+
+<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/build_utils.py#L394"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+
+## <kbd>function</kbd> `get_latest_version`
+
+```python
+get_latest_version() → Union[str, NoneType]
+```
+
+Returns the latest version based on Git tags. 
+
+
+---
+
+<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/build_utils.py#L404"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `duplicate_folder`
 
