@@ -11,7 +11,7 @@ FLAG_DOCKER_IMAGE_PREFIX = "docker_image_prefix"
 
 
 def parse_arguments(
-    arguments: List[str] = None, argument_parser: argparse.ArgumentParser = None
+    input_args: List[str] = None, argument_parser: argparse.ArgumentParser = None
 ) -> Dict[str, Union[str, bool, List[str]]]:
     """Parses all arguments and returns a sanitized & augmented list of arguments.
 
@@ -19,7 +19,7 @@ def parse_arguments(
     If arguments are not valid, exit the script run.
 
     Args:
-        arguments (List[str], optional): List of arguments that are used instead of the arguments passed to the process. Defaults to `None`.
+        input_args (List[str], optional): List of arguments that are used instead of the arguments passed to the process. Defaults to `None`.
         argument_parser (arparse.ArgumentParser, optional): An argument parser which is passed as a parents parser to the default ArgumentParser to be able to use additional flags besides the default ones. Must be initialized with `add_help=False` flag like argparse.ArgumentParser(add_help=False)!
 
     Returns:
@@ -36,7 +36,7 @@ def parse_arguments(
     )
 
     return build_utils.parse_arguments(
-        arguments=arguments, argument_parser=argument_parser
+        input_args=input_args, argument_parser=argument_parser
     )
 
 

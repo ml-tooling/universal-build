@@ -87,7 +87,7 @@ def log(message: str) -> None:
 
 
 def parse_arguments(
-    arguments: List[str] = None, argument_parser: argparse.ArgumentParser = None
+    input_args: List[str] = None, argument_parser: argparse.ArgumentParser = None
 ) -> Dict[str, Union[str, bool, List[str]]]:
     """Parses all arguments and returns a sanitized & augmented list of arguments.
 
@@ -95,7 +95,7 @@ def parse_arguments(
     If arguments are not valid, exit the script run.
 
     Args:
-        arguments (List[str], optional): List of arguments that are used instead of the arguments passed to the process. Defaults to None.
+        input_args (List[str], optional): List of arguments that are used instead of the arguments passed to the process. Defaults to None.
         argument_parser (arparse.ArgumentParser, optional): An argument parser which is passed as a parents parser to the default ArgumentParser to be able to use additional flags besides the default ones. Must be initialized with `add_help=False` flag like argparse.ArgumentParser(add_help=False)!
 
     Returns:
@@ -103,13 +103,16 @@ def parse_arguments(
     """
     argument_parser = argument_parser or argparse.ArgumentParser()
     parser = _get_default_cli_arguments_parser(argument_parser)
-    parsed_args, _ = parser.parse_known_args(args=arguments)
+    parsed_args, _ = parser.parse_known_args(args=input_args)
+
+    if not input_args:
+        input_args = sys.argv
 
     # convert args to dict
     args = vars(parsed_args)
 
     # Set defaults
-    if len(sys.argv) <= 1:
+    if len(input_args) <= 1:
         # Set default configuration if called without any arguments
         args[FLAG_CHECK] = True
         args[FLAG_MAKE] = True
@@ -124,7 +127,7 @@ def parse_arguments(
         args[_FLAG_SKIP_PATH] = []
 
     # load from env variables
-    args = _load_from_env_variables(args)
+    args = _load_from_env_variables(args, input_args)
 
     if args.get(_FLAG_SANITIZED):
         log("Sanatized Arguments: " + str(args))
@@ -173,24 +176,24 @@ def parse_arguments(
     return DashInsensitiveDict(args)
 
 
-def _load_from_env_variables(args: dict) -> dict:
-    for argument in args:
-        if not isinstance(args[argument], str):
+def _load_from_env_variables(sanatized_args: dict, program_args: List[str]) -> dict:
+    for argument in sanatized_args:
+        if not isinstance(sanatized_args[argument], str):
             # Only load env variables for string variables
             continue
 
-        if argument.replace("_", "-") in " ".join(sys.argv):
+        if argument.replace("_", "-") in " ".join(program_args):
             # Argument was provided via command line arguments
             continue
 
         if os.environ.get(argument.upper()):
-            args[argument] = os.environ.get(argument.upper())
+            sanatized_args[argument] = os.environ.get(argument.upper())
 
         if os.environ.get("INPUT_" + argument.upper()):
             # Support for github action inputs
-            args[argument] = os.environ.get("INPUT_" + argument.upper())
+            sanatized_args[argument] = os.environ.get("INPUT_" + argument.upper())
 
-    return args
+    return sanatized_args
 
 
 def _concat_command_line_arguments(args: Dict[str, Union[str, bool, List[str]]]) -> str:
