@@ -65,7 +65,7 @@ Sanitized means that, for example, the version is already checked and set depend
 **Args:**
  
  - <b>`input_args`</b> (List[str], optional):  List of arguments that are used instead of the arguments passed to the process. Defaults to None. 
- - <b>`argument_parser`</b> (arparse.ArgumentParser, optional):  An argument parser which is passed as a parents parser to the default ArgumentParser to be able to use additional flags besides the default ones. Must be initialized with `add_help=False` flag like argparse.ArgumentParser(add_help=False)! 
+ - <b>`argument_parser`</b> (arparse.ArgumentParser, optional):  An argument parser which is passed as a parents parser to the default ArgumentParser to be able to use additional flags besides the default ones. 
 
 
 
@@ -184,7 +184,11 @@ Exit the process with exit code.
 ## <kbd>function</kbd> `duplicate_folder`
 
 ```python
-duplicate_folder(src_path: str, target_path: str) → None
+duplicate_folder(
+    src_path: str,
+    target_path: str,
+    exit_on_error: bool = True
+) → None
 ```
 
 Duplicate a folder into another folder. 
@@ -195,6 +199,7 @@ Duplicate a folder into another folder.
  
  - <b>`src_path`</b> (str):  Source path to duplicate. 
  - <b>`target_path`</b> (str):  Target path to move the source folder.  The existing content in the folder will be deleted. 
+ - <b>`exit_on_error`</b> (bool, optional):  If `True`, exit process as soon as error occures. Defaults to True. 
 
 
 
