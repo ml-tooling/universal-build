@@ -16,7 +16,7 @@ def main(args: dict) -> None:
     # set current path as working dir
     os.chdir(HERE)
 
-    version = args[build_utils.FLAG_VERSION]
+    version = args.get(build_utils.FLAG_VERSION)
 
     if version:
         # Update version in _about.py
@@ -25,6 +25,19 @@ def main(args: dict) -> None:
         )
 
     if args.get(build_utils.FLAG_MAKE):
+        # Bump all versions in some filess
+        previous_version = build_utils.get_latest_version()
+        print(previous_version)
+        if previous_version:
+            build_utils.replace_in_files(
+                previous_version,
+                version,
+                file_paths=[
+                    "./actions/build-environment/Dockerfile"
+                ],  # , "./README.md"
+                regex=False,
+                exit_on_error=True,
+            )
         # Install pipenv dev requirements
         build_python.install_build_env()
         # Create API documentation via lazydocs
@@ -54,10 +67,7 @@ def main(args: dict) -> None:
 
         test_markers = args.get(build_utils.FLAG_TEST_MARKER)
 
-        if (
-            isinstance(test_markers, list)
-            and build_utils.TEST_MARKER_SLOW in test_markers
-        ):
+        if build_utils.TEST_MARKER_SLOW in test_markers:  # type: ignore
             # Run if slow test marker is set: test in multiple environments
             # Python 3.6
             build_python.test_with_py_version(python_version="3.6.12")
