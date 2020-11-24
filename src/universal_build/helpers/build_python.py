@@ -23,7 +23,7 @@ def parse_arguments(
 
     Args:
         input_args (List[str], optional): List of arguments that are used instead of the arguments passed to the process. Defaults to `None`.
-        argument_parser (arparse.ArgumentParser, optional): An argument parser which is passed as a parents parser to the default ArgumentParser to be able to use additional flags besides the default ones. Must be initialized with `add_help=False` flag like argparse.ArgumentParser(add_help=False)!
+        argument_parser (arparse.ArgumentParser, optional): An argument parser which is passed as a parents parser to the default ArgumentParser to be able to use additional flags besides the default ones.
 
     Returns:
         Dict[str, Union[str, bool, List[str]]]: The parsed default arguments thar are already checked for validity.
