@@ -13,16 +13,16 @@ Utilities to help building Docker images.
 
 <a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/helpers/build_docker.py#L13"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
-## <kbd>function</kbd> `get_sanitized_arguments`
+## <kbd>function</kbd> `parse_arguments`
 
 ```python
-get_sanitized_arguments(
-    arguments: List[str] = None,
+parse_arguments(
+    input_args: List[str] = None,
     argument_parser: ArgumentParser = None
 ) → Dict[str, Union[str, bool, List[str]]]
 ```
 
-Return sanitized default arguments when they are valid. 
+Parses all arguments and returns a sanitized & augmented list of arguments. 
 
 Sanitized means that, for example, the version is already checked and set depending on our build guidelines. If arguments are not valid, exit the script run. 
 
@@ -30,7 +30,7 @@ Sanitized means that, for example, the version is already checked and set depend
 
 **Args:**
  
- - <b>`arguments`</b> (List[str], optional):  List of arguments that are used instead of the arguments passed to the process. Defaults to `None`. 
+ - <b>`input_args`</b> (List[str], optional):  List of arguments that are used instead of the arguments passed to the process. Defaults to `None`. 
  - <b>`argument_parser`</b> (arparse.ArgumentParser, optional):  An argument parser which is passed as a parents parser to the default ArgumentParser to be able to use additional flags besides the default ones. Must be initialized with `add_help=False` flag like argparse.ArgumentParser(add_help=False)! 
 
 
@@ -47,7 +47,7 @@ Sanitized means that, for example, the version is already checked and set depend
 ## <kbd>function</kbd> `lint_dockerfile`
 
 ```python
-lint_dockerfile() → None
+lint_dockerfile(exit_on_error: bool = True) → None
 ```
 
 Run hadolint on the Dockerfile. 
@@ -55,7 +55,7 @@ Run hadolint on the Dockerfile.
 
 ---
 
-<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/helpers/build_docker.py#L54"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/helpers/build_docker.py#L56"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `build_docker_image`
 
@@ -88,7 +88,7 @@ Build a docker image from a Dockerfile in the working directory.
 
 ---
 
-<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/helpers/build_docker.py#L89"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/helpers/build_docker.py#L91"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `release_docker_image`
 
