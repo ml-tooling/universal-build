@@ -65,7 +65,7 @@ class TestGetVersionClass:
         assert pytest_wrapped_e.type is build_utils._VersionInvalidFormatException
 
         with pytest.raises(SystemExit) as pytest_wrapped_e:
-            build_utils.get_sanitized_arguments(
+            build_utils.parse_arguments(
                 [f"--{build_utils.FLAG_VERSION}={too_small_patch_version}"]
             )
 
@@ -94,14 +94,14 @@ class TestGetVersionClass:
 class TestBuildClass:
     def test_release_without_version(self):
         with pytest.raises(SystemExit) as pytest_wrapped_e:
-            build_utils.get_sanitized_arguments([f"--{build_utils.FLAG_RELEASE}"])
+            build_utils.parse_arguments([f"--{build_utils.FLAG_RELEASE}"])
 
         assert pytest_wrapped_e.type == SystemExit
         assert pytest_wrapped_e.value.code == build_utils.EXIT_CODE_INVALID_ARGUMENTS
 
     def test_release_with_invalid_version_in_main_branch(self):
         with pytest.raises(SystemExit) as pytest_wrapped_e:
-            build_utils.get_sanitized_arguments(
+            build_utils.parse_arguments(
                 [
                     f"--{build_utils.FLAG_RELEASE}",
                     f"--{build_utils.FLAG_TEST}",
@@ -115,7 +115,7 @@ class TestBuildClass:
 
     def test_release_with_already_existing_version(self):
         with pytest.raises(SystemExit) as pytest_wrapped_e:
-            build_utils.get_sanitized_arguments(
+            build_utils.parse_arguments(
                 [
                     f"--{build_utils.FLAG_RELEASE}",
                     f"--{build_utils.FLAG_TEST}",
@@ -128,7 +128,7 @@ class TestBuildClass:
         assert pytest_wrapped_e.value.code == build_utils.EXIT_CODE_INVALID_VERSION
 
     def test_release(self):
-        sanitized_arguments = build_utils.get_sanitized_arguments(
+        sanitized_arguments = build_utils.parse_arguments(
             [
                 f"--{build_utils.FLAG_RELEASE}",
                 f"--{build_utils.FLAG_TEST}",
@@ -140,7 +140,7 @@ class TestBuildClass:
         assert sanitized_arguments[build_utils.FLAG_VERSION] == valid_patch_version
 
     def test_build_with_force_with_version(self):
-        sanitized_args = build_utils.get_sanitized_arguments(
+        sanitized_args = build_utils.parse_arguments(
             [
                 f"--{build_utils.FLAG_MAKE}",
                 f"--{build_utils.FLAG_FORCE}",
