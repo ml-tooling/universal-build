@@ -20,7 +20,7 @@ Utilities to help building Python libraries.
 parse_arguments(
     input_args: List[str] = None,
     argument_parser: ArgumentParser = None
-) → Dict[str, Union[str, bool, List[str]]]
+) → dict
 ```
 
 Parses all arguments and returns a sanitized & augmented list of arguments. 
@@ -38,7 +38,7 @@ Sanitized means that, for example, the version is already checked and set depend
 
 **Returns:**
  
- - <b>`Dict[str, Union[str, bool, List[str]]]`</b>:  The parsed default arguments thar are already checked for validity. 
+ - <b>`dict`</b>:  The parsed default arguments thar are already checked for validity. 
 
 
 ---
