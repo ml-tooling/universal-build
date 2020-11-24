@@ -132,6 +132,8 @@ python build.py [OPTIONS]
 
 **Options**:
 
+> _These options correspond to the default flags documented in the next section._
+
 - `--make`: Make/compile/package all artifacts.
 - `--test`: Run unit and integration tests.
 - `--check`: Run linting and style checks.
@@ -139,8 +141,8 @@ python build.py [OPTIONS]
 - `--run`: Run the component in development mode (e.g. dev server).
 - `--version VERSION`: Version of the build (`MAJOR.MINOR.PATCH-TAG`).
 - `--force`: Ignore all enforcements and warnings.
-- `--skip-path SKIP_PATH`: Skips the build phases for all (sub)paths provided here.
-- `--test-marker TEST_MARKER`: Provide custom markers for testing. The default marker for slow tests is `slow`.
+- `--skip-path SKIP_PATH`: Skips the build phases for all (sub)paths provided here. This option can be used multiple times.
+- `--test-marker TEST_MARKER`: Provide custom markers for testing. The default marker for slow tests is `slow`. This option can be used multiple times.
 - `-h, --help`: Show the help message and exit.
 
 ### Default Flags
