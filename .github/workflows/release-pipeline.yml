@@ -76,6 +76,13 @@ jobs:
           find: "${{ steps.get-latest-version.outputs.latest_version }}"
           replace: "${{ env.VERSION }}"
           include: "actions/build-environment/Dockerfile"
+      - if: ${{ steps.get-latest-version.outputs.latest_version }}
+        name: replace-version
+        uses: jacobtomlinson/gha-find-replace@0.1.2
+        with:
+          find: "${{ steps.get-latest-version.outputs.latest_version }}"
+          replace: "${{ env.VERSION }}"
+          include: "README.md"
       # END: CUSTOM STEPS
       - if: ${{ env.GITHUB_TOKEN }}
         name: update-repository
