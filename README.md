@@ -91,7 +91,7 @@ your-repository
       - build-pipeline.yml
 ```
 
-Once you have pushed the `build-environment` action and the [build-](https://github.com/ml-tooling/universal-build/blob/main/workflows/build-pipeline.yml) and [release-pipelines](https://github.com/ml-tooling/universal-build/blob/main/workflows/release-pipeline.yml), please look into the [Automated Build Pipeline (CI)](#automated-build-pipeline-ci) and [Automated Release Pipeline (CD)](#automated-release-pipeline-cd) sections for information on how to run your build- and release-pipelines.
+Once you have pushed the `build-environment` action and the [build-](https://github.com/ml-tooling/universal-build/blob/main/workflows/build-pipeline.yml) and [release-pipelines](https://github.com/ml-tooling/universal-build/blob/main/workflows/release-pipeline.yml), please look into the [Automated Build Pipeline](#automated-build-pipeline-ci) and [Automated Release Pipeline](#automated-release-pipeline-cd) sections for information on how to run your build- and release-pipelines.
 
 ---
 
@@ -219,7 +219,7 @@ Furthermore, you can also check if the [build-](https://github.com/ml-tooling/un
 
 ### Automated Build Pipeline (CI)
 
-Universal-build enables you to run your build pipeline on your local machine, in a containerized environment via [Act](https://github.com/nektos/act), or automated via [Github Actions](https://github.com/features/actions).
+Universal-build enables you to run your build pipeline on your local machine, in a containerized environment via [Act](https://github.com/nektos/act), or automated via [Github Actions](https://github.com/features/actions) (= Continuous Integration).
 
 **Local machine via build script:**
 
@@ -245,13 +245,13 @@ act -b -s BUILD_ARGS="--check --make --test" -j build
 
 In the Github UI, go to `Actions` -> select `build-pipeline` -> select `Run Workflow` and provide the build arguments, e.g. `--check --make --test`.
 
-**Automated via Github Actions:**
+**Automated via Github Actions (CI):**
 
-With the default configuration, the build pipeline will run automatically via Github Actions on any `push` event to your repository. You can also change the events that trigger the build-pipeline by modifying the `on` section in the `.github/workflows/build-pipeline.yml` file. You can find more information about Github Actions events [here](https://docs.github.com/en/free-pro-team@latest/actions/reference/events-that-trigger-workflows).
+With the default configuration, the build pipeline will run automatically via Github Actions on any `push` event to your repository. This automation can be referred to as continuous integration. You can also change the events that trigger the build-pipeline by modifying the `on` section in the `.github/workflows/build-pipeline.yml` file. You can find more information about Github Actions events [here](https://docs.github.com/en/free-pro-team@latest/actions/reference/events-that-trigger-workflows).
 
 ### Automated Release Pipeline (CD)
 
-To release a new version and publish all relevant artifacts to the respective registries (e.g. Docker image to DockerHub) you can either trigger our release pipeline on your local machine, in a containerized environment via [Act](https://github.com/nektos/act), or automated via [Github Actions](https://github.com/features/actions).
+To release a new version and publish all relevant artifacts to the respective registries (e.g. Docker image to DockerHub) you can either trigger our release pipeline on your local machine, in a containerized environment via [Act](https://github.com/nektos/act), or automated via [Github Actions](https://github.com/features/actions) (= Continuous Delivery).
 
 **Local machine via build script:**
 
@@ -275,11 +275,11 @@ act -b -s VERSION="<MAJOR.MINOR.PATCH>" -j release
 
 In case you also want to automatically create a valid Github release, you also need to provide a valid `GITHUB_TOKEN` as a secret (`-s GITHUB_TOKEN=<token>`). Please refer to the next section for information on how to finish and publish the release.
 
-**On Github Actions:**
+**On Github Actions (CD):**
 
 > _Make sure that all required secrets for you release pipeline are configured in your Github repository. More information [here](ttps://docs.github.com/en/free-pro-team@latest/actions/reference/encrypted-secrets#creating-encrypted-secrets-for-a-repository)._
 
-To trigger our release pipeline from Github UI, you can either close a milestone that has a valid version name (`vMAJOR.MINOR.PATCH`) or execute the release pipeline manually via the `workflow_dispatch` UI in the Action Tab (`Actions -> release-pipeline -> Run Workflow`). The release pipeline will automatically create a pull request for the new version as well as a draft release on Github.
+To trigger our release pipeline from Github UI, you can either close a milestone that has a valid version name (`vMAJOR.MINOR.PATCH`) or execute the release pipeline manually via the `workflow_dispatch` UI in the Action Tab (`Actions -> release-pipeline -> Run Workflow`). The release pipeline will automatically run the build, check, test, and release steps, and create a pull request for the new version as well as a draft release on Github. This automation can be referred to as continuous delivery.
 
 After successful execution of the release pipeline, the following steps are required to finish the release:
 
