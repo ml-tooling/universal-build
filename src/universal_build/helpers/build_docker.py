@@ -12,7 +12,7 @@ FLAG_DOCKER_IMAGE_PREFIX = "docker_image_prefix"
 
 def parse_arguments(
     input_args: List[str] = None, argument_parser: argparse.ArgumentParser = None
-) -> Dict[str, Union[str, bool, List[str]]]:
+) -> dict:
     """Parses all arguments and returns a sanitized & augmented list of arguments.
 
     Sanitized means that, for example, the version is already checked and set depending on our build guidelines.
@@ -23,7 +23,7 @@ def parse_arguments(
         argument_parser (arparse.ArgumentParser, optional): An argument parser which is passed as a parents parser to the default ArgumentParser to be able to use additional flags besides the default ones.
 
     Returns:
-        Dict[str, Union[str, bool, List[str]]]: The parsed default arguments thar are already checked for validity.
+        dict: The parsed default arguments thar are already checked for validity.
     """
     if argument_parser is None:
         argument_parser = argparse.ArgumentParser()

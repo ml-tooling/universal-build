@@ -88,7 +88,7 @@ def log(message: str) -> None:
 
 def parse_arguments(
     input_args: List[str] = None, argument_parser: argparse.ArgumentParser = None
-) -> Dict[str, Union[str, bool, List[str]]]:
+) -> dict:
     """Parses all arguments and returns a sanitized & augmented list of arguments.
 
     Sanitized means that, for example, the version is already checked and set depending on our build guidelines.
@@ -99,7 +99,7 @@ def parse_arguments(
         argument_parser (arparse.ArgumentParser, optional): An argument parser which is passed as a parents parser to the default ArgumentParser to be able to use additional flags besides the default ones.
 
     Returns:
-        Dict[str, Union[str, bool, List[str]]]: The parsed default arguments thar are already checked for validity.
+        dict: The parsed default arguments thar are already checked for validity.
     """
     argument_parser = argument_parser or argparse.ArgumentParser()
     parser = _get_default_cli_arguments_parser(argument_parser)
@@ -348,6 +348,57 @@ def exit_process(code: int = 0) -> None:
     atexit._run_exitfuncs()
     sys.stdout.flush()
     os._exit(code)
+
+
+def replace_in_files(
+    find: str,
+    replace: str,
+    file_paths: List[str],
+    regex: bool = False,
+    exit_on_error: bool = True,
+) -> None:
+    """Replaces a string or regex occurence in a collection of files.
+
+    Args:
+        find (str): A string to find and replace in the files.
+        replace (str): The string to replace it with.
+        file_paths (List[str]): Collection of file paths.
+        regex (bool, optional): If `True`, apply the find string as a regex notation. Defaults to `False`.
+        exit_on_error (bool, optional): If `True`, exit process as soon as error occures. Defaults to True.
+    """
+    for file_path in file_paths:
+        if not os.path.exists(file_path):
+            log("File path does not exist for string replacement: " + file_path)
+            if exit_on_error:
+                exit_process(1)
+        try:
+            with open(file_path, "r+") as f:
+                data = f.read()
+                f.seek(0)
+                if regex:
+                    f.write(re.sub(find, replace, data))
+                else:
+                    f.write(data.replace(find, replace))
+                f.truncate()
+        except Exception as ex:
+            log(
+                "Failed to replace string in file: "
+                + file_path
+                + ". Exception: "
+                + str(ex)
+            )
+            if exit_on_error:
+                exit_process(1)
+
+
+def get_latest_version() -> Optional[str]:
+    """Returns the latest version based on Git tags."""
+    try:
+        latest_version = _get_latest_branch_version()
+        assert latest_version is not None
+        return latest_version.to_string()
+    except Exception:
+        return None
 
 
 def duplicate_folder(
