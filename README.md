@@ -107,6 +107,13 @@ This project is maintained by [Benjamin Räthlein](https://twitter.com/raethlein
 
 ## Documentation
 
+<p align="center">
+  <a href="#build-script-cli">Build Script CLI</a> •
+  <a href="#default-flags">Default Flags</a> •
+  <a href="#api-reference">API Reference</a> •
+  <a href="#update-universal-build">Update Universal Build</a>
+</p>
+
 ### Build Script CLI
 
 Any build script that utilizes the `build_utils.parse_arguments()` method to parse the CLI arguments can be executed with the following options:
@@ -468,11 +475,22 @@ import argparse
 from universal_build import build_utils
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--deployment-token", help="Token to deploy component.")
+parser.add_argument("--deployment-token", help="Token to deploy component.", default="")
 
 args = build_utils.parse_arguments(argument_parser=parser)
 
 deployment_token = args.get("deployment_token")
+```
+
+Once it is implemented in your build script, you can provide the build argument via the CLI options: `python build.py --deployment-token=my-token`. If your custom argument is a `string` and has a default string value (e.g. `default=""`), you can also provide the build argument via environment variables: `DEPLOYMENT_TOKEN=mytoken python build.py`.
+
+To use your custom build arguments inside the release pipeline, you need to add the `DEPLOYMENT_TOKEN` as a secret to your Github repository (more info [here](https://docs.github.com/en/free-pro-team@latest/actions/reference/encrypted-secrets#creating-encrypted-secrets-for-a-repository)) and adapt the `.github/workflows/release-pipeline.yml` file by adding the `DEPLOYMENT_TOKEN` as an environment variable (`env`) to the steps that need this build argument, for example:
+
+```yaml
+- name: release-components
+  uses: ./.github/actions/build-environment
+  env:
+    DEPLOYMENT_TOKEN: ${{ secrets.DEPLOYMENT_TOKEN }}
 ```
 
 **Use custom test markers to select tests for execution:**
