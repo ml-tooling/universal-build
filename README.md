@@ -25,7 +25,7 @@
   <a href="https://github.com/ml-tooling/universal-build/releases">Changelog</a>
 </p>
 
-Universal-build allows to implement your build and release pipeline with Python scripts once and run it either on your local machine, in a containerized environment via [Act](https://github.com/nektos/act), or automated via [Github Actions](https://github.com/features/actions). It supports a monorepo or polyrepo setup and can be used with any programming language or technology. It also provides a full release pipeline for automated releases with changelog generation. All of your build scripts are written with plain Python, which gives you the full power of a generic programming language for your build pipelines.
+Universal-build allows to implement your build and release pipeline with Python scripts once and run it either on your local machine, in a containerized environment via [Act](https://github.com/nektos/act), or automated via [Github Actions](https://github.com/features/actions). It supports a monorepo or polyrepo setup and can be used with any programming language or technology. It also provides a full release pipeline for automated releases with changelog generation.
 
 > _**WIP**: This project is still an alpha version and not ready for general usage._
 
@@ -274,6 +274,8 @@ act -b -s VERSION="<MAJOR.MINOR.PATCH>" -j release
 In case you also want to automatically create a valid Github release, you also need to provide a valid `GITHUB_TOKEN` as a secret (`-s GITHUB_TOKEN=<token>`). Please refer to the next section for information on how to finish and publish the release.
 
 **On Github Actions:**
+
+> _Make sure that all required secrets for you release pipeline are configured in your Github repository. More information [here](ttps://docs.github.com/en/free-pro-team@latest/actions/reference/encrypted-secrets#creating-encrypted-secrets-for-a-repository)._
 
 To trigger our release pipeline from Github UI, you can either close a milestone that has a valid version name (`vMAJOR.MINOR.PATCH`) or execute the release pipeline manually via the `workflow_dispatch` UI in the Action Tab (`Actions -> release-pipeline -> Run Workflow`). The release pipeline will automatically create a pull request for the new version as well as a draft release on Github.
 
