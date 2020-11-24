@@ -145,8 +145,6 @@ RUN pip install $RESOURCES_PATH/universal-build.tar.gz
 RUN curl -fsSL https://github.com/hadolint/hadolint/releases/download/v1.16.3/hadolint-Linux-x86_64 -o /bin/hadolint \
     && chmod +x /bin/hadolint
 
-RUN hadolint --help
-
 COPY ./resources/entrypoint.sh /entrypoint.sh
 
 RUN chmod +x /entrypoint.sh
