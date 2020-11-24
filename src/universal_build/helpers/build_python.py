@@ -5,7 +5,7 @@ import os
 import re
 import sys
 from shutil import rmtree
-from typing import Dict, List, Optional, Union
+from typing import List, Optional
 
 from universal_build import build_utils
 

@@ -3,7 +3,7 @@
 import argparse
 import os
 import subprocess
-from typing import Dict, List, Union
+from typing import List
 
 from universal_build import build_utils
 
