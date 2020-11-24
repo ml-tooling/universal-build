@@ -1,0 +1,272 @@
+{% extends "base.html" %}
+
+{% block styles %}
+    {{ super() }}
+    <link rel="stylesheet" href="{{ base_url }}/css/image-slider.css">
+    <link rel="stylesheet" href="{{ base_url }}/css/termynal.css">
+{% endblock styles %}
+
+{% block libs %}
+    {{ super() }}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="{{ base_url }}/js/termynal.js"></script>
+{% endblock libs %}
+
+{% block scripts %}
+    {{ super() }}
+    <script>
+
+(function($) {
+  // https://github.com/waylan/mkdocs-theme_dir-example
+  "use strict";
+  $.fn.sliderResponsive = function(settings) {
+    
+    var set = $.extend( 
+      {
+        slidePause: 5000,
+        fadeSpeed: 800,
+        autoPlay: "on",
+        showArrows: "off", 
+        hideDots: "off", 
+        hoverZoom: "on",
+        titleBarTop: "off"
+      },
+      settings
+    ); 
+    
+    var $slider = $(this);
+    var size = $slider.find("> div").length; //number of slides
+    var position = 0; // current position of carousal
+    var sliderIntervalID; // used to clear autoplay
+      
+    // Add a Dot for each slide
+    $slider.append("<ul></ul>");
+    $slider.find("> div").each(function(){
+      $slider.find("> ul").append('<li></li>');
+    });
+      
+    // Put .show on the first Slide
+    $slider.find("div:first-of-type").addClass("show");
+      
+    // Put .showLi on the first dot
+    $slider.find("li:first-of-type").addClass("showli")
+
+     //fadeout all items except .show
+    $slider.find("> div").not(".show").fadeOut();
+    
+    // If Autoplay is set to 'on' than start it
+    if (set.autoPlay === "on") {
+        startSlider(); 
+    } 
+    
+    // If showarrows is set to 'on' then don't hide them
+    if (set.showArrows === "on") {
+        $slider.addClass('showArrows'); 
+    }
+    
+    // If hideDots is set to 'on' then hide them
+    if (set.hideDots === "on") {
+        $slider.addClass('hideDots'); 
+    }
+    
+    // If hoverZoom is set to 'off' then stop it
+    if (set.hoverZoom === "off") {
+        $slider.addClass('hoverZoomOff'); 
+    }
+    
+    // If titleBarTop is set to 'on' then move it up
+    if (set.titleBarTop === "on") {
+        $slider.addClass('titleBarTop'); 
+    }
+
+    // function to start auto play
+    function startSlider() {
+      sliderIntervalID = setInterval(function() {
+        nextSlide();
+      }, set.slidePause);
+    }
+    
+    // on mouseover stop the autoplay
+    $slider.mouseover(function() {
+      if (set.autoPlay === "on") {
+        clearInterval(sliderIntervalID);
+      }
+    });
+      
+    // on mouseout starts the autoplay
+    $slider.mouseout(function() {
+      if (set.autoPlay === "on") {
+        startSlider();
+      }
+    });
+
+    //on right arrow click
+    $slider.find("> .right").click(nextSlide)
+
+    //on left arrow click
+    $slider.find("> .left").click(prevSlide);
+      
+    // Go to next slide
+    function nextSlide() {
+      position = $slider.find(".show").index() + 1;
+      if (position > size - 1) position = 0;
+      changeCarousel(position);
+    }
+    
+    // Go to previous slide
+    function prevSlide() {
+      position = $slider.find(".show").index() - 1;
+      if (position < 0) position = size - 1;
+      changeCarousel(position);
+    }
+
+    //when user clicks slider button
+    $slider.find(" > ul > li").click(function() {
+      position = $(this).index();
+      changeCarousel($(this).index());
+    });
+
+    //this changes the image and button selection
+    function changeCarousel() {
+      $slider.find(".show").removeClass("show").fadeOut();
+      $slider
+        .find("> div")
+        .eq(position)
+        .fadeIn(set.fadeSpeed)
+        .addClass("show");
+      // The Dots
+      $slider.find("> ul").find(".showli").removeClass("showli");
+      $slider.find("> ul > li").eq(position).addClass("showli");
+    }
+
+    return $slider;
+  };
+})(jQuery);
+
+
+ 
+//////////////////////////////////////////////
+// Activate each slider - change options
+//////////////////////////////////////////////
+$(document).ready(function() {
+  
+  $("#slider1").sliderResponsive({
+    slidePause: 7000,
+    fadeSpeed: 400,
+    autoPlay: "on",
+    showArrows: "off", 
+    hideDots: "on", 
+    hoverZoom: "off", 
+    titleBarTop: "off"
+  });
+}); 
+function setupTermynal() {
+    document.querySelectorAll(".use-termynal").forEach(node => {
+        node.style.display = "block";
+        new Termynal(node, {
+            lineDelay: 500
+        });
+    });
+    const progressLiteralStart = "---> 100%";
+    const promptLiteralStart = "$ ";
+    const customPromptLiteralStart = "# ";
+    const termynalActivateClass = "termy";
+    let termynals = [];
+
+    function createTermynals() {
+        document
+            .querySelectorAll(`.${termynalActivateClass} .highlight`)
+            .forEach(node => {
+                const text = node.textContent;
+                const lines = text.split("\n");
+                const useLines = [];
+                let buffer = [];
+                function saveBuffer() {
+                    if (buffer.length) {
+                        let isBlankSpace = true;
+                        buffer.forEach(line => {
+                            if (line) {
+                                isBlankSpace = false;
+                            }
+                        });
+                        dataValue = {};
+                        if (isBlankSpace) {
+                            dataValue["delay"] = 0;
+                        }
+                        if (buffer[buffer.length - 1] === "") {
+                            // A last single <br> won't have effect
+                            // so put an additional one
+                            buffer.push("");
+                        }
+                        const bufferValue = buffer.join("<br>");
+                        dataValue["value"] = bufferValue;
+                        useLines.push(dataValue);
+                        buffer = [];
+                    }
+                }
+                for (let line of lines) {
+                    if (line === progressLiteralStart) {
+                        saveBuffer();
+                        useLines.push({
+                            type: "progress"
+                        });
+                    } else if (line.startsWith(promptLiteralStart)) {
+                        saveBuffer();
+                        const value = line.replace(promptLiteralStart, "").trimEnd();
+                        useLines.push({
+                            type: "input",
+                            value: value
+                        });
+                    } else if (line.startsWith("// ")) {
+                        saveBuffer();
+                        const value = "💬 " + line.replace("// ", "").trimEnd();
+                        useLines.push({
+                            value: value,
+                            class: "termynal-comment",
+                            delay: 0
+                        });
+                    } else if (line.startsWith(customPromptLiteralStart)) {
+                        saveBuffer();
+                        const promptStart = line.indexOf(promptLiteralStart);
+                        if (promptStart === -1) {
+                            console.error("Custom prompt found but no end delimiter", line)
+                        }
+                        const prompt = line.slice(0, promptStart).replace(customPromptLiteralStart, "")
+                        let value = line.slice(promptStart + promptLiteralStart.length);
+                        useLines.push({
+                            type: "input",
+                            value: value,
+                            prompt: prompt
+                        });
+                    } else {
+                        buffer.push(line);
+                    }
+                }
+                saveBuffer();
+                const div = document.createElement("div");
+                node.replaceWith(div);
+                const termynal = new Termynal(div, {
+                    lineData: useLines,
+                    noInit: true,
+                    lineDelay: 500
+                });
+                termynals.push(termynal);
+            });
+    }
+
+    function loadVisibleTermynals() {
+        termynals = termynals.filter(termynal => {
+            if (termynal.container.getBoundingClientRect().top - innerHeight <= 0) {
+                termynal.init();
+                return false;
+            }
+            return true;
+        });
+    }
+    window.addEventListener("scroll", loadVisibleTermynals);
+    createTermynals();
+    loadVisibleTermynals();
+};
+setupTermynal();
+    </script>
+{% endblock scripts %}

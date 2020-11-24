@@ -1,0 +1,81 @@
+# Project information
+site_name: Project Template
+site_description: Documentation for the Project Template
+site_author: ML Tooling Team
+site_url: https://mltooling.github.io/project-template/
+
+# Repository
+repo_name: mltooling/project-template
+repo_url: https://github.com/mltooling/project-template
+
+# Theme
+theme:
+  name: "material"
+  custom_dir: "custom_theme"
+  #palette:
+  #  scheme: preference
+  #  primary: teal
+  #  accent: amber
+  language: "en"
+  # logo: 'images/favicon.ico'
+  # favicon: 'images/favicon.ico'
+
+# google_analytics:
+
+# Extensions:
+markdown_extensions:
+  - admonition
+  - footnotes
+  - extra
+  - toc:
+      permalink: true
+  - codehilite:
+      guess_lang: false
+  #- markdown_include.include:
+  #    base_path: docs
+  - pymdownx.details
+  - pymdownx.emoji
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.magiclink
+  - pymdownx.mark
+  - pymdownx.superfences
+  - pymdownx.snippets
+  - pymdownx.progressbar
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+  - pymdownx.smartsymbols
+  - pymdownx.inlinehilite
+  - pymdownx.critic
+  - pymdownx.caret
+  - pymdownx.tabbed
+
+plugins:
+  - awesome-pages # https://github.com/lukasgeiter/mkdocs-awesome-pages-plugin
+  - search:
+      lang: en
+
+#- markdownextradata:
+#    data: data
+
+# Navigation
+# nav: ommitted, because we're using the awesome-pages plugin (https://github.com/lukasgeiter/mkdocs-awesome-pages-plugin)
+# navigation is defined in the .pages files within the docs folders
+
+# Options
+extra:
+  # logo: "images/logo.svg"
+  feature:
+    tabs: false
+  palette:
+    primary: indigo
+    accent: indigo
+  font:
+    text: "Roboto"
+    code: "Roboto Mono"
+  social:
+    - icon: fontawesome/brands/github-alt
+      link: https://github.com/mltooling/project-template
+#extra_css: [css/custom.css]
+#extra_javascript:

@@ -1,0 +1,15 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+mkdocs = "*"
+mkdocs-material = "*"
+pymdown-extensions = "*"
+markdown-include = "*"
+mkdocs-awesome-pages-plugin = "*"
+mkdocs-markdownextradata-plugin = "*"
+Pygments = "*"
+
+[dev-packages]
