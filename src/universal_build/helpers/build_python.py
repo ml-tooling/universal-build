@@ -12,10 +12,10 @@ FLAG_PYPI_TOKEN = "pypi_token"
 FLAG_PYPI_REPOSITORY = "pypi_repository"
 
 
-def get_sanitized_arguments(
+def parse_arguments(
     arguments: List[str] = None, argument_parser: argparse.ArgumentParser = None
 ) -> Dict[str, Union[str, bool, List[str]]]:
-    """Return sanitized default arguments when they are valid.
+    """Parses all arguments and returns a sanitized & augmented list of arguments.
 
     Sanitized means that, for example, the version is already checked and set depending on our build guidelines.
     If arguments are not valid, exit the script run.
@@ -43,7 +43,7 @@ def get_sanitized_arguments(
         default="",
     )
 
-    return build_utils.get_sanitized_arguments(
+    return build_utils.parse_arguments(
         arguments=arguments, argument_parser=argument_parser
     )
 

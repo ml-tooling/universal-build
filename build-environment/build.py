@@ -34,4 +34,4 @@ def main(args: dict) -> None:
 
 
 if __name__ == "__main__":
-    main(build_docker.get_sanitized_arguments())
+    main(build_docker.parse_arguments())

@@ -91,7 +91,7 @@ def main(args: dict) -> None:
 
 
 if __name__ == "__main__":
-    args = build_python.get_sanitized_arguments()
+    args = build_python.parse_arguments()
 
     if args.get(build_utils.FLAG_RELEASE):
         # Run main without release to see whether everthing can be built and all tests run through

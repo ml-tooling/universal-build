@@ -53,7 +53,7 @@ To make use of universal build for your project, create a build script with the 
 ```python
 from universal_build import build_utils
 
-args = build_utils.get_sanitized_arguments()
+args = build_utils.parse_arguments()
 
 version = args.get(build_utils.FLAG_VERSION)
 
@@ -109,7 +109,7 @@ This project is maintained by [Benjamin Räthlein](https://twitter.com/raethlein
 
 ### Build Script CLI
 
-Any build script that utilizes the `build_utils.get_sanitized_arguments()` method to parse the CLI arguments can be executed with the following options:
+Any build script that utilizes the `build_utils.parse_arguments()` method to parse the CLI arguments can be executed with the following options:
 
 ```bash
 python build.py [OPTIONS]
@@ -130,12 +130,12 @@ python build.py [OPTIONS]
 
 ### Default Flags
 
-At its core, universal-build will parse all arguments provided to the build script via `build_utils.get_sanitized_arguments()` and returns a sanitized and augmented list of arguments. Those arguments are the building blocks for your build script. You can utilize those arguments in whatever way you like. Here is an example on how to use those arguments in a `build.py` script:
+At its core, universal-build will parse all arguments provided to the build script via `build_utils.parse_arguments()` and returns a sanitized and augmented list of arguments. Those arguments are the building blocks for your build script. You can utilize those arguments in whatever way you like. Here is an example on how to use those arguments in a `build.py` script:
 
 ```python
 from universal_build import build_utils
 
-args = build_utils.get_sanitized_arguments()
+args = build_utils.parse_arguments()
 
 version = args.get(build_utils.FLAG_VERSION)
 
@@ -290,7 +290,7 @@ In between the build steps, you can execute any required operations, for example
 ```python
 from universal_build import build_utils
 
-args = build_utils.get_sanitized_arguments()
+args = build_utils.parse_arguments()
 
 build_utils.build("webapp", args)
 build_utils.build("backend", args)
@@ -332,7 +332,7 @@ from universal_build.helpers import build_python
 # Project specific configuration
 MAIN_PACKAGE = "template_package"
 
-args = build_python.get_sanitized_arguments()
+args = build_python.parse_arguments()
 
 version = args.get(build_utils.FLAG_VERSION)
 
@@ -359,7 +359,7 @@ if args.get(build_utils.FLAG_RELEASE):
   build_python.publish_pypi_distribution(pypi_token=args.get(build_python.FLAG_PYPI_TOKEN),pypi_repository=args.get(build_python.FLAG_PYPI_REPOSITORY))
 ```
 
-The [`build_python.get_sanitized_arguments()`](https://github.com/ml-tooling/universal-build/blob/main/docs/universal_build.helpers.build_python.md#function-get_sanitized_arguments) argument parser has the following additional flags:
+The [`build_python.parse_arguments()`](https://github.com/ml-tooling/universal-build/blob/main/docs/universal_build.helpers.build_python.md#function-parse_arguments) argument parser has the following additional flags:
 
 | Flag  |  Type  | Description |
 | --- | --- | --- |
@@ -382,7 +382,7 @@ from universal_build.helpers import build_docker
 IMAGE_NAME = "build-environment"
 DOCKER_IMAGE_PREFIX = "mltooling"
 
-args = build_docker.get_sanitized_arguments()
+args = build_docker.parse_arguments()
 
 version = args.get(build_utils.FLAG_VERSION)
 
@@ -396,7 +396,7 @@ if args.get(build_utils.FLAG_RELEASE):
   build_docker.release_docker_image(IMAGE_NAME, version, DOCKER_IMAGE_PREFIX, exit_on_error=True)
 ```
 
-The [`build_docker.get_sanitized_arguments()`](https://github.com/ml-tooling/universal-build/blob/main/docs/universal_build.helpers.build_docker.md#function-get_sanitized_arguments) argument parser has the following additional flags:
+The [`build_docker.parse_arguments()`](https://github.com/ml-tooling/universal-build/blob/main/docs/universal_build.helpers.build_docker.md#function-parse_arguments) argument parser has the following additional flags:
 
 | Flag  |  Type  | Description |
 | --- | --- | --- |
@@ -414,7 +414,7 @@ The [`build_mkdocs`](https://github.com/ml-tooling/universal-build/blob/main/doc
 from universal_build import build_utils
 from universal_build.helpers import build_mkdocs
 
-args = build_utils.get_sanitized_arguments()
+args = build_utils.parse_arguments()
 
 if args.get(build_utils.FLAG_MAKE):
   # Install pipenv dev requirements
@@ -470,7 +470,7 @@ from universal_build import build_utils
 parser = argparse.ArgumentParser()
 parser.add_argument("--deployment-token", help="Token to deploy component.")
 
-args = build_utils.get_sanitized_arguments(argument_parser=parser)
+args = build_utils.parse_arguments(argument_parser=parser)
 
 deployment_token = args.get("deployment_token")
 ```
