@@ -350,17 +350,25 @@ def exit_process(code: int = 0) -> None:
     os._exit(code)
 
 
-def duplicate_folder(src_path: str, target_path: str) -> None:
+def duplicate_folder(
+    src_path: str, target_path: str, exit_on_error: bool = True
+) -> None:
     """Duplicate a folder into another folder.
 
     Args:
         src_path (str): Source path to duplicate.
         target_path (str): Target path to move the source folder.
             The existing content in the folder will be deleted.
+        exit_on_error (bool, optional): If `True`, exit process as soon as error occures. Defaults to True.
     """
-    if os.path.exists(target_path):
-        shutil.rmtree(target_path)
-    shutil.copytree(src_path, target_path)
+    try:
+        if os.path.exists(target_path):
+            shutil.rmtree(target_path)
+        shutil.copytree(src_path, target_path)
+    except Exception as ex:
+        log("Failed to duplicate folder: " + str(ex))
+        if exit_on_error:
+            exit_process(1)
 
 
 # Private functions
