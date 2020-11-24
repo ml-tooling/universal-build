@@ -83,8 +83,10 @@ def main(args: dict) -> None:
         # TODO: Publish coverage report: if private repo set CODECOV_TOKEN="token" or use -t
         # build_utils.run("curl -s https://codecov.io/bash | bash -s", exit_on_error=False)
 
-    # Build the build environment component
+    # Build the build-environment component
     build_utils.build("build-environment", args)
+    # Build all examples components
+    build_utils.build("examples", args)
 
 
 if __name__ == "__main__":
