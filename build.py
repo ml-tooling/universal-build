@@ -32,9 +32,7 @@ def main(args: dict) -> None:
             build_utils.replace_in_files(
                 previous_version,
                 version,
-                file_paths=[
-                    "./actions/build-environment/Dockerfile"
-                ],  # , "./README.md"
+                file_paths=["./actions/build-environment/Dockerfile", "./README.md"],
                 regex=False,
                 exit_on_error=True,
             )
