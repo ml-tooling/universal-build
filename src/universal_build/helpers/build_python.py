@@ -34,13 +34,13 @@ def get_sanitized_arguments(
         "--" + FLAG_PYPI_TOKEN.replace("_", "-"),
         help="Personal access token for PyPI account.",
         required=False,
-        default=None,
+        default="",
     )
     argument_parser.add_argument(
         "--" + FLAG_PYPI_REPOSITORY.replace("_", "-"),
         help="PyPI repository for publishing artifacts.",
         required=False,
-        default=None,
+        default="",
     )
 
     return build_utils.get_sanitized_arguments(

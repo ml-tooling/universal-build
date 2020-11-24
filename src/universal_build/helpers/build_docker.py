@@ -30,9 +30,9 @@ def get_sanitized_arguments(
 
     argument_parser.add_argument(
         "--" + FLAG_DOCKER_IMAGE_PREFIX.replace("_", "-"),
-        help="With this flag you can provide a prefix for a Docker image, e.g. 'mltooling/' or even a repository path. When leaving blank, the default Dockerhub Repository is used.",
+        help="Provide a prefix for a Docker image, e.g. 'mltooling/' or even a repository path. When leaving blank, the default Dockerhub Repository is used.",
         required=False,
-        default=None,
+        default="",
     )
 
     return build_utils.get_sanitized_arguments(
