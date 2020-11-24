@@ -22,7 +22,7 @@ def main(args: dict) -> None:
         build_docker.build_docker_image(IMAGE_NAME, version, exit_on_error=True)
 
     if args.get(build_utils.FLAG_CHECK):
-        build_docker.lint_dockerfile()
+        build_docker.lint_dockerfile(exit_on_error=True)
 
     if args.get(build_utils.FLAG_RELEASE):
         build_docker.release_docker_image(

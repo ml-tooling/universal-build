@@ -59,16 +59,16 @@ version = args.get(build_utils.FLAG_VERSION)
 
 if args.get(build_utils.FLAG_MAKE):
     build_utils.log("Build the componet:")
-    build_utils.run("yarn build", exit_on_error=True)
+    build_utils.run("yarn build")
 
 if args.get(build_utils.FLAG_CHECK):
     build_utils.log("Run linters and style checks:")
-    build_utils.run("yarn run lint:js", exit_on_error=True)
-    build_utils.run("yarn run lint:css", exit_on_error=True)
+    build_utils.run("yarn run lint:js")
+    build_utils.run("yarn run lint:css")
 
 if args.get(build_utils.FLAG_TEST):
     build_utils.log("Test the component:")
-    build_utils.run("yarn test", exit_on_error=True)
+    build_utils.run("yarn test")
 
 if args.get(build_utils.FLAGE_RELEASE):
     build_utils.log("Release the component:")
@@ -369,10 +369,10 @@ if args.get(build_utils.FLAG_MAKE):
   build_python.build_distribution()
 
 if args.get(build_utils.FLAG_CHECK):
-  build_python.code_checks(exit_on_error=True)
+  build_python.code_checks()
 
 if args.get(build_utils.FLAG_TEST):
-  build_utils.run('pipenv run pytest -m "not slow"', exit_on_error=True)
+  build_utils.run('pipenv run pytest -m "not slow"')
 
   if "slow" in args.get(build_utils.FLAG_TEST_MARKER):
     build_python.test_with_py_version(python_version="3.6.12")
@@ -410,13 +410,13 @@ args = build_docker.parse_arguments()
 version = args.get(build_utils.FLAG_VERSION)
 
 if args.get(build_utils.FLAG_MAKE):
-  build_docker.build_docker_image(COMPONENT_NAME, version, exit_on_error=True)
+  build_docker.build_docker_image(COMPONENT_NAME, version)
 
 if args.get(build_utils.FLAG_CHECK):
-  build_docker.lint_dockerfile(exit_on_error=True)
+  build_docker.lint_dockerfile()
 
 if args.get(build_utils.FLAG_RELEASE):
-  build_docker.release_docker_image(IMAGE_NAME, version, DOCKER_IMAGE_PREFIX, exit_on_error=True)
+  build_docker.release_docker_image(IMAGE_NAME, version, DOCKER_IMAGE_PREFIX)
 ```
 
 The [`build_docker.parse_arguments()`](https://github.com/ml-tooling/universal-build/blob/main/docs/universal_build.helpers.build_docker.md#function-parse_arguments) argument parser has the following additional flags:

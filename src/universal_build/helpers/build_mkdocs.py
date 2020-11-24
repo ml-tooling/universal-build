@@ -4,59 +4,93 @@ import os
 import sys
 
 from universal_build import build_utils
+from universal_build.helpers.build_python import is_pipenv_environment
 
-PIPENV_RUN = "pipenv run"
+_PIPENV_RUN = "pipenv run"
 
 
-def install_build_env() -> None:
-    """Installs a new virtual environment via pipenv."""
-    build_utils.run("pipenv --rm")
+def install_build_env(exit_on_error: bool = True) -> None:
+    """Installs a new virtual environment via pipenv.
+
+    Args:
+        exit_on_error (bool, optional): Exit process if an error occurs. Defaults to `True`.
+    """
+
+    if not is_pipenv_environment():
+        build_utils.log("No Pipfile discovered, cannot install pipenv environemnt")
+        return
+
+    build_utils.run("pipenv --rm", exit_on_error=False)
     build_utils.run(
         f"pipenv install --dev --python={sys.executable} --skip-lock --site-packages",
-        exit_on_error=True,
+        exit_on_error=exit_on_error,
     )
 
 
-def lint_markdown() -> None:
-    """Run markdownlint on markdown documentation."""
+def lint_markdown(exit_on_error: bool = True) -> None:
+    """Run markdownlint on markdown documentation.
+
+    Args:
+        exit_on_error (bool, optional): Exit process if an error occurs. Defaults to `True`.
+    """
     build_utils.log("Run linters and style checks:")
 
     config_file_arg = ""
     if os.path.exists(".markdown-lint.yml"):
         config_file_arg = "--config='.markdown-lint.yml'"
 
-    build_utils.run(f"markdownlint {config_file_arg} ./docs", exit_on_error=True)
-
-
-def build_mkdocs(command_prefix: str = PIPENV_RUN) -> None:
-    """Build mkdocs markdown documentation.
-
-    Args:
-        command_prefix (str, optional): Prefix to use for all commands. Defaults to `pipenv run`.
-    """
-    build_utils.run(f"{command_prefix} mkdocs build", exit_on_error=True)
-
-
-def deploy_gh_pages(command_prefix: str = PIPENV_RUN) -> None:
-    """Deploy mkdocs documentation to Github pages.
-
-    Args:
-        command_prefix (str, optional): Prefix to use for all commands. Defaults to `pipenv run`.
-    """
-    build_utils.log("Deploy documentation to Github pages:")
     build_utils.run(
-        f"{command_prefix} mkdocs gh-deploy --clean", exit_on_error=True, timeout=120
+        f"markdownlint {config_file_arg} ./docs", exit_on_error=exit_on_error
     )
 
 
-def run_dev_mode(port: int = 8001, command_prefix: str = PIPENV_RUN) -> None:
+def build_mkdocs(exit_on_error: bool = True) -> None:
+    """Build mkdocs markdown documentation.
+
+    Args:
+        exit_on_error (bool, optional): Exit process if an error occurs. Defaults to `True`.
+    """
+
+    command_prefix = ""
+    if is_pipenv_environment():
+        command_prefix = _PIPENV_RUN
+
+    build_utils.run(f"{command_prefix} mkdocs build", exit_on_error=exit_on_error)
+
+
+def deploy_gh_pages(exit_on_error: bool = True) -> None:
+    """Deploy mkdocs documentation to Github pages.
+
+    Args:
+        exit_on_error (bool, optional): Exit process if an error occurs. Defaults to `True`.
+    """
+    build_utils.log("Deploy documentation to Github pages:")
+
+    command_prefix = ""
+    if is_pipenv_environment():
+        command_prefix = _PIPENV_RUN
+
+    build_utils.run(
+        f"{command_prefix} mkdocs gh-deploy --clean",
+        exit_on_error=exit_on_error,
+        timeout=120,
+    )
+
+
+def run_dev_mode(port: int = 8001, exit_on_error: bool = True) -> None:
     """Run mkdocs development server.
 
     Args:
         port (int, optional): Port to use for mkdocs development server. Defaults to 8001.
-        command_prefix (str, optional): Prefix to use for all commands. Defaults to `pipenv run`.
+        exit_on_error (bool, optional): Exit process if an error occurs. Defaults to `True`.
     """
     build_utils.log(f"Run docs in development mode (http://localhost:{port}):")
+
+    command_prefix = ""
+    if is_pipenv_environment():
+        command_prefix = _PIPENV_RUN
+
     build_utils.run(
-        f"{command_prefix} mkdocs serve --dev-addr 0.0.0.0:{port}", exit_on_error=True
+        f"{command_prefix} mkdocs serve --dev-addr 0.0.0.0:{port}",
+        exit_on_error=exit_on_error,
     )

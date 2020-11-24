@@ -1,6 +1,7 @@
 """Utilities to help building Python libraries."""
 
 import argparse
+import os
 import re
 import sys
 from shutil import rmtree
@@ -48,6 +49,10 @@ def parse_arguments(
     )
 
 
+def is_pipenv_environment() -> bool:
+    return True
+
+
 def test_with_py_version(python_version: str, exit_on_error: bool = True) -> None:
     """Run pytest in a environment wiht the specified python version.
 
@@ -55,6 +60,10 @@ def test_with_py_version(python_version: str, exit_on_error: bool = True) -> Non
         python_version (str): Python version to use inside the virutal environment.
         exit_on_error (bool, optional): Exit process if an error occurs. Defaults to `True`.
     """
+    if not is_pipenv_environment():
+        build_utils.log("Testing with specific python version only works with pipenv.")
+        return
+
     # Install pipenv environment with specific versio
     build_utils.run(
         f"pyenv install --skip-existing {python_version} && pyenv local {python_version}",
@@ -68,17 +77,29 @@ def test_with_py_version(python_version: str, exit_on_error: bool = True) -> Non
     # Run pytest in pipenv environment
     build_utils.run("pipenv run pytest", exit_on_error=exit_on_error)
     # Remove enviornment
-    build_utils.run("pipenv --rm")
+    build_utils.run("pipenv --rm", exit_on_error=False)
     # Uninstall pyenv version
-    build_utils.run(f"pyenv local --unset && pyenv uninstall -f {python_version}")
+    build_utils.run(
+        f"pyenv local --unset && pyenv uninstall -f {python_version}",
+        exit_on_error=False,
+    )
 
 
-def install_build_env() -> None:
-    """Installs a new virtual environment via pipenv."""
-    build_utils.run("pipenv --rm")
+def install_build_env(exit_on_error: bool = True) -> None:
+    """Installs a new virtual environment via pipenv.
+
+    Args:
+        exit_on_error (bool, optional): Exit process if an error occurs. Defaults to `True`.
+    """
+
+    if not is_pipenv_environment():
+        build_utils.log("No Pipfile discovered, cannot install pipenv environemnt")
+        return
+
+    build_utils.run("pipenv --rm", exit_on_error=False)
     build_utils.run(
         f"pipenv install --dev --python={sys.executable} --skip-lock",
-        exit_on_error=True,
+        exit_on_error=exit_on_error,
     )
 
     # Show current environment
@@ -88,7 +109,6 @@ def install_build_env() -> None:
 def generate_api_docs(
     github_url: str,
     main_package: str,
-    command_prefix: str = "pipenv run",
     exit_on_error: bool = True,
 ) -> None:
     """Generates API documentation via lazydocs.
@@ -96,9 +116,13 @@ def generate_api_docs(
     Args:
         github_url (str): Github URL
         main_package (str): The main package name to use for docs generation.
-        command_prefix (str, optional): Prefix to use for all commands. Defaults to `pipenv run`.
         exit_on_error (bool, optional): Exit process if an error occurs. Defaults to `True`.
     """
+
+    command_prefix = ""
+    if is_pipenv_environment():
+        command_prefix = "pipenv run"
+
     build_utils.run(
         f"{command_prefix} lazydocs --overview-file=README.md"
         f" --src-base-url={github_url}/blob/main {main_package}",
@@ -107,7 +131,10 @@ def generate_api_docs(
 
 
 def publish_pypi_distribution(
-    pypi_token: str, pypi_user: str = "__token__", pypi_repository: Optional[str] = None
+    pypi_token: str,
+    pypi_user: str = "__token__",
+    pypi_repository: Optional[str] = None,
+    exit_on_error: bool = True,
 ) -> None:
     """Publish distribution to pypi.
 
@@ -115,10 +142,13 @@ def publish_pypi_distribution(
         pypi_token (str): Token of PyPi repository.
         pypi_user (str, optional): User of PyPi repository. Defaults to "__token__".
         pypi_repository (Optional[str], optional): PyPi repository. If `None` provided, use the production instance.
+        exit_on_error (bool, optional): Exit process if an error occurs. Defaults to `True`.
     """
     if not pypi_token:
         build_utils.log("PyPI token is required for release (--pypi-token=<TOKEN>)")
-        build_utils.exit_process(1)
+        if exit_on_error:
+            build_utils.exit_process(1)
+        return
 
     pypi_repository_args = ""
     if pypi_repository:
@@ -127,12 +157,11 @@ def publish_pypi_distribution(
     # Publish on pypi
     build_utils.run(
         f'twine upload --non-interactive -u "{pypi_user}" -p "{pypi_token}" {pypi_repository_args} dist/*',
-        exit_on_error=True,
+        exit_on_error=exit_on_error,
     )
 
 
 def code_checks(
-    command_prefix: str = "pipenv run",
     black: bool = True,
     isort: bool = True,
     pydocstyle: bool = True,
@@ -144,7 +173,6 @@ def code_checks(
     """Run linting and style checks.
 
     Args:
-        command_prefix (str, optional): Prefix to use for all check commands. Defaults to `pipenv run`.
         black (bool, optional): Activate black formatting check. Defaults to True.
         isort (bool, optional): Activate isort import sorting check. Defaults to True.
         pydocstyle (bool, optional): Activate pydocstyle docstring check. Defaults to True.
@@ -153,6 +181,11 @@ def code_checks(
         safety (bool, optional): Activate saftey check via pipenv. Defaults to True.
         exit_on_error (bool, optional): If `True`, exit process as soon as error occures. Defaults to True.
     """
+
+    command_prefix = ""
+    if is_pipenv_environment():
+        command_prefix = "pipenv run"
+
     if black:
         build_utils.run(
             f"{command_prefix} black --check src", exit_on_error=exit_on_error
@@ -193,15 +226,24 @@ def code_checks(
         build_utils.run("pipenv check", exit_on_error=exit_on_error)
 
 
-def update_version(module_path: str, version: str) -> None:
+def update_version(module_path: str, version: str, exit_on_error: bool = True) -> None:
     """Update version in specified module.
 
     Args:
         module_path (str): Python module with a `__version__` attribute.
         version (str): New version number to write into `__version__` attribute.
+        exit_on_error (bool, optional): If `True`, exit process as soon as error occures. Defaults to True.
     """
     if not version:
         build_utils.log("Cannot update version, no version provided")
+        if exit_on_error:
+            build_utils.exit_process(1)
+        return
+
+    if os.path.exists(module_path):
+        build_utils.log("Couldn't find file: " + module_path)
+        if exit_on_error:
+            build_utils.exit_process(1)
         return
 
     with open(module_path, "r+") as f:
@@ -211,8 +253,12 @@ def update_version(module_path: str, version: str) -> None:
         f.truncate()
 
 
-def build_distribution() -> None:
-    """Build python package distribution."""
+def build_distribution(exit_on_error: bool = True) -> None:
+    """Build python package distribution.
+
+    Args:
+        exit_on_error (bool, optional): If `True`, exit process as soon as error occures. Defaults to True.
+    """
 
     try:
         # Ensure there are no old builds
@@ -228,9 +274,8 @@ def build_distribution() -> None:
 
     # Build the distribution archives
     build_utils.run(
-        "python setup.py sdist bdist_wheel clean --all",
-        exit_on_error=True,
+        "python setup.py sdist bdist_wheel clean --all", exit_on_error=exit_on_error
     )
 
     # Check the archives with twine
-    build_utils.run("twine check dist/*", exit_on_error=True)
+    build_utils.run("twine check dist/*", exit_on_error=exit_on_error)

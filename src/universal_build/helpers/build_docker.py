@@ -41,7 +41,11 @@ def parse_arguments(
 
 
 def lint_dockerfile(exit_on_error: bool = True) -> None:
-    """Run hadolint on the Dockerfile."""
+    """Run hadolint on the Dockerfile.
+
+    Args:
+        exit_on_error (bool, optional): Exit process if an error occurs. Defaults to `True`.
+    """
     build_utils.log("Run linters and style checks:")
 
     config_file_arg = ""

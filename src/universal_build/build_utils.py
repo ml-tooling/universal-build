@@ -219,7 +219,7 @@ def _concat_command_line_arguments(args: Dict[str, Union[str, bool, List[str]]])
 
 
 def create_git_tag(
-    version: str, push: bool = False, force: bool = False
+    version: str, push: bool = False, force: bool = False, exit_on_error: bool = False
 ) -> subprocess.CompletedProcess:
     """Create an annotated git tag in the current HEAD via `git tag` and the provided version.
 
@@ -238,6 +238,7 @@ def create_git_tag(
     completed_process = run(
         f"git tag -a -m 'Automatically tagged during build process.' {force_flag} v{version}",
         disable_stderr_logging=True,
+        exit_on_error=exit_on_error,
     )
 
     if completed_process.returncode > 0:
@@ -246,7 +247,9 @@ def create_git_tag(
         )
 
     if completed_process.returncode == 0 and push:
-        completed_process = run(f"git push origin v{version}")
+        completed_process = run(
+            f"git push origin v{version}", exit_on_error=exit_on_error
+        )
 
     return completed_process
 
@@ -264,7 +267,7 @@ def build(component_path: str, args: Dict[str, Union[str, bool, List[str]]]) -> 
         return
 
     build_command = _create_build_cmd_from_args(component_path, args)
-    completed_process = run(build_command)
+    completed_process = run(build_command, exit_on_error=False)
 
     if completed_process.returncode > 0:
         log(
@@ -277,7 +280,7 @@ def run(  # type: ignore
     command: str,
     disable_stdout_logging: bool = False,
     disable_stderr_logging: bool = False,
-    exit_on_error: bool = False,
+    exit_on_error: bool = True,
     timeout: Optional[int] = None,
 ) -> subprocess.CompletedProcess:
     """Run a specified command.
@@ -370,7 +373,7 @@ def _get_current_branch() -> Tuple[str, str]:
         Tuple: (branchname, type)
     """
     full_branch_name = run(
-        "git branch --show-current", disable_stdout_logging=True
+        "git branch --show-current", disable_stdout_logging=True, exit_on_error=False
     ).stdout.rstrip("\n")
     if full_branch_name == "":
         full_branch_name = "HEAD"
@@ -519,10 +522,11 @@ def _get_version_tags() -> List["_Version"]:
     return versions
 
 
-def _get_latest_branch_version(branch_name: str = "") -> Optional["_Version"]:
+def _get_latest_branch_version() -> Optional[_Version]:
     result = run(
         "git describe --tags --match 'v[0-9].*' --abbrev=0",
         disable_stdout_logging=True,
+        exit_on_error=False,
     )
 
     return _Version.get_version_from_string(result.stdout.rstrip("\n"))
@@ -534,14 +538,16 @@ def _get_remote_git_tags() -> List[str]:
         return []
 
     result = run(
-        "git ls-remote --tags --sort='-v:refname' --refs", disable_stdout_logging=True
+        "git ls-remote --tags --sort='-v:refname' --refs",
+        disable_stdout_logging=True,
+        exit_on_error=False,
     )
     return result.stdout.rstrip("\n").split("\n")
 
 
 def _get_version(
-    version: str, force: bool = False, existing_versions: List["_Version"] = []
-) -> "_Version":
+    version: str, force: bool = False, existing_versions: List[_Version] = []
+) -> _Version:
     """Get validated version. If force is set to True, the version is allowed to be equal or smaller than the existing patch version.
 
     Raises:
