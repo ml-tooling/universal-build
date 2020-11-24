@@ -26,7 +26,7 @@ Universal build utilities.
 
 ---
 
-<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/build_utils.py#L78"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/build_utils.py#L80"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `log`
 
@@ -45,18 +45,18 @@ Log message to stdout.
 
 ---
 
-<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/build_utils.py#L87"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/build_utils.py#L89"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
-## <kbd>function</kbd> `get_sanitized_arguments`
+## <kbd>function</kbd> `parse_arguments`
 
 ```python
-get_sanitized_arguments(
-    arguments: List[str] = None,
+parse_arguments(
+    input_args: List[str] = None,
     argument_parser: ArgumentParser = None
 ) → Dict[str, Union[str, bool, List[str]]]
 ```
 
-Return sanitized default arguments when they are valid. 
+Parses all arguments and returns a sanitized & augmented list of arguments. 
 
 Sanitized means that, for example, the version is already checked and set depending on our build guidelines. If arguments are not valid, exit the script run. 
 
@@ -64,7 +64,7 @@ Sanitized means that, for example, the version is already checked and set depend
 
 **Args:**
  
- - <b>`arguments`</b> (List[str], optional):  List of arguments that are used instead of the arguments passed to the process. Defaults to None. 
+ - <b>`input_args`</b> (List[str], optional):  List of arguments that are used instead of the arguments passed to the process. Defaults to None. 
  - <b>`argument_parser`</b> (arparse.ArgumentParser, optional):  An argument parser which is passed as a parents parser to the default ArgumentParser to be able to use additional flags besides the default ones. Must be initialized with `add_help=False` flag like argparse.ArgumentParser(add_help=False)! 
 
 
@@ -76,7 +76,7 @@ Sanitized means that, for example, the version is already checked and set depend
 
 ---
 
-<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/build_utils.py#L167"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/build_utils.py#L221"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `create_git_tag`
 
@@ -109,7 +109,7 @@ The version will be prefixed with 'v'. If push is set, the tag is pushed to remo
 
 ---
 
-<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/build_utils.py#L200"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/build_utils.py#L254"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `build`
 
@@ -129,7 +129,7 @@ Run the build logic of the specified component, except if the path is a (sub-)pa
 
 ---
 
-<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/build_utils.py#L222"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/build_utils.py#L276"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `run`
 
@@ -163,7 +163,7 @@ Run a specified command.
 
 ---
 
-<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/build_utils.py#L281"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/build_utils.py#L335"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `exit_process`
 
@@ -178,7 +178,7 @@ Exit the process with exit code.
 
 ---
 
-<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/build_utils.py#L296"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/build_utils.py#L350"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `duplicate_folder`
 
