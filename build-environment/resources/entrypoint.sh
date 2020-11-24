@@ -36,14 +36,6 @@ else
     cd "$GITHUB_WORKSPACE"
 fi
 
-if [ -n "$INPUT_PYPI_TOKEN" ]; then
-    BUILD_ARGS="$BUILD_ARGS --pypi-token=$INPUT_PYPI_TOKEN"
-fi
-
-if [ -n "$INPUT_PYPI_REPOSITORY" ]; then
-    BUILD_ARGS="$BUILD_ARGS --pypi-repository=$INPUT_PYPI_REPOSITORY"
-fi
-
 # Get docker mount directory either via volume or bind mount
 INPUT_CONTAINER_MOUNT=$(echo $(docker inspect $(basename "$(cat /proc/1/cpuset)") | jq -r '.[0].HostConfig.Binds[]| select(. | contains("/github/workspace"))') | sed 's/:.*//')
 if [ -z "$INPUT_CONTAINER_MOUNT" ]; then
