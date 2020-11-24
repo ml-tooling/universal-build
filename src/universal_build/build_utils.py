@@ -127,6 +127,7 @@ def parse_arguments(
     args = _load_from_env_variables(args)
 
     if args.get(_FLAG_SANITIZED):
+        log("Sanatized Arguments: " + str(args))
         return DashInsensitiveDict(args)
 
     if not _is_valid_command_combination(args):
@@ -168,6 +169,7 @@ def parse_arguments(
 
     args[_FLAG_SANITIZED] = True
 
+    log("Sanatized Arguments: " + str(args))
     return DashInsensitiveDict(args)
 
 
