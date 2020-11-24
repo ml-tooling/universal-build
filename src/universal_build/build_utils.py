@@ -8,6 +8,8 @@ import subprocess
 import sys
 from typing import Dict, List, Match, Optional, Tuple, Union
 
+from universal_build._utilities import DashInsensitiveDict
+
 _ALLOWED_BRANCH_TYPES_FOR_RELEASE = ["release", "production"]
 _MAIN_BRANCH_NAMES = ["master", "main"]
 
@@ -101,31 +103,40 @@ def get_sanitized_arguments(
     """
     argument_parser = argument_parser or argparse.ArgumentParser()
     parser = _get_default_cli_arguments_parser(argument_parser)
-    args, _ = parser.parse_known_args(args=arguments)
+    parsed_args, _ = parser.parse_known_args(args=arguments)
 
-    if args.test_marker is None:
-        # Set test marker to an empty list for better access
-        args.test_marker = []
+    # convert args to dict
+    args = vars(parsed_args)
 
-    if args.skip_path is None:
-        # Set skip path to an empty list for better access
-        args.skip_path = []
-
+    # Set defaults
     if len(sys.argv) <= 1:
         # Set default configuration if called without any arguments
-        args.make = True
-        args.check = True
-        args.test = True
+        args[FLAG_CHECK] = True
+        args[FLAG_MAKE] = True
+        args[FLAG_TEST] = True
 
-    if args._sanitized:
-        return vars(args)
+    if args.get(FLAG_TEST_MARKER) is None:
+        # Set test marker to an empty list for better access
+        args[FLAG_TEST_MARKER] = []
+
+    if args.get(_FLAG_SKIP_PATH) is None:
+        # Set skip path to an empty list for better access
+        args[_FLAG_SKIP_PATH] = []
+
+    # load from env variables
+    args = _load_from_env_variables(args)
+
+    if args.get(_FLAG_SANITIZED):
+        return DashInsensitiveDict(args)
 
     if not _is_valid_command_combination(args):
         exit_process(EXIT_CODE_INVALID_ARGUMENTS)
 
     try:
         version: Optional[_Version] = _get_version(
-            args.version, args.force, existing_versions=_get_version_tags()
+            args.get(FLAG_VERSION),  # type: ignore
+            args.get(FLAG_FORCE),  # type: ignore
+            existing_versions=_get_version_tags(),
         )
     except _VersionInvalidFormatException as e:
         log(str(e))
@@ -133,10 +144,10 @@ def get_sanitized_arguments(
     except Exception:
         version = None
 
-    if args.release and version is None:
+    if args.get(FLAG_RELEASE) and version is None:
         log("For a release a valid semantic version has to be set.")
         exit_process(EXIT_CODE_VERSION_IS_REQUIRED)
-    elif args.release is False and version is None:
+    elif args.get(FLAG_RELEASE) is False and version is None:
         latest_branch_version = _get_latest_branch_version()
 
         if not latest_branch_version:
@@ -149,14 +160,35 @@ def get_sanitized_arguments(
             version.patch = 0
             # Apply dev prefix
             version.suffix = _get_dev_suffix(_get_current_branch()[0])
-    elif args.release is False and args.force is False and version:
+    elif args.get(FLAG_RELEASE) is False and args.get(FLAG_FORCE) is False and version:
         version.suffix = _get_dev_suffix(_get_current_branch()[0])
 
     assert version is not None
-    args.version = version.to_string()
+    args[FLAG_VERSION] = version.to_string()
 
-    args._sanitized = True
-    return vars(args)
+    args[_FLAG_SANITIZED] = True
+
+    return DashInsensitiveDict(args)
+
+
+def _load_from_env_variables(args: dict) -> dict:
+    for argument in args:
+        if not isinstance(args[argument], str):
+            # Only load env variables for string variables
+            continue
+
+        if argument.replace("_", "-") in " ".join(sys.argv):
+            # Argument was provided via command line arguments
+            continue
+
+        if os.environ.get(argument.upper()):
+            args[argument] = os.environ.get(argument.upper())
+
+        if os.environ.get("INPUT_" + argument.upper()):
+            # Support for github action inputs
+            args[argument] = os.environ.get("INPUT_" + argument.upper())
+
+    return args
 
 
 def _concat_command_line_arguments(args: Dict[str, Union[str, bool, List[str]]]) -> str:
@@ -437,25 +469,29 @@ def _create_build_cmd_from_args(module_path: str, sanitized_args: dict) -> str:
     return full_command
 
 
-def _is_valid_command_combination(args: argparse.Namespace) -> bool:
-    if args.release and not args.version and not args.force:
+def _is_valid_command_combination(args: dict) -> bool:
+    if (
+        args.get(FLAG_RELEASE)
+        and not args.get(FLAG_VERSION)
+        and not args.get(FLAG_FORCE)
+    ):
         log(
             f"Please provide a version for deployment (--{FLAG_VERSION}=MAJOR.MINOR.PATCH-TAG)"
         )
         return False
-    if args.release and not args.test and not args.force:
+    if args.get(FLAG_RELEASE) and not args.get(FLAG_TEST) and not args.get(FLAG_FORCE):
         log(f"The release steps requires test to be executed (--{FLAG_TEST})")
         return False
-    if args.release and not args.make and not args.force:
+    if args.get(FLAG_RELEASE) and not args.get(FLAG_MAKE) and not args.get(FLAG_FORCE):
         log(f"The release steps requires make to be executed (--{FLAG_MAKE})")
         return False
 
-    if args.release:
+    if args.get(FLAG_RELEASE):
         current_branch, current_branch_type = _get_current_branch()
         if (
             current_branch.lower() not in _MAIN_BRANCH_NAMES
             and current_branch_type.lower() not in _ALLOWED_BRANCH_TYPES_FOR_RELEASE
-            and not args.force
+            and not args.get(FLAG_FORCE)
         ):
             log(
                 f"Release is only allowed from branches: [{', '.join(_MAIN_BRANCH_NAMES)}] or in branch types: [{', '.join(_ALLOWED_BRANCH_TYPES_FOR_RELEASE)}]"
