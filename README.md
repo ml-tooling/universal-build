@@ -93,6 +93,10 @@ your-repository
 
 Once you have pushed the `build-environment` action and the [build-](https://github.com/ml-tooling/universal-build/blob/main/workflows/build-pipeline.yml) and [release-pipelines](https://github.com/ml-tooling/universal-build/blob/main/workflows/release-pipeline.yml), please look into the [Automated Build Pipeline (CI)](#automated-build-pipeline-ci) and [Automated Release Pipeline (CD)](#automated-release-pipeline-cd) sections for information on how to run your build- and release-pipelines.
 
+---
+
+<br>
+
 ## Support & Feedback
 
 This project is maintained by [Benjamin Räthlein](https://twitter.com/raethlein), [Lukas Masuch](https://twitter.com/LukasMasuch), and [Jan Kalkan](https://www.linkedin.com/in/jan-kalkan-b5390284/). Please understand that we won't be able to provide individual support via email. We also believe that help is much more valuable if it's shared publicly so that more people can benefit from it.
@@ -104,6 +108,10 @@ This project is maintained by [Benjamin Räthlein](https://twitter.com/raethlein
 | 👩‍💻&nbsp; **Usage Questions**   |   <a href="https://stackoverflow.com/questions/tagged/ml-tooling" title="Open Question on Stackoverflow"><img src="https://img.shields.io/badge/stackoverflow-ml--tooling-orange.svg"></a> <a href="https://gitter.im/ml-tooling/universal-build" title="Chat on Gitter"><img src="https://badges.gitter.im/ml-tooling/universal-build.svg"></a> |
 | 🗯&nbsp; **General Discussion** | <a href="https://gitter.im/ml-tooling/universal-build" title="Chat on Gitter"><img src="https://badges.gitter.im/ml-tooling/universal-build.svg"></a> <a href="https://twitter.com/mltooling" title="ML Tooling on Twitter"><img src="https://img.shields.io/twitter/follow/mltooling.svg?style=social"></a>|
 | ❓&nbsp; **Other Requests** | <a href="mailto:team@mltooling.org" title="Email ML Tooling Team"><img src="https://img.shields.io/badge/email-ML Tooling-green?logo=mail.ru&style=flat-square&logoColor=white"></a> |
+
+---
+
+<br>
 
 ## Documentation
 
@@ -187,7 +195,11 @@ In case you also run your build outside of the build-environment (locally), make
 pip install --upgrade universal-build
 ```
 
-Furthermore, you can also check if the [build-](https://github.com/ml-tooling/universal-build/blob/main/workflows/build-pipeline.yml) and [release-pipeline](https://github.com/ml-tooling/universal-build/blob/main/workflows/release-pipeline.yml) workflows from the [workflows](https://github.com/ml-tooling/universal-build/tree/main/workflows) folder have changed. In case of changes, update the workflows in your `.github/workflows` folder of your repository as well.
+Furthermore, you can also check if the [build-](https://github.com/ml-tooling/universal-build/blob/main/workflows/build-pipeline.yml) and [release-pipeline](https://github.com/ml-tooling/universal-build/blob/main/workflows/release-pipeline.yml) workflows have changed. In case of changes, update the workflows in your `.github/workflows` folder of your repository as well.
+
+---
+
+<br>
 
 ## Features
 
@@ -530,6 +542,10 @@ To use the build-environment for containerized development, just define a `.devc
 
 You can find a full example [here](https://github.com/ml-tooling/universal-build/blob/main/.devcontainer/devcontainer.json).
 
+---
+
+<br>
+
 ## Known Issues
 
 <details>
@@ -542,6 +558,10 @@ docker rm -f $(docker ps -a --filter="name=^act-" -q)
 ```
 
 </details>
+
+---
+
+<br>
 
 ## Contributors
 
