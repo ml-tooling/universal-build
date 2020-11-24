@@ -455,7 +455,7 @@ if args.get(build_utils.FLAG_RELEASE):
 
 ### Extensibility
 
-**Extend your build-environment image with additional tools:**
+##### Extend your build-environment image with additional tools
 
 Install the tools in the Dockerfile in your `.github/actions/build-environment/Dockerfile` as demonstrated in this example:
 
@@ -467,7 +467,7 @@ RUN apt-get update \
     && apt-get install -y golang-go
 ```
 
-**Extend the entrypoint of the build-environment:**
+##### Extend the entrypoint of the build-environment
 
 You can overwrite the default entrypoint script as shown below to run your custom code at startup:
 
@@ -481,7 +481,7 @@ RUN chmod +x /entrypoint.sh
 
 However, you need to make sure to still implement most of the logic in the [original entrypoint script](https://github.com/ml-tooling/universal-build/blob/main/build-environment/resources/entrypoint.sh) as well.
 
-**Support additional build arguments:**
+##### Support additional build arguments
 
 The following example demonstrates how you can support custom build arguments (CLI) in your `build.py` script:
 
@@ -509,7 +509,7 @@ To use your custom build arguments inside the release pipeline, you need to add 
     DEPLOYMENT_TOKEN: ${{ secrets.DEPLOYMENT_TOKEN }}
 ```
 
-**Use custom test markers to select tests for execution:**
+##### Use custom test markers to select tests for execution
 
 You can provide any number of custom test markers via the `--test-marker` build argument. The following example shows how to react to custom test markers in your build script:
 
