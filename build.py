@@ -25,17 +25,6 @@ def main(args: dict) -> None:
         )
 
     if args.get(build_utils.FLAG_MAKE):
-        # Bump all versions in some filess
-        previous_version = build_utils.get_latest_version()
-        print(previous_version)
-        if previous_version:
-            build_utils.replace_in_files(
-                previous_version,
-                version,
-                file_paths=["./actions/build-environment/Dockerfile", "./README.md"],
-                regex=False,
-                exit_on_error=True,
-            )
         # Install pipenv dev requirements
         build_python.install_build_env()
         # Create API documentation via lazydocs
