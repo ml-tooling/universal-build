@@ -58,7 +58,7 @@ jobs:
         uses: ./.github/actions/build-environment
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PYPI_TOKEN: ${{ secrets.PYPI_TOKEN  }}
+          PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
           PYPI_REPOSITORY: ${{ secrets.PYPI_REPOSITORY }}
         with:
           build_args: --release --force --version=${{ env.VERSION  }}
