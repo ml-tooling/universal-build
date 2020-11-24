@@ -15,9 +15,10 @@ def install_build_env(exit_on_error: bool = True) -> None:
     Args:
         exit_on_error (bool, optional): Exit process if an error occurs. Defaults to `True`.
     """
-
-    if not is_pipenv_environment():
+    if not os.path.exists("Pipfile"):
         build_utils.log("No Pipfile discovered, cannot install pipenv environemnt")
+        if exit_on_error:
+            build_utils.exit_process(1)
         return
 
     build_utils.run("pipenv --rm", exit_on_error=False)

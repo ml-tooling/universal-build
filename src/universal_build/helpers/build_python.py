@@ -50,7 +50,14 @@ def parse_arguments(
 
 
 def is_pipenv_environment() -> bool:
-    return True
+    if not os.path.exists("Pipfile"):
+        return False
+    return (
+        build_utils.run(
+            "pipenv --venv", disable_stderr_logging=True, disable_stdout_logging=True
+        ).returncode
+        == 0
+    )
 
 
 def test_with_py_version(python_version: str, exit_on_error: bool = True) -> None:
@@ -91,9 +98,10 @@ def install_build_env(exit_on_error: bool = True) -> None:
     Args:
         exit_on_error (bool, optional): Exit process if an error occurs. Defaults to `True`.
     """
-
-    if not is_pipenv_environment():
+    if not os.path.exists("Pipfile"):
         build_utils.log("No Pipfile discovered, cannot install pipenv environemnt")
+        if exit_on_error:
+            build_utils.exit_process(1)
         return
 
     build_utils.run("pipenv --rm", exit_on_error=False)
