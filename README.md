@@ -462,7 +462,7 @@ if args.get(build_utils.FLAG_RELEASE):
 Install the tools in the Dockerfile in your `.github/actions/build-environment/Dockerfile` as demonstrated in this example:
 
 ```Dockerfile
-FROM mltooling/build-environment:0.4.0
+FROM mltooling/build-environment:0.4.1
 
 # Install Go Runtime
 RUN apt-get update \
@@ -474,7 +474,7 @@ RUN apt-get update \
 You can overwrite the default entrypoint script as shown below to run your custom code at startup:
 
 ```Dockerfile
-FROM mltooling/build-environment:0.4.0
+FROM mltooling/build-environment:0.4.1
 
 COPY ./resources/entrypoint.sh /entrypoint.sh
 
