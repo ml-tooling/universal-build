@@ -187,6 +187,8 @@ In case you also run your build outside of the build-environment (locally), make
 pip install --upgrade universal-build
 ```
 
+Furthermore, you can also check if the [build-](https://github.com/ml-tooling/universal-build/blob/main/workflows/build-pipeline.yml) and [release-pipeline](https://github.com/ml-tooling/universal-build/blob/main/workflows/release-pipeline.yml) workflows from the [workflows](https://github.com/ml-tooling/universal-build/tree/main/workflows) folder have changed. In case of changes, update the workflows in your `.github/workflows` folder of your repository as well.
+
 ## Features
 
 <p align="center">
