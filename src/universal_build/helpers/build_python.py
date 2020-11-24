@@ -240,7 +240,7 @@ def update_version(module_path: str, version: str, exit_on_error: bool = True) -
             build_utils.exit_process(1)
         return
 
-    if os.path.exists(module_path):
+    if not os.path.exists(module_path):
         build_utils.log("Couldn't find file: " + module_path)
         if exit_on_error:
             build_utils.exit_process(1)
