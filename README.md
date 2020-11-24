@@ -510,6 +510,19 @@ To use the build-environment for containerized development, just define a `.devc
 
 You can find a full example [here](https://github.com/ml-tooling/universal-build/blob/main/.devcontainer/devcontainer.json).
 
+## Known Issues
+
+<details>
+<summary><b>Act: Error response from daemon - volume is in use</b> (click to expand...)</summary>
+
+Sometimes the act containers are not removed properly and are blocking any subsequent act executions of your workflow. As a workaround, you can just remove all act containers:
+
+```bash
+docker rm -f $(docker ps -a --filter="name=^act-" -q)
+```
+
+</details>
+
 ## Contributors
 
 [![](https://sourcerer.io/fame/LukasMasuch/ml-tooling/universal-build/images/0)](https://sourcerer.io/fame/LukasMasuch/ml-tooling/universal-build/links/0)[![](https://sourcerer.io/fame/LukasMasuch/ml-tooling/universal-build/images/1)](https://sourcerer.io/fame/LukasMasuch/ml-tooling/universal-build/links/1)[![](https://sourcerer.io/fame/LukasMasuch/ml-tooling/universal-build/images/2)](https://sourcerer.io/fame/LukasMasuch/ml-tooling/universal-build/links/2)[![](https://sourcerer.io/fame/LukasMasuch/ml-tooling/universal-build/images/3)](https://sourcerer.io/fame/LukasMasuch/ml-tooling/universal-build/links/3)[![](https://sourcerer.io/fame/LukasMasuch/ml-tooling/universal-build/images/4)](https://sourcerer.io/fame/LukasMasuch/ml-tooling/universal-build/links/4)[![](https://sourcerer.io/fame/LukasMasuch/ml-tooling/universal-build/images/5)](https://sourcerer.io/fame/LukasMasuch/ml-tooling/universal-build/links/5)[![](https://sourcerer.io/fame/LukasMasuch/ml-tooling/universal-build/images/6)](https://sourcerer.io/fame/LukasMasuch/ml-tooling/universal-build/links/6)[![](https://sourcerer.io/fame/LukasMasuch/ml-tooling/universal-build/images/7)](https://sourcerer.io/fame/LukasMasuch/ml-tooling/universal-build/links/7)
