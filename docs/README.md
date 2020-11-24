@@ -35,6 +35,7 @@
 - [`code_checks`](./universal_build.helpers.build_python.md#function-code_checks): Run linting and style checks.
 - [`generate_api_docs`](./universal_build.helpers.build_python.md#function-generate_api_docs): Generates API documentation via lazydocs.
 - [`install_build_env`](./universal_build.helpers.build_python.md#function-install_build_env): Installs a new virtual environment via pipenv.
+- [`is_pipenv_environment`](./universal_build.helpers.build_python.md#function-is_pipenv_environment)
 - [`parse_arguments`](./universal_build.helpers.build_python.md#function-parse_arguments): Parses all arguments and returns a sanitized & augmented list of arguments.
 - [`publish_pypi_distribution`](./universal_build.helpers.build_python.md#function-publish_pypi_distribution): Publish distribution to pypi.
 - [`test_with_py_version`](./universal_build.helpers.build_python.md#function-test_with_py_version): Run pytest in a environment wiht the specified python version.
