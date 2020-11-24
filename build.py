@@ -74,6 +74,17 @@ def main(args: dict) -> None:
             build_utils.run('pipenv run pytest -m "not slow"', exit_on_error=True)
 
     if args.get(build_utils.FLAG_RELEASE):
+        # Bump all versions in some filess
+        previous_version = build_utils.get_latest_version()
+        if previous_version:
+            build_utils.replace_in_files(
+                previous_version,
+                version,
+                file_paths=["./actions/build-environment/Dockerfile", "./README.md"],
+                regex=False,
+                exit_on_error=True,
+            )
+
         # Publish distribution on pypi
         build_python.publish_pypi_distribution(
             pypi_token=args.get(build_python.FLAG_PYPI_TOKEN),
