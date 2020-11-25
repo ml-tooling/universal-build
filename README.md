@@ -475,17 +475,37 @@ RUN apt-get update \
 
 #### Extend the entrypoint of the build-environment
 
-You can overwrite the default entrypoint script as shown below to run your custom code at startup:
+You can extend or overwrite the default entrypoint with your custom entrypoint script (e.g. `extended-entrypoint.sh`) as shown below:
 
 ```Dockerfile
 FROM mltooling/build-environment:0.4.1
 
-COPY ./resources/entrypoint.sh /entrypoint.sh
+COPY extended-entrypoint.sh /extended-entrypoint.sh
 
-RUN chmod +x /entrypoint.sh
+RUN chmod +x /extended-entrypoint.sh
+
+ENTRYPOINT ["/tini", "-g", "--", "/extended-entrypoint.sh"]
 ```
 
-However, you need to make sure to still implement most of the logic in the [original entrypoint script](https://github.com/ml-tooling/universal-build/blob/main/build-environment/resources/entrypoint.sh) as well.
+The following `extended-entrypoint.sh` example demonstrates how to extend and reuse the existing default entrypoint:
+
+```bash
+# Stops script execution if a command has an error
+set -e
+
+echo "Setup Phase"
+
+# TODO: Do your custom setups here
+
+# Call the default build-environment entrypoint.
+# Thereby, you can reuse the existing implementation:
+/bin/bash /entrypoint.sh "$@"
+
+echo "Cleanup Phase"
+
+# TODO: Do additional cleanup
+
+```
 
 #### Support additional build arguments
 
