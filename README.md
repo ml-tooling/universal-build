@@ -93,6 +93,8 @@ your-repository
 
 Once you have pushed the `build-environment` action and the [build-](https://github.com/ml-tooling/universal-build/blob/main/workflows/build-pipeline.yml) and [release-pipelines](https://github.com/ml-tooling/universal-build/blob/main/workflows/release-pipeline.yml), please look into the [Automated Build Pipeline](#automated-build-pipeline-ci) and [Automated Release Pipeline](#automated-release-pipeline-cd) sections for information on how to run your build- and release-pipelines.
 
+You can find a more detailed example project with multiple components in the [examples](https://github.com/ml-tooling/universal-build/tree/main/examples) folder.
+
 ---
 
 <br>
@@ -297,16 +299,18 @@ In case the release pipeline fails at any step, we suggest to fix the problem ba
 
 ### Support for Nested Components
 
-Universal-build has excellent support for repositories that contain multiple nested components (aka Monorepo). The following `example` repository has four components: `docs`, `webapp`, `backend`, and `python-lib`:
+> _You can find the implementation of this multi-nested example in the [examples](https://github.com/ml-tooling/universal-build/tree/main/examples) folder._
+
+Universal-build has excellent support for repositories that contain multiple nested components (aka Monorepo). The following [`examples`](https://github.com/ml-tooling/universal-build/tree/main/examples) repository has four components: `docs`, `react-webapp`, `docker`, and `python-lib`:
 
 ```plain
-example:
+examples:
   - build.py
   - docs:
     - build.py
-  - webapp:
+  - react-webapp:
     - build.py
-  - backend:
+  - docker:
     - build.py
   - python-lib:
     - build.py
@@ -314,17 +318,17 @@ example:
 
 Every component needs its own `build.py` script in the component root folder that implements all the logic to build, check, test, and release the given component. The `build.py` script in the repo root folder contains the build logic that orchestrates all component builds. Universal-build provides the [`build_utils.build()`](https://github.com/ml-tooling/universal-build/blob/main/docs/universal_build.build_utils.md#function-build) function that allows to call the build script of a sub-component with the parsed arguments (find more info on `build` function in the [API documentation](https://github.com/ml-tooling/universal-build/blob/main/docs/universal_build.build_utils.md#function-build)).
 
-In between the build steps, you can execute any required operations, for example, duplicating build artifacts from one component to another. The following example, shows the `build.py` script that would support the `example` repository structure:
+In between the build steps, you can execute any required operations, for example, duplicating build artifacts from one component to another. The following example, shows the `build.py` script that would support the `examples` repository structure:
 
 ```python
 from universal_build import build_utils
 
 args = build_utils.parse_arguments()
 
-build_utils.build("webapp", args)
-build_utils.build("backend", args)
+build_utils.build("react-webapp", args)
 build_utils.build("python-lib", args)
 build_utils.duplicate_folder("./python-lib/docs/", "./docs/docs/api-docs/")
+build_utils.build("docker", args)
 build_utils.build("docs", args)
 ```
 
