@@ -22,7 +22,8 @@
   <a href="#documentation">Documentation</a> •
   <a href="#support--feedback">Support</a> •
   <a href="#contribution">Contribution</a> •
-  <a href="https://github.com/ml-tooling/universal-build/releases">Changelog</a>
+  <a href="https://github.com/ml-tooling/universal-build/releases">Changelog</a> •
+  <a href="#faq--known-issues">FAQ</a>
 </p>
 
 Universal-build allows to implement your build and release pipeline with Python scripts once and run it either on your local machine, in a containerized environment via [Act](https://github.com/nektos/act), or automated via [Github Actions](https://github.com/features/actions). It supports a monorepo or polyrepo setup and can be used with any programming language or technology. It also provides a full release pipeline for automated releases with changelog generation.
@@ -578,9 +579,10 @@ You can find a full example [here](https://github.com/ml-tooling/universal-build
 
 <br>
 
-## Known Issues
+## FAQ & Known Issues
 
 <details>
+
 <summary><b>Act: Error response from daemon - volume is in use</b> (click to expand...)</summary>
 
 Sometimes the act containers are not removed properly and are blocking any subsequent act executions of your workflow. As a workaround, you can just remove all act containers:
@@ -588,6 +590,33 @@ Sometimes the act containers are not removed properly and are blocking any subse
 ```bash
 docker rm -f $(docker ps -a --filter="name=^act-" -q)
 ```
+
+</details>
+
+<details>
+<summary><b>How to access the host from Docker Containers in GitHub Actions / Act or containers from the host</b> (click to expand...)</summary>
+
+If you want to access the host (in act the pipeline container and on GitHub Actions the Linux VM) from within a container, you can set an environment variable in the workflow file with this step:
+
+```yaml
+- name: set-host-ip
+  run: echo "::set-env name=_HOST_IP::$(hostname -I | cut -d ' ' -f 1)"
+  # new syntax which is not yet supported on act:
+  # run: echo "_HOST_IP=$(hostname -I | cut -d ' ' -f 1)" >> "$GITHUB_ENV"
+```
+
+and then access the environment variable from within a container. This way you can, for example, access other containers with published ports or other host services.
+
+If you want to access a container directly without going through the host, you can get the IP address for example in the following way:
+
+```bash
+container_id=<CONTAINER-ID-OR-NAME>
+container_ip=$(docker inspect $container_id | jq -r '.[0].NetworkSettings.Networks.bridge.IPAddress')
+```
+
+> Note that the tool `jq` has to be installed. If you run a python script and use the Docker client, the command looks different, of course.
+
+When you don't put starting containers into a custom network, the container is now reachable from the host (GitHub Actions & Act) as well as other containers under this `$container_ip` address!
 
 </details>
 
