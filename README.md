@@ -221,15 +221,17 @@ Furthermore, you can also check if the [build-](https://github.com/ml-tooling/un
 
 Universal-build enables you to run your build pipeline on your local machine, in a containerized environment via [Act](https://github.com/nektos/act), or automated via [Github Actions](https://github.com/features/actions) (= Continuous Integration).
 
-#### Local machine via build script:
+#### Local machine via build script (not recommended):
 
-> _Requirements: All build requirements need to be installed on your machine._
+> _Requirements: [universal-build](#installation) and all the build requirements that your build script is using (e.g. yarn, pipenv, maven, ...) need to be installed on your machine._
 
 Execute the following command in the root folder of any component with a valid `build.py` script:
 
 ```bash
 python build.py --make --check --test
 ```
+
+Executing the build-pipeline directly via the build scripts is not recommended.
 
 #### Containerized environment via Act:
 
@@ -253,15 +255,17 @@ With the default configuration, the build pipeline will run automatically via Gi
 
 To release a new version and publish all relevant artifacts to the respective registries (e.g. Docker image to DockerHub) you can either trigger our release pipeline on your local machine, in a containerized environment via [Act](https://github.com/nektos/act), or automated via [Github Actions](https://github.com/features/actions) (= Continuous Delivery).
 
-#### Local machine via build script:
+#### Local machine via build script (not recommended):
 
-> _Requirements: All build requirements need to be installed on your machine._
+> _Requirements: [universal-build](#installation) and all the build requirements that your build script is using (e.g. yarn, pipenv, maven, ...) need to be installed on your machine._
 
 Execute the following command in the root folder of any component with a valid `build.py` script:
 
 ```bash
 python build.py --make --check --test --release --version="<MAJOR.MINOR.PATCH>"
 ```
+
+Executing the release step directly via the build scripts is not recommended.
 
 #### Containerized environment via Act:
 
