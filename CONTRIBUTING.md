@@ -115,10 +115,6 @@ After successful execution of the release pipeline, the following steps are requ
 
 In case the release pipeline fails at any step, we suggest to fix the problem based on the release pipeline logs and create a new release with an incremented `patch` version. To clean up the unsuccessful release, make sure to delete the following artifacts (if they exist): the release branch, the release PR, the version tag, the draft release, and any release artifact that was already published (e.g. on DockerHub, NPM or PyPi).
 
-##### Via Github Actions
-
-To trigger our release pipeline from Github UI, you can either close a milestone that has a valid version name (`vMAJOR.MINOR.PATCH`) or execute the release pipeline manually via the `workflow_dispatch` UI in the Action Tab (`Actions -> release-pipeline -> Run Workflow`). The release pipeline will automatically create a PR for the new version as well as a Github draft release. To finish the release, you need to merge the release PR into `main`, adapt the changelog in the draft release in the release section on Github, and, finally, publish the release.
-
 ### Commit messages guidelines
 
 Commit messages should be as standardized as possible within the repository. A few best practices:
