@@ -5,7 +5,7 @@ from universal_build.helpers import build_python
 
 # Project specific configuration
 MAIN_PACKAGE = "template_package"
-GITHUB_URL = "https://github.com/mltooling/project-template"
+GITHUB_URL = "https://github.com/ml-tooling/universal-build"
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 
