@@ -24,8 +24,7 @@ def patch_fastapi(app: FastAPI) -> None:
             "requestInterceptor: (e)  => {"
             "\n\t\t\tvar url = window.location.origin + window.location.pathname"
             '\n\t\t\turl = url.substring( 0, url.lastIndexOf( "/" ) + 1);'
-            # TODO it still works: "\n\t\t\turl = e.url.replace(/http(s)?:\/\/[^/]*\//i, url);"
-            "\n\t\t\turl = e.url.replace(/http(s)?://[^/]*//i, url);"
+            "\n\t\t\turl = e.url.replace(/http(s)?:\/\/[^/]*\//i, url);"  # noqa: W605
             "\n\t\t\te.contextUrl = url"
             "\n\t\t\te.url = url"
             "\n\t\t\treturn e;}"
