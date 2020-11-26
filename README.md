@@ -616,7 +616,36 @@ container_ip=$(docker inspect $container_id | jq -r '.[0].NetworkSettings.Networ
 
 > Note that the tool `jq` has to be installed. If you run a python script and use the Docker client, the command looks different, of course.
 
-When you don't put starting containers into a custom network, the container is now reachable from the host (GitHub Actions & Act) as well as other containers under this `$container_ip` address!
+When you don't put starting containers into a custom network, the container is now reachable from the host (GitHub Actions & Act) as well as other containers under this `$container_ip` address. Yet, it is *not* reachable from your local machine (e.g. your Mac). For that, you have to publish the port and use the `$_HOST_IP` address as explained above. The host port should be assigned randomly so that the setup is as host-independent as possible. To dynamically get the random port you can get it in the following way via bash:
+
+```bash
+container_id=<CONTAINER-ID-OR-NAME>
+container_port=<INNER-CONTAINER-PORT>
+container_host_port=$(docker inspect $container_id | jq -r '.[0].NetworkSettings.Ports["'$container_port'/tcp"][0].HostPort')
+```
+
+In your code, you should then check whether the `$_HOST_IP` variable is set and if not, use `localhost`. This way, it will work on GitHub Actions, Act, and your local machine. Here is a Python example:
+
+```python
+import docker
+
+client = docker.from_env()
+container_name = "test-container"
+container_port = 8080
+container = client.containers.run(
+    "some-image:1.2.3",
+    name=container_name,
+    ports={f"{container_port}/tcp": None},
+    detach=True,
+)
+
+container.reload()
+ip_address = os.getenv("_HOST_IP", "localhost")
+os.environ["CONTAINER_NAME"] = container_name
+os.environ["CONTAINER_IP"] = ip_address
+container_host_port = container.attrs["NetworkSettings"]["Ports"][f"{container_port}/tcp"][0]["HostPort"]
+os.environ["CONTAINER_HOST_PORT"] = container_host_port
+```
 
 </details>
 
