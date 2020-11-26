@@ -64,7 +64,6 @@ setup(
             "pytest-mock",
             "pytest-cov",
             "mypy",
-            "mypy",
             "black",
             "pydocstyle",
             "isort",
