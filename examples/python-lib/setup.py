@@ -68,7 +68,6 @@ setup(
             "black",
             "pydocstyle",
             "isort",
-            "nox",
             "lazydocs",
         ],
     },
