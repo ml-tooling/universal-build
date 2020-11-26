@@ -503,12 +503,19 @@ echo "Setup Phase"
 # TODO: Do your custom setups here
 
 # Call the default build-environment entrypoint.
+# Disable the immediate script execution stop so that the cleanup phase can run in any case
+set +e
 # Thereby, you can reuse the existing implementation:
 /bin/bash /entrypoint.sh "$@"
+# Save the exit code of the previous command
+exit_code=$?
 
 echo "Cleanup Phase"
 
 # TODO: Do additional cleanup
+
+# Exit the script with the exit code of the actual entrypoint execution
+exit $exit_code
 
 ```
 
