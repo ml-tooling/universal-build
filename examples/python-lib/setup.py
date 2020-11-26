@@ -76,10 +76,11 @@ setup(
         # 'sample': ['package_data.dat'],
     },
     classifiers=[
-        # TODO: Update based on https://pypi.python.org/pypi?%3Aaction=list_classifiers
+        # TODO: Update based on https://pypi.org/classifiers/
         "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
         "Intended Audience :: Science/Research",
+        "Intended Audience :: Information Technology",
         "License :: OSI Approved :: MIT License",
         "Natural Language :: English",
         "Operating System :: OS Independent",
@@ -91,9 +92,12 @@ setup(
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: Implementation :: PyPy",
         "Programming Language :: Python :: Implementation :: CPython",
+        "Topic :: Software Development",
         "Topic :: Software Development :: Libraries",
         "Topic :: Software Development :: Libraries :: Python Modules",
         "Topic :: Scientific/Engineering :: Artificial Intelligence",
+        "Topic :: Scientific/Engineering",
+        "Topic :: Utilities",
     ],
     project_urls={
         "Changelog": URL + "/releases",
