@@ -8,7 +8,7 @@ def cli_app() -> Typer:
     from template_package import _cli
 
     print("Create cli_app fixture")
-    return _cli.app
+    return _cli.cli
 
 
 @pytest.fixture(scope="session")

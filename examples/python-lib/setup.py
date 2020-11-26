@@ -101,7 +101,7 @@ setup(
         "Documentation": URL + "#documentation",
         "Source": URL,
     },
-    entry_points={"console_scripts": [f"{NAME}={MAIN_PACKAGE}._cli:app"]},
+    entry_points={"console_scripts": [f"{NAME}={MAIN_PACKAGE}._cli:cli"]},
     keywords=[
         # eg: 'keyword1', 'keyword2', 'keyword3',
     ],

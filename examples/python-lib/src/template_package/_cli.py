@@ -4,15 +4,15 @@ import typer
 
 from template_package import api
 
-app = typer.Typer()
+cli = typer.Typer()
 
 
-@app.command()
+@cli.command()
 def hello(name: str) -> None:
     typer.echo(f"Hello {name}")
 
 
-@app.command()
+@cli.command()
 def start_api_server(host: str = "0.0.0.0", port: int = 8081) -> None:
     import uvicorn
 
@@ -24,4 +24,4 @@ def start_api_server(host: str = "0.0.0.0", port: int = 8081) -> None:
 
 
 if __name__ == "__main__":
-    app()
+    cli()
