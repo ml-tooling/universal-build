@@ -54,7 +54,10 @@ def is_pipenv_environment() -> bool:
         return False
     return (
         build_utils.run(
-            "pipenv --venv", disable_stderr_logging=True, disable_stdout_logging=True
+            "pipenv --venv",
+            disable_stderr_logging=True,
+            disable_stdout_logging=True,
+            exit_on_error=False,
         ).returncode
         == 0
     )
