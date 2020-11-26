@@ -10,16 +10,15 @@
 
 ## Classes
 
-- [`Item`](./template_package.api.md#class-item)
+- [`api.Item`](./template_package.api.md#class-item)
 
 ## Functions
 
-- [`Item.__init__`](./pydantic.main.md#function-__init__): Create a new model by parsing and validating input data from keyword arguments.
-- [`ext_call`](./template_package.api.md#function-ext_call)
-- [`read_item`](./template_package.api.md#function-read_item)
-- [`slow_call_to_external_url`](./template_package.api.md#function-slow_call_to_external_url)
-- [`update_item`](./template_package.api.md#function-update_item)
-- [`patch_fastapi`](./template_package.utils.api_utils.md#function-patch_fastapi): Patch function to allow relative url resolution.
+- [`api.ext_call`](./template_package.api.md#function-ext_call)
+- [`api.read_item`](./template_package.api.md#function-read_item)
+- [`api.slow_call_to_external_url`](./template_package.api.md#function-slow_call_to_external_url)
+- [`api.update_item`](./template_package.api.md#function-update_item)
+- [`api_utils.patch_fastapi`](./template_package.utils.api_utils.md#function-patch_fastapi): Patch function to allow relative url resolution.
 
 
 ---

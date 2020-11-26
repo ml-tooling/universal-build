@@ -220,7 +220,7 @@
                 "sha256:cedb2f9e1f990918ea061f28a0f0077a07702e3819602d3507e2ff98c8d20636",
                 "sha256:e8caf961e1b1a945db76f1b5fa9c91498d15f545ac0ababbe575cfab185d3bd8"
             ],
-            "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4' and python_version < '4.0'",
+            "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4' and python_version < '4'",
             "version": "==5.3"
         },
         "cryptography": {
@@ -301,7 +301,7 @@
                 "sha256:dcab1d98b469a12a1a624ead220584391648790275560e1a43e54c5dceae65e7",
                 "sha256:dcaeec1b5f0eca77faea2a35ab790b4f3680ff75590bfcb7145986905aab2f58"
             ],
-            "markers": "python_version >= '3.6' and python_version < '4.0'",
+            "markers": "python_version >= '3.6' and python_version < '4'",
             "version": "==5.6.4"
         },
         "jeepney": {
@@ -322,11 +322,11 @@
         },
         "lazydocs": {
             "hashes": [
-                "sha256:600eedeba1c185d8986993f631f3c5670d01adbb2429d83a4df0a93f84d639a7",
-                "sha256:fdbcd4c04949acd2f6047479ea0c00a817572a47af234bc201f6adbedb16666c"
+                "sha256:90245dc4769b49b9c4a3e9e6a7b59d5dada937e2e7a9183023308deaf0b4ad3e",
+                "sha256:f8cd0640486770f2402cce144d99f5285ac4b3d5a4830b9164a11fd9a3d6872e"
             ],
             "markers": "python_version >= '3.6'",
-            "version": "==0.3.0"
+            "version": "==0.4.1"
         },
         "mccabe": {
             "hashes": [
@@ -666,7 +666,7 @@
                 "sha256:19188f96923873c92ccb987120ec4acaa12f0461fa9ce5d3d0772bc965a39e08",
                 "sha256:d8ff90d979214d7b4f8ce956e80f4028fc6860e4431f731ea4a8c08f23f99473"
             ],
-            "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4' and python_version < '4.0'",
+            "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4' and python_version < '4'",
             "version": "==1.26.2"
         },
         "virtualenv": {
