@@ -94,8 +94,8 @@ RUN apt-get update \
         pipenv==2020.11.* \
         better-exceptions==0.* \
         # Fix safety problems
-        cryptography>3.2\
-        lxml>4.6.0 \
+        cryptography>=3.2.1\
+        lxml>=4.6.2 \
     # Clean up
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
