@@ -58,7 +58,11 @@ def lint_dockerfile(exit_on_error: bool = True) -> None:
 
 
 def build_docker_image(
-    name: str, version: str, build_args: str = "", exit_on_error: bool = False
+    name: str,
+    version: str,
+    build_args: str = "",
+    docker_image_prefix: str = "",
+    exit_on_error: bool = False,
 ) -> subprocess.CompletedProcess:
     """Build a docker image from a Dockerfile in the working directory.
 
@@ -66,6 +70,7 @@ def build_docker_image(
         name (str): Name of the docker image.
         version (str): Version to use as tag.
         build_args (str, optional): Add additional build arguments for docker build.
+        docker_image_prefix (str, optional): The prefix added to the name to indicate an organization on DockerHub or a completely different repository.
         exit_on_error (bool, optional): If `True`, exit process as soon as an error occurs.
 
     Returns:
@@ -84,23 +89,32 @@ def build_docker_image(
         exit_on_error=exit_on_error,
     )
 
-    # TODO tag prefixed image names
-
     if completed_process.returncode > 0:
-        build_utils.log(f"Failed to build Docker image {name}:{version}")
+        build_utils.log(f"Failed to build Docker image {versioned_image}")
+        return completed_process
 
-    return completed_process
+    if docker_image_prefix:
+        docker_image_prefix = docker_image_prefix.rstrip("/") + "/"
+        remote_versioned_image = docker_image_prefix + versioned_image
+        completed_process = build_utils.run(
+            "docker tag " + versioned_image + " " + remote_versioned_image,
+            exit_on_error=exit_on_error,
+        )
+
+        if completed_process.returncode > 0:
+            build_utils.log(f"Failed to tag Docker image {remote_versioned_image}")
+            return completed_process
 
 
 def release_docker_image(
-    name: str, version: str, docker_image_prefix: str = "", exit_on_error: bool = False
+    name: str, version: str, docker_image_prefix: str, exit_on_error: bool = False
 ) -> subprocess.CompletedProcess:
     """Push a Docker image to a repository.
 
     Args:
         name (str): The name of the image. Must not be prefixed!
         version (str): The tag used for the image.
-        docker_image_prefix (str, optional): The prefix added to the name to indicate an organization on DockerHub or a completely different repository. Defaults to "".
+        docker_image_prefix (str): The prefix added to the name to indicate an organization on DockerHub or a completely different repository.
         exit_on_error (bool, optional): Exit process if an error occurs. Defaults to `True`.
 
     Returns:
@@ -127,7 +141,8 @@ def release_docker_image(
     if completed_process.returncode > 0:
         build_utils.log(f"Failed to release Docker image {name}:{version}")
 
-    if "-dev" not in version:
+    # Only push version with latest tag if no suffix is added (pre-release)
+    if "-" not in version:
         build_utils.log("Release Docker image with latest tag as well.")
         latest_image = name + ":latest"
         remote_latest_image = docker_image_prefix + latest_image
