@@ -70,8 +70,10 @@ def test_with_py_version(python_version: str, exit_on_error: bool = True) -> Non
         python_version (str): Python version to use inside the virutal environment.
         exit_on_error (bool, optional): Exit process if an error occurs. Defaults to `True`.
     """
-    if not is_pipenv_environment():
-        build_utils.log("Testing with specific python version only works with pipenv.")
+    if not os.path.exists("Pipfile"):
+        build_utils.log(
+            "No Pipfile discovered. Testing with specific python version only works with pipenv."
+        )
         return
 
     # Install pipenv environment with specific versio
