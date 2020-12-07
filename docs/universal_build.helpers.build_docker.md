@@ -70,6 +70,7 @@ build_docker_image(
     name: str,
     version: str,
     build_args: str = '',
+    docker_image_prefix: str = '',
     exit_on_error: bool = False
 ) → CompletedProcess
 ```
@@ -83,6 +84,7 @@ Build a docker image from a Dockerfile in the working directory.
  - <b>`name`</b> (str):  Name of the docker image. 
  - <b>`version`</b> (str):  Version to use as tag. 
  - <b>`build_args`</b> (str, optional):  Add additional build arguments for docker build. 
+ - <b>`docker_image_prefix`</b> (str, optional):  The prefix added to the name to indicate an organization on DockerHub or a completely different repository. 
  - <b>`exit_on_error`</b> (bool, optional):  If `True`, exit process as soon as an error occurs. 
 
 
@@ -94,7 +96,7 @@ Build a docker image from a Dockerfile in the working directory.
 
 ---
 
-<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/helpers/build_docker.py#L95"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/helpers/build_docker.py#L107"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `release_docker_image`
 
@@ -102,7 +104,7 @@ Build a docker image from a Dockerfile in the working directory.
 release_docker_image(
     name: str,
     version: str,
-    docker_image_prefix: str = '',
+    docker_image_prefix: str,
     exit_on_error: bool = False
 ) → CompletedProcess
 ```
@@ -115,7 +117,7 @@ Push a Docker image to a repository.
  
  - <b>`name`</b> (str):  The name of the image. Must not be prefixed! 
  - <b>`version`</b> (str):  The tag used for the image. 
- - <b>`docker_image_prefix`</b> (str, optional):  The prefix added to the name to indicate an organization on DockerHub or a completely different repository. Defaults to "". 
+ - <b>`docker_image_prefix`</b> (str):  The prefix added to the name to indicate an organization on DockerHub or a completely different repository. 
  - <b>`exit_on_error`</b> (bool, optional):  Exit process if an error occurs. Defaults to `True`. 
 
 
