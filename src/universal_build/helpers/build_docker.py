@@ -96,14 +96,12 @@ def build_docker_image(
     if docker_image_prefix:
         docker_image_prefix = docker_image_prefix.rstrip("/") + "/"
         remote_versioned_image = docker_image_prefix + versioned_image
-        completed_process = build_utils.run(
+        build_utils.run(
             "docker tag " + versioned_image + " " + remote_versioned_image,
             exit_on_error=exit_on_error,
         )
 
-        if completed_process.returncode > 0:
-            build_utils.log(f"Failed to tag Docker image {remote_versioned_image}")
-            return completed_process
+    return completed_process
 
 
 def release_docker_image(
