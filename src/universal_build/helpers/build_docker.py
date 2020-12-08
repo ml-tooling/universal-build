@@ -40,6 +40,25 @@ def parse_arguments(
     )
 
 
+def check_image(image: str, trivy: bool = True, exit_on_error: bool = True) -> None:
+    """Run vulnerability checks on Dockerimage.
+
+    Args:
+        image (str): The name of the docker image to check.
+        trivy (bool, optional): Activate trivy vulnerability check. Defaults to True.
+        exit_on_error (bool, optional): If `True`, exit process as soon as an error occurs.
+    """
+    build_utils.log("Run vulnerability checks on docker image:")
+
+    if trivy:
+        build_utils.run(
+            f"trivy image --timeout=20m0s --exit-code 1 --severity HIGH,CRITICAL {image}",
+            exit_on_error=exit_on_error,
+        )
+
+    # TODO: Implement dockl container scan
+
+
 def lint_dockerfile(exit_on_error: bool = True) -> None:
     """Run hadolint on the Dockerfile.
 
@@ -62,7 +81,7 @@ def build_docker_image(
     version: str,
     build_args: str = "",
     docker_image_prefix: str = "",
-    exit_on_error: bool = False,
+    exit_on_error: bool = True,
 ) -> subprocess.CompletedProcess:
     """Build a docker image from a Dockerfile in the working directory.
 
@@ -105,7 +124,7 @@ def build_docker_image(
 
 
 def release_docker_image(
-    name: str, version: str, docker_image_prefix: str, exit_on_error: bool = False
+    name: str, version: str, docker_image_prefix: str, exit_on_error: bool = True
 ) -> subprocess.CompletedProcess:
     """Push a Docker image to a repository.
 

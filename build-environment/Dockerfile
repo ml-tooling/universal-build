@@ -141,9 +141,13 @@ COPY ./resources/universal-build.tar.gz $RESOURCES_PATH/universal-build.tar.gz
 # hadolint ignore=DL3013
 RUN pip install $RESOURCES_PATH/universal-build.tar.gz
 
-# Install hadolint
+# Install hadolint - Dockerfile linter
 RUN curl -fsSL https://github.com/hadolint/hadolint/releases/download/v1.16.3/hadolint-Linux-x86_64 -o /bin/hadolint \
     && chmod +x /bin/hadolint
+
+# Install trivy - Vulnerability Scanner for Containers
+# https://github.com/aquasecurity/trivy
+RUN curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/master/contrib/install.sh | sh -s -- -b /usr/local/bin
 
 COPY ./resources/entrypoint.sh /entrypoint.sh
 
