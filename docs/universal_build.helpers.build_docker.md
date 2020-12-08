@@ -44,6 +44,27 @@ Sanitized means that, for example, the version is already checked and set depend
 
 <a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/helpers/build_docker.py#L43"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
+## <kbd>function</kbd> `check_image`
+
+```python
+check_image(image: str, trivy: bool = True, exit_on_error: bool = True) → None
+```
+
+Run vulnerability checks on Dockerimage. 
+
+
+
+**Args:**
+ 
+ - <b>`image`</b> (str):  The name of the docker image to check. 
+ - <b>`trivy`</b> (bool, optional):  Activate trivy vulnerability check. Defaults to True. 
+ - <b>`exit_on_error`</b> (bool, optional):  If `True`, exit process as soon as an error occurs. 
+
+
+---
+
+<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/helpers/build_docker.py#L62"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+
 ## <kbd>function</kbd> `lint_dockerfile`
 
 ```python
@@ -61,7 +82,7 @@ Run hadolint on the Dockerfile.
 
 ---
 
-<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/helpers/build_docker.py#L60"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/helpers/build_docker.py#L79"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `build_docker_image`
 
@@ -71,7 +92,7 @@ build_docker_image(
     version: str,
     build_args: str = '',
     docker_image_prefix: str = '',
-    exit_on_error: bool = False
+    exit_on_error: bool = True
 ) → CompletedProcess
 ```
 
@@ -96,7 +117,7 @@ Build a docker image from a Dockerfile in the working directory.
 
 ---
 
-<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/helpers/build_docker.py#L107"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/helpers/build_docker.py#L126"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `release_docker_image`
 
@@ -105,7 +126,7 @@ release_docker_image(
     name: str,
     version: str,
     docker_image_prefix: str,
-    exit_on_error: bool = False
+    exit_on_error: bool = True
 ) → CompletedProcess
 ```
 
