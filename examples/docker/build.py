@@ -16,7 +16,7 @@ def main(args: dict) -> None:
     version = args.get(build_utils.FLAG_VERSION)
     docker_image_prefix = args.get(build_docker.FLAG_DOCKER_IMAGE_PREFIX)
 
-    if docker_image_prefix:
+    if not docker_image_prefix:
         docker_image_prefix = DOCKER_IMAGE_PREFIX  # type: ignore
 
     if args.get(build_utils.FLAG_MAKE):
@@ -24,6 +24,7 @@ def main(args: dict) -> None:
 
     if args.get(build_utils.FLAG_CHECK):
         build_docker.lint_dockerfile(exit_on_error=True)
+        build_docker.check_image(exit_on_error=True)
 
     if args.get(build_utils.FLAG_RELEASE):
         # TODO: commented to prevent template image to be released
