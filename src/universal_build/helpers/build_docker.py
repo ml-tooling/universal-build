@@ -76,6 +76,23 @@ def lint_dockerfile(exit_on_error: bool = True) -> None:
     )
 
 
+def get_image_name(name: str, tag: str, image_prefix: str = "") -> str:
+    """Get a valid versioned image name.
+
+    Args:
+        name (str): Name of the docker image.
+        tag (str): Version to use for the tag.
+        image_prefix (str, optional): The prefix added to the name to indicate an organization on DockerHub or a completely different repository.
+
+    Returns:
+        str: a valid docker image name based on: prefix/name:tag
+    """
+    versioned_tag = name.strip() + ":" + tag.strip()
+    if image_prefix:
+        versioned_tag = image_prefix.strip().rstrip("/") + "/" + versioned_tag
+    return versioned_tag
+
+
 def build_docker_image(
     name: str,
     version: str,
@@ -95,13 +112,13 @@ def build_docker_image(
     Returns:
         subprocess.CompletedProcess: Returns the CompletedProcess object of the
     """
-    versioned_image = name + ":" + version
-    latest_image = name + ":latest"
+    versioned_tag = get_image_name(name=name, tag=version)
+    latest_tag = get_image_name(name=name, tag="latest")
     completed_process = build_utils.run(
         "docker build -t "
-        + versioned_image
+        + versioned_tag
         + " -t "
-        + latest_image
+        + latest_tag
         + " "
         + build_args
         + " ./",
@@ -109,14 +126,15 @@ def build_docker_image(
     )
 
     if completed_process.returncode > 0:
-        build_utils.log(f"Failed to build Docker image {versioned_image}")
+        build_utils.log(f"Failed to build Docker image {versioned_tag}")
         return completed_process
 
     if docker_image_prefix:
-        docker_image_prefix = docker_image_prefix.rstrip("/") + "/"
-        remote_versioned_image = docker_image_prefix + versioned_image
+        remote_versioned_tag = get_image_name(
+            name=name, tag=version, image_prefix=docker_image_prefix
+        )
         build_utils.run(
-            "docker tag " + versioned_image + " " + remote_versioned_image,
+            "docker tag " + versioned_tag + " " + remote_versioned_tag,
             exit_on_error=exit_on_error,
         )
 
@@ -143,16 +161,16 @@ def release_docker_image(
         )
         build_utils.exit_process(build_utils.EXIT_CODE_GENERAL)
 
-    docker_image_prefix = docker_image_prefix.rstrip("/") + "/"
-
-    versioned_image = name + ":" + version
-    remote_versioned_image = docker_image_prefix + versioned_image
+    versioned_tag = get_image_name(name=name, tag=version)
+    remote_versioned_tag = get_image_name(
+        name=name, tag=version, image_prefix=docker_image_prefix
+    )
     build_utils.run(
-        "docker tag " + versioned_image + " " + remote_versioned_image,
+        "docker tag " + versioned_tag + " " + remote_versioned_tag,
         exit_on_error=exit_on_error,
     )
     completed_process = build_utils.run(
-        "docker push " + remote_versioned_image, exit_on_error=exit_on_error
+        "docker push " + remote_versioned_tag, exit_on_error=exit_on_error
     )
 
     if completed_process.returncode > 0:
@@ -160,15 +178,18 @@ def release_docker_image(
 
     # Only push version with latest tag if no suffix is added (pre-release)
     if "-" not in version:
-        build_utils.log("Release Docker image with latest tag as well.")
-        latest_image = name + ":latest"
-        remote_latest_image = docker_image_prefix + latest_image
+        remote_latest_tag = get_image_name(
+            name=name, tag=version, image_prefix="latest"
+        )
+
+        build_utils.log(
+            "Release Docker image with latest tag as well: " + remote_latest_tag
+        )
+
         build_utils.run(
-            "docker tag " + latest_image + " " + remote_latest_image,
+            "docker tag " + versioned_tag + " " + remote_latest_tag,
             exit_on_error=exit_on_error,
         )
-        build_utils.run(
-            "docker push " + remote_latest_image, exit_on_error=exit_on_error
-        )
+        build_utils.run("docker push " + remote_latest_tag, exit_on_error=exit_on_error)
 
     return completed_process
