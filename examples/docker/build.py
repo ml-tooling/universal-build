@@ -24,7 +24,10 @@ def main(args: dict) -> None:
 
     if args.get(build_utils.FLAG_CHECK):
         build_docker.lint_dockerfile(exit_on_error=True)
-        build_docker.check_image(image=COMPONENT_NAME + ":latest", exit_on_error=True)
+        build_docker.check_image(
+            image=build_docker.get_image_name(name=COMPONENT_NAME, tag=version),
+            exit_on_error=True,
+        )
 
     if args.get(build_utils.FLAG_RELEASE):
         # TODO: commented to prevent template image to be released
