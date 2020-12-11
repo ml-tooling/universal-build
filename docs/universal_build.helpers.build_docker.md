@@ -84,6 +84,33 @@ Run hadolint on the Dockerfile.
 
 <a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/helpers/build_docker.py#L79"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
+## <kbd>function</kbd> `get_image_name`
+
+```python
+get_image_name(name: str, tag: str, image_prefix: str = '') → str
+```
+
+Get a valid versioned image name. 
+
+
+
+**Args:**
+ 
+ - <b>`name`</b> (str):  Name of the docker image. 
+ - <b>`tag`</b> (str):  Version to use for the tag. 
+ - <b>`image_prefix`</b> (str, optional):  The prefix added to the name to indicate an organization on DockerHub or a completely different repository. 
+
+
+
+**Returns:**
+ 
+ - <b>`str`</b>:  a valid docker image name based on: prefix/name:tag 
+
+
+---
+
+<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/helpers/build_docker.py#L96"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+
 ## <kbd>function</kbd> `build_docker_image`
 
 ```python
@@ -117,7 +144,7 @@ Build a docker image from a Dockerfile in the working directory.
 
 ---
 
-<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/helpers/build_docker.py#L126"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/helpers/build_docker.py#L144"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `release_docker_image`
 
