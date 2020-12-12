@@ -13,7 +13,7 @@ env:
   VERSION: ${{ secrets.VERSION }}
   BRANCH_PREFIX: "release/v"
   ACTIONS_ALLOW_UNSECURE_COMMANDS: true # TODO: only needed until act supports the new way
-  DEFAULT_BRANCH: master
+  DEFAULT_BRANCH: main
 
 jobs:
   release:
@@ -97,6 +97,8 @@ jobs:
         name: create-pull-request
         shell: bash
         run: |
+          # Stops script execution if a command has an error
+          set -e
           curl -fsSL https://github.com/github/hub/raw/master/script/get | bash -s 2.14.2
           # TODO: Milestone link currently does not work with closed milestones: ${{ env.PR_MILESTONE_LINK  }} (problem with hub cli)
           bin/hub pull-request -b ${{ env.DEFAULT_BRANCH }} -h ${{ env.BRANCH_PREFIX }}${{ env.VERSION  }} --no-edit -m "Finalize release for version ${{ env.VERSION  }}" -m "Automated pull request for release version ${{ env.VERSION  }}" -l "skip changelog" || true
