@@ -57,7 +57,7 @@ Run vulnerability checks on Dockerimage.
 **Args:**
  
  - <b>`image`</b> (str):  The name of the docker image to check. 
- - <b>`trivy`</b> (bool, optional):  Activate trivy vulnerability check. Defaults to True. 
+ - <b>`trivy`</b> (bool, optional):  Activate trivy vulnerability check. Defaults to `True`. 
  - <b>`exit_on_error`</b> (bool, optional):  If `True`, exit process as soon as an error occurs. 
 
 
@@ -68,7 +68,7 @@ Run vulnerability checks on Dockerimage.
 ## <kbd>function</kbd> `lint_dockerfile`
 
 ```python
-lint_dockerfile(exit_on_error: bool = True) → None
+lint_dockerfile(hadolint: bool = True, exit_on_error: bool = True) → None
 ```
 
 Run hadolint on the Dockerfile. 
@@ -77,12 +77,13 @@ Run hadolint on the Dockerfile.
 
 **Args:**
  
+ - <b>`hadolint`</b> (bool, optional):  Activate hadolint dockerfile linter. Defaults to `True`. 
  - <b>`exit_on_error`</b> (bool, optional):  Exit process if an error occurs. Defaults to `True`. 
 
 
 ---
 
-<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/helpers/build_docker.py#L79"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/helpers/build_docker.py#L81"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `get_image_name`
 
@@ -109,7 +110,7 @@ Get a valid versioned image name.
 
 ---
 
-<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/helpers/build_docker.py#L96"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/helpers/build_docker.py#L98"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `build_docker_image`
 
@@ -144,7 +145,7 @@ Build a docker image from a Dockerfile in the working directory.
 
 ---
 
-<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/helpers/build_docker.py#L144"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/helpers/build_docker.py#L149"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `release_docker_image`
 

@@ -17,6 +17,7 @@
 ## Functions
 
 - [`build_utils.build`](./universal_build.build_utils.md#function-build): Run the build logic of the specified component, except if the path is a (sub-)path in skipped-paths.
+- [`build_utils.command_exists`](./universal_build.build_utils.md#function-command_exists): Checks whether the `command` exists and is marked as executable.
 - [`build_utils.create_git_tag`](./universal_build.build_utils.md#function-create_git_tag): Create an annotated git tag in the current HEAD via `git tag` and the provided version.
 - [`build_utils.duplicate_folder`](./universal_build.build_utils.md#function-duplicate_folder): Duplicate a folder into another folder.
 - [`build_utils.exit_process`](./universal_build.build_utils.md#function-exit_process): Exit the process with exit code.
@@ -40,7 +41,7 @@
 - [`build_python.code_checks`](./universal_build.helpers.build_python.md#function-code_checks): Run linting and style checks.
 - [`build_python.generate_api_docs`](./universal_build.helpers.build_python.md#function-generate_api_docs): Generates API documentation via lazydocs.
 - [`build_python.install_build_env`](./universal_build.helpers.build_python.md#function-install_build_env): Installs a new virtual environment via pipenv.
-- [`build_python.is_pipenv_environment`](./universal_build.helpers.build_python.md#function-is_pipenv_environment)
+- [`build_python.is_pipenv_environment`](./universal_build.helpers.build_python.md#function-is_pipenv_environment): Check if current working directory is a valid pipenv environment.
 - [`build_python.parse_arguments`](./universal_build.helpers.build_python.md#function-parse_arguments): Parses all arguments and returns a sanitized & augmented list of arguments.
 - [`build_python.publish_pypi_distribution`](./universal_build.helpers.build_python.md#function-publish_pypi_distribution): Publish distribution to pypi.
 - [`build_python.test_with_py_version`](./universal_build.helpers.build_python.md#function-test_with_py_version): Run pytest in a environment wiht the specified python version.
