@@ -45,12 +45,12 @@ def check_image(image: str, trivy: bool = True, exit_on_error: bool = True) -> N
 
     Args:
         image (str): The name of the docker image to check.
-        trivy (bool, optional): Activate trivy vulnerability check. Defaults to True.
+        trivy (bool, optional): Activate trivy vulnerability check. Defaults to `True`.
         exit_on_error (bool, optional): If `True`, exit process as soon as an error occurs.
     """
     build_utils.log("Run vulnerability checks on docker image:")
 
-    if trivy:
+    if trivy and build_utils.command_exists("trivy", exit_on_error=exit_on_error):
         build_utils.run(
             f"trivy image --timeout=20m0s --exit-code 1 --severity HIGH,CRITICAL {image}",
             exit_on_error=exit_on_error,
@@ -59,21 +59,23 @@ def check_image(image: str, trivy: bool = True, exit_on_error: bool = True) -> N
     # TODO: Implement dockl container scan
 
 
-def lint_dockerfile(exit_on_error: bool = True) -> None:
+def lint_dockerfile(hadolint: bool = True, exit_on_error: bool = True) -> None:
     """Run hadolint on the Dockerfile.
 
     Args:
+        hadolint (bool, optional): Activate hadolint dockerfile linter. Defaults to `True`.
         exit_on_error (bool, optional): Exit process if an error occurs. Defaults to `True`.
     """
     build_utils.log("Run linters and style checks:")
 
-    config_file_arg = ""
-    if os.path.exists(".hadolint.yml"):
-        config_file_arg = "--config=.hadolint.yml"
+    if hadolint and build_utils.command_exists("hadolint", exit_on_error=exit_on_error):
+        config_file_arg = ""
+        if os.path.exists(".hadolint.yml"):
+            config_file_arg = "--config=.hadolint.yml"
 
-    build_utils.run(
-        f"hadolint {config_file_arg} Dockerfile", exit_on_error=exit_on_error
-    )
+        build_utils.run(
+            f"hadolint {config_file_arg} Dockerfile", exit_on_error=exit_on_error
+        )
 
 
 def get_image_name(name: str, tag: str, image_prefix: str = "") -> str:
@@ -112,6 +114,9 @@ def build_docker_image(
     Returns:
         subprocess.CompletedProcess: Returns the CompletedProcess object of the
     """
+    # Check if docker exists on the system
+    build_utils.command_exists("docker", exit_on_error=exit_on_error)
+
     versioned_tag = get_image_name(name=name, tag=version)
     latest_tag = get_image_name(name=name, tag="latest")
     completed_process = build_utils.run(
@@ -155,6 +160,9 @@ def release_docker_image(
     Returns:
         subprocess.CompletedProcess: Returns the CompletedProcess object of the `docker push ...` command.
     """
+    # Check if docker exists on the system
+    build_utils.command_exists("docker", exit_on_error=exit_on_error)
+
     if not docker_image_prefix:
         build_utils.log(
             "The flag --docker-image-prefix cannot be blank when pushing a Docker image."
@@ -179,7 +187,7 @@ def release_docker_image(
     # Only push version with latest tag if no suffix is added (pre-release)
     if "-" not in version:
         remote_latest_tag = get_image_name(
-            name=name, tag=version, image_prefix="latest"
+            name=name, tag="latest", image_prefix=docker_image_prefix
         )
 
         build_utils.log(

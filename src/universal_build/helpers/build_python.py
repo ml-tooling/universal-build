@@ -50,8 +50,14 @@ def parse_arguments(
 
 
 def is_pipenv_environment() -> bool:
+    """Check if current working directory is a valid pipenv environment."""
+
     if not os.path.exists("Pipfile"):
         return False
+
+    if not build_utils.command_exists("pipenv"):
+        return False
+
     return (
         build_utils.run(
             "pipenv --venv",
@@ -75,6 +81,12 @@ def test_with_py_version(python_version: str, exit_on_error: bool = True) -> Non
             "No Pipfile discovered. Testing with specific python version only works with pipenv."
         )
         return
+
+    # Check if pyenv command exists
+    build_utils.command_exists("pyenv", exit_on_error=exit_on_error)
+
+    # Check if pipenv command exists
+    build_utils.command_exists("pipenv", exit_on_error=exit_on_error)
 
     # Install pipenv environment with specific versio
     build_utils.run(
@@ -109,6 +121,9 @@ def install_build_env(exit_on_error: bool = True) -> None:
             build_utils.exit_process(1)
         return
 
+    # Check if pipenv command exists
+    build_utils.command_exists("pipenv", exit_on_error=exit_on_error)
+
     build_utils.run("pipenv --rm", exit_on_error=False)
     build_utils.run(
         f"pipenv install --dev --python={sys.executable} --skip-lock",
@@ -135,6 +150,9 @@ def generate_api_docs(
     command_prefix = ""
     if is_pipenv_environment():
         command_prefix = "pipenv run"
+    else:
+        # Check lazydocs command
+        build_utils.command_exists("lazydocs", exit_on_error=exit_on_error)
 
     build_utils.run(
         f"{command_prefix} lazydocs --overview-file=README.md"
@@ -166,6 +184,9 @@ def publish_pypi_distribution(
     pypi_repository_args = ""
     if pypi_repository:
         pypi_repository_args = f'--repository-url "{pypi_repository}"'
+
+    # Check twine command
+    build_utils.command_exists("twine", exit_on_error=exit_on_error)
 
     # Publish on pypi
     build_utils.run(
@@ -200,6 +221,10 @@ def code_checks(
         command_prefix = "pipenv run"
 
     if black:
+        if not command_prefix:
+            # Check twine command
+            build_utils.command_exists("black", exit_on_error=exit_on_error)
+
         build_utils.run(
             f"{command_prefix} black --check src", exit_on_error=exit_on_error
         )
@@ -208,6 +233,10 @@ def code_checks(
         )
 
     if isort:
+        if not command_prefix:
+            # Check twine command
+            build_utils.command_exists("isort", exit_on_error=exit_on_error)
+
         build_utils.run(
             f"{command_prefix} isort --profile black --check-only src",
             exit_on_error=exit_on_error,
@@ -218,13 +247,25 @@ def code_checks(
         )
 
     if pydocstyle:
+        if not command_prefix:
+            # Check twine command
+            build_utils.command_exists("pydocstyle", exit_on_error=exit_on_error)
+
         build_utils.run(f"{command_prefix} pydocstyle src", exit_on_error=exit_on_error)
 
         # Run linters and checks
     if mypy:
+        if not command_prefix:
+            # Check twine command
+            build_utils.command_exists("mypy", exit_on_error=exit_on_error)
+
         build_utils.run(f"{command_prefix} mypy src", exit_on_error=exit_on_error)
 
     if flake8:
+        if not command_prefix:
+            # Check twine command
+            build_utils.command_exists("flake8", exit_on_error=exit_on_error)
+
         build_utils.run(
             f"{command_prefix} flake8 --show-source --statistics src",
             exit_on_error=exit_on_error,
@@ -235,6 +276,9 @@ def code_checks(
         )
 
     if safety:
+        # Check pipenv command
+        build_utils.command_exists("pipenv", exit_on_error=exit_on_error)
+
         # Check using pipenv (runs safety check)
         build_utils.run("pipenv check", exit_on_error=exit_on_error)
 
@@ -289,6 +333,9 @@ def build_distribution(exit_on_error: bool = True) -> None:
     build_utils.run(
         "python setup.py sdist bdist_wheel clean --all", exit_on_error=exit_on_error
     )
+
+    # Check twine command
+    build_utils.command_exists("twine", exit_on_error=exit_on_error)
 
     # Check the archives with twine
     build_utils.run("twine check dist/*", exit_on_error=exit_on_error)

@@ -86,6 +86,38 @@ def log(message: str) -> None:
     print(message, flush=True)
 
 
+def command_exists(
+    command: str, silent: bool = False, exit_on_error: bool = False
+) -> bool:
+    """Checks whether the `command` exists and is marked as executable.
+
+    Args:
+        command (str): Command to check.
+        silent (bool): If `True`, no message will be logged in case the command does not exist. Default is `False`.
+        exit_on_error (bool, optional): Exit process if the command does not exist. Defaults to `False`.
+
+    Returns:
+        bool: `True` if the commend exist and is executable.
+    """
+
+    # Alternative:
+    # import distutils.spawn
+    # return distutils.spawn.find_executable(name)
+
+    from shutil import which
+
+    exists: bool = which(command) is not None
+
+    if not exists and not silent:
+        log(
+            f"The command {command} does not exist on the system or is not executable. Make sure to install {command}."
+        )
+        if exit_on_error:
+            exit_process(1)
+
+    return exists
+
+
 def parse_arguments(
     input_args: List[str] = None, argument_parser: argparse.ArgumentParser = None
 ) -> dict:
@@ -230,6 +262,7 @@ def create_git_tag(
         version (str): The tag to be created. Will be prefixed with 'v'.
         push (bool, optional): If true, push the tag to remote. Defaults to False.
         force (bool, optional): If true, force the tag to be created. Defaults to False.
+        exit_on_error (bool): Exit program if the tag creation fails.
 
     Returns:
         subprocess.CompletedProcess: Returns the CompletedProcess object of either the `git tag` or the `git push tag` command. If `push` is set to true, the CompletedProcess of `git tag` is returned if it failed, otherwise the CompletedProcess object from the `git push tag` command is returned.
