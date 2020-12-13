@@ -31,6 +31,9 @@ jobs:
         run: 'if [[ ! "${{ env.VERSION }}" =~ ^([0-9]+\.[0-9]+\.[0-9]+.*)$ ]]; then echo "The version is not valid: ${{ env.VERSION }}"; exit 1; fi'
       - name: set-github-token
         run: echo "::set-env name=GITHUB_TOKEN::${{ secrets.GITHUB_TOKEN }}"
+      # Set host ip to env variable to be uside within container actions
+      - name: set-host-ip
+        run: echo "::set-env name=_HOST_IP::$(hostname -I | cut -d ' ' -f 1)"
       # Fix git version for act if github token is provided
       - if: ${{ env.GITHUB_ACTOR == 'nektos/act' && env.GITHUB_TOKEN != null && env.GITHUB_TOKEN != '' }}
         name: install-latest-git
