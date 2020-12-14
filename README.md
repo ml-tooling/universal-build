@@ -26,7 +26,7 @@
   <a href="#faq--known-issues">FAQ</a>
 </p>
 
-Universal-build allows to implement your build and release pipeline with Python scripts once and run it either on your local machine, in a containerized environment via [Act](https://github.com/nektos/act), or automated via [Github Actions](https://github.com/features/actions). It supports a monorepo or polyrepo setup and can be used with any programming language or technology. It also provides a full release pipeline for automated releases with changelog generation.
+Universal-build is a set of utilities designed to build, test, package, and release software. It enables you to implement your build and release pipeline with Python scripts once and run it either on your local machine, in a containerized environment via [Act](https://github.com/nektos/act), or automated via [Github Actions](https://github.com/features/actions). It supports a monorepo or polyrepo setup and can be used with any programming language or technology. It also provides a full release pipeline for automated releases with changelog generation.
 
 > _**WIP**: This project is still an alpha version and not ready for general usage._
 
