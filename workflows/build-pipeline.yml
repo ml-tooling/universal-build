@@ -1,4 +1,4 @@
-# Based on universal-build version: 0.6.6
+# Based on https://github.com/ml-tooling/universal-build/blob/v0.6.6/workflows/build-pipeline.yml
 name: build-pipeline
 
 on:
