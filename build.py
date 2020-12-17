@@ -110,7 +110,6 @@ if __name__ == "__main__":
 
     if args.get(build_utils.FLAG_RELEASE):
         # Run main without release to see whether everthing can be built and all tests run through
-        # Run args without release to see whether everthing can be built and all tests run through
         args = dict(args)
         args[build_utils.FLAG_RELEASE] = False
         main(args)
