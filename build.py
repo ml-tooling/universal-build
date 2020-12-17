@@ -80,7 +80,12 @@ def main(args: dict) -> None:
             build_utils.replace_in_files(
                 previous_version,
                 version,
-                file_paths=["./actions/build-environment/Dockerfile", "./README.md"],
+                file_paths=[
+                    "./actions/build-environment/Dockerfile",
+                    "./README.md",
+                    "./workflows/build-pipeline.yml",
+                    "./workflows/release-pipeline.yml",
+                ],
                 regex=False,
                 exit_on_error=True,
             )
