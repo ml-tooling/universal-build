@@ -10,6 +10,7 @@ if [ -z "$BUILD_ARGS" ]; then
 fi
 
 if [ -n "$GITHUB_TOKEN" ]; then
+    echo "GitHub Token provided. Setting up GitHub URLs..."
     # Use the github token to authenticate the git interaction (see this Stackoverflow answer: https://stackoverflow.com/a/57229018/5379273)
     git config --global url."https://api:$GITHUB_TOKEN@github.com/".insteadOf "https://github.com/"
     git config --global url."https://ssh:$GITHUB_TOKEN@github.com/".insteadOf "ssh://git@github.com/"
@@ -19,6 +20,7 @@ if [ -n "$GITHUB_TOKEN" ]; then
 fi
 
 if [ -n "$INPUT_CONTAINER_REGISTRY_USERNAME" ] && [ -n "$INPUT_CONTAINER_REGISTRY_PASSWORD" ]; then
+    echo "Container registry credentials provided. Logging in to registry..."
     docker login $INPUT_CONTAINER_REGISTRY_URL -u "$INPUT_CONTAINER_REGISTRY_USERNAME" -p "$INPUT_CONTAINER_REGISTRY_PASSWORD"
 
     if [ -n "$INPUT_CONTAINER_REGISTRY_URL" ]; then
