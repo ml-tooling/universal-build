@@ -220,38 +220,64 @@ def code_checks(
     if is_pipenv_environment():
         command_prefix = "pipenv run"
 
+    successful: bool = True
+
     if black:
         if not command_prefix:
             # Check twine command
             build_utils.command_exists("black", exit_on_error=exit_on_error)
 
-        build_utils.run(
-            f"{command_prefix} black --check src", exit_on_error=exit_on_error
-        )
-        build_utils.run(
-            f"{command_prefix} black --check tests", exit_on_error=exit_on_error
-        )
+        if (
+            build_utils.run(
+                f"{command_prefix} black --check src", exit_on_error=False
+            ).returncode
+            > 0
+        ):
+            successful = False
+
+        if (
+            build_utils.run(
+                f"{command_prefix} black --check tests", exit_on_error=False
+            ).returncode
+            > 0
+        ):
+            successful = False
 
     if isort:
         if not command_prefix:
             # Check twine command
             build_utils.command_exists("isort", exit_on_error=exit_on_error)
 
-        build_utils.run(
-            f"{command_prefix} isort --profile black --check-only src",
-            exit_on_error=exit_on_error,
-        )
-        build_utils.run(
-            f"{command_prefix} isort --profile black --check-only tests",
-            exit_on_error=exit_on_error,
-        )
+        if (
+            build_utils.run(
+                f"{command_prefix} isort --profile black --check-only src",
+                exit_on_error=False,
+            ).returncode
+            > 0
+        ):
+            successful = False
+
+        if (
+            build_utils.run(
+                f"{command_prefix} isort --profile black --check-only tests",
+                exit_on_error=False,
+            ).returncode
+            > 0
+        ):
+            successful = False
 
     if pydocstyle:
         if not command_prefix:
             # Check twine command
             build_utils.command_exists("pydocstyle", exit_on_error=exit_on_error)
 
-        build_utils.run(f"{command_prefix} pydocstyle src", exit_on_error=exit_on_error)
+        if (
+            build_utils.run(
+                f"{command_prefix} pydocstyle src", exit_on_error=False
+            ).returncode
+            > 0
+        ):
+            successful = False
 
         # Run linters and checks
     if mypy:
@@ -259,28 +285,50 @@ def code_checks(
             # Check twine command
             build_utils.command_exists("mypy", exit_on_error=exit_on_error)
 
-        build_utils.run(f"{command_prefix} mypy src", exit_on_error=exit_on_error)
+        if (
+            build_utils.run(
+                f"{command_prefix} mypy src", exit_on_error=False
+            ).returncode
+            > 0
+        ):
+            successful = False
 
     if flake8:
         if not command_prefix:
             # Check twine command
             build_utils.command_exists("flake8", exit_on_error=exit_on_error)
 
-        build_utils.run(
-            f"{command_prefix} flake8 --show-source --statistics src",
-            exit_on_error=exit_on_error,
-        )
-        build_utils.run(
-            f"{command_prefix} flake8 --show-source --statistics tests",
-            exit_on_error=exit_on_error,
-        )
+        if (
+            build_utils.run(
+                f"{command_prefix} flake8 --show-source --statistics src",
+                exit_on_error=False,
+            ).returncode
+            > 0
+        ):
+            successful = False
+
+        if (
+            build_utils.run(
+                f"{command_prefix} flake8 --show-source --statistics tests",
+                exit_on_error=False,
+            ).returncode
+            > 0
+        ):
+            successful = False
 
     if safety:
         # Check pipenv command
         build_utils.command_exists("pipenv", exit_on_error=exit_on_error)
 
         # Check using pipenv (runs safety check)
-        build_utils.run("pipenv check", exit_on_error=exit_on_error)
+        if build_utils.run("pipenv check", exit_on_error=False).returncode > 0:
+            successful = False
+
+    if not successful:
+        build_utils.log(
+            "Style and linting checks failed. Please check the logs and fix the issues."
+        )
+        build_utils.exit_process(1)
 
 
 def update_version(module_path: str, version: str, exit_on_error: bool = True) -> None:
