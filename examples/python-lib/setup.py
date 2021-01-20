@@ -9,7 +9,7 @@ from setuptools import find_packages, setup  # type: ignore
 
 # TODO: Update the package meta-data
 NAME = "python-lib"
-MAIN_PACKAGE = NAME  # Change if main package != NAME
+MAIN_PACKAGE = "template_package"
 DESCRIPTION = "Python package template."
 URL = "https://github.com/mltooling/project-template"
 EMAIL = "team@mltooling.org"
