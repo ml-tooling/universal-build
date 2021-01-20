@@ -59,7 +59,7 @@ args = build_utils.parse_arguments()
 version = args.get(build_utils.FLAG_VERSION)
 
 if args.get(build_utils.FLAG_MAKE):
-    build_utils.log("Build the componet:")
+    build_utils.log("Build the component:")
     build_utils.run("yarn build")
 
 if args.get(build_utils.FLAG_CHECK):
@@ -77,7 +77,7 @@ if args.get(build_utils.FLAGE_RELEASE):
 
 ```
 
-Next, copy the [`build-environment`](https://github.com/ml-tooling/universal-build/blob/main/actions/build-environment) action from the [actions](https://github.com/ml-tooling/universal-build/tree/main/actions) folder into the  `.github/actions` folder of your repository. In addition, you need to copy the [build-](https://github.com/ml-tooling/universal-build/blob/main/workflows/build-pipeline.yml) and [release-pipeline](https://github.com/ml-tooling/universal-build/blob/main/workflows/release-pipeline.yml) workflows from the [workflows](https://github.com/ml-tooling/universal-build/tree/main/workflows) folder into the `.github/workflows` folder of your repository as well. Your repository should now contain atleast the following files:
+Next, copy the [`build-environment`](https://github.com/ml-tooling/universal-build/blob/main/actions/build-environment) action from the [actions](https://github.com/ml-tooling/universal-build/tree/main/actions) folder into the `.github/actions` folder of your repository. In addition, you need to copy the [build-](https://github.com/ml-tooling/universal-build/blob/main/workflows/build-pipeline.yml) and [release-pipeline](https://github.com/ml-tooling/universal-build/blob/main/workflows/release-pipeline.yml) workflows from the [workflows](https://github.com/ml-tooling/universal-build/tree/main/workflows) folder into the `.github/workflows` folder of your repository as well. Your repository should now contain atleast the following files:
 
 ```
 your-repository
@@ -104,13 +104,13 @@ You can find a more detailed example project with multiple components in the [ex
 
 This project is maintained by [Benjamin Räthlein](https://twitter.com/raethlein), [Lukas Masuch](https://twitter.com/LukasMasuch), and [Jan Kalkan](https://www.linkedin.com/in/jan-kalkan-b5390284/). Please understand that we won't be able to provide individual support via email. We also believe that help is much more valuable if it's shared publicly so that more people can benefit from it.
 
-| Type                     | Channel                                              |
-| ------------------------ | ------------------------------------------------------ |
-| 🚨&nbsp; **Bug Reports**       | <a href="https://github.com/ml-tooling/universal-build/issues?utf8=%E2%9C%93&q=is%3Aopen+is%3Aissue+label%3Abug+sort%3Areactions-%2B1-desc+" title="Open Bug Report"><img src="https://img.shields.io/github/issues/ml-tooling/universal-build/bug.svg?label=bug"></a>                                 |
-| 🎁&nbsp; **Feature Requests**  | <a href="https://github.com/ml-tooling/universal-build/issues?q=is%3Aopen+is%3Aissue+label%3Afeature+sort%3Areactions-%2B1-desc" title="Open Feature Request"><img src="https://img.shields.io/github/issues/ml-tooling/universal-build/feature.svg?label=feature%20request"></a>                                 |
-| 👩‍💻&nbsp; **Usage Questions**   |   <a href="https://stackoverflow.com/questions/tagged/ml-tooling" title="Open Question on Stackoverflow"><img src="https://img.shields.io/badge/stackoverflow-ml--tooling-orange.svg"></a> <a href="https://gitter.im/ml-tooling/universal-build" title="Chat on Gitter"><img src="https://badges.gitter.im/ml-tooling/universal-build.svg"></a> |
-| 🗯&nbsp; **General Discussion** | <a href="https://gitter.im/ml-tooling/universal-build" title="Chat on Gitter"><img src="https://badges.gitter.im/ml-tooling/universal-build.svg"></a> <a href="https://twitter.com/mltooling" title="ML Tooling on Twitter"><img src="https://img.shields.io/twitter/follow/mltooling.svg?style=social"></a>|
-| ❓&nbsp; **Other Requests** | <a href="mailto:team@mltooling.org" title="Email ML Tooling Team"><img src="https://img.shields.io/badge/email-ML Tooling-green?logo=mail.ru&logoColor=white"></a> |
+| Type                           | Channel                                                                                                                                                                                                                                                                                                                                        |
+| ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 🚨&nbsp; **Bug Reports**       | <a href="https://github.com/ml-tooling/universal-build/issues?utf8=%E2%9C%93&q=is%3Aopen+is%3Aissue+label%3Abug+sort%3Areactions-%2B1-desc+" title="Open Bug Report"><img src="https://img.shields.io/github/issues/ml-tooling/universal-build/bug.svg?label=bug"></a>                                                                         |
+| 🎁&nbsp; **Feature Requests**  | <a href="https://github.com/ml-tooling/universal-build/issues?q=is%3Aopen+is%3Aissue+label%3Afeature+sort%3Areactions-%2B1-desc" title="Open Feature Request"><img src="https://img.shields.io/github/issues/ml-tooling/universal-build/feature.svg?label=feature%20request"></a>                                                              |
+| 👩‍💻&nbsp; **Usage Questions**   | <a href="https://stackoverflow.com/questions/tagged/ml-tooling" title="Open Question on Stackoverflow"><img src="https://img.shields.io/badge/stackoverflow-ml--tooling-orange.svg"></a> <a href="https://gitter.im/ml-tooling/universal-build" title="Chat on Gitter"><img src="https://badges.gitter.im/ml-tooling/universal-build.svg"></a> |
+| 🗯&nbsp; **General Discussion** | <a href="https://gitter.im/ml-tooling/universal-build" title="Chat on Gitter"><img src="https://badges.gitter.im/ml-tooling/universal-build.svg"></a> <a href="https://twitter.com/mltooling" title="ML Tooling on Twitter"><img src="https://img.shields.io/twitter/follow/mltooling.svg?style=social"></a>                                   |
+| ❓&nbsp; **Other Requests**    | <a href="mailto:team@mltooling.org" title="Email ML Tooling Team"><img src="https://img.shields.io/badge/email-ML Tooling-green?logo=mail.ru&logoColor=white"></a>                                                                                                                                                                             |
 
 ---
 
@@ -140,7 +140,7 @@ python build.py [OPTIONS]
 - `--make`: Make/compile/package all artifacts.
 - `--test`: Run unit and integration tests.
 - `--check`: Run linting and style checks.
-- `--release`: Release all artifacts (e.g. to  registries like DockerHub or NPM).
+- `--release`: Release all artifacts (e.g. to registries like DockerHub or NPM).
 - `--run`: Run the component in development mode (e.g. dev server).
 - `--version VERSION`: Version of the build (`MAJOR.MINOR.PATCH-TAG`).
 - `--force`: Ignore all enforcements and warnings.
@@ -171,16 +171,16 @@ if args.get(build_utils.FLAG_TEST):
 
 The following list contains all of the default flags currently supported by universal-build:
 
-| Flag  | Type | Description |
-| --- | --- | --- |
-|  `FLAG_MAKE`  | `bool` | Build/compile/package all artifacts. |
-|  `FLAG_CHECK`  | `bool` | Run linting and style checks. |
-|  `FLAG_TEST`  | `bool` | Run unit and integration tests. |
-|  `FLAG_RELEASE`  | `bool` | Release all artifacts (e.g. to  registries like DockerHub or NPM). |
-|  `FLAG_RUN`  | `bool` | Run the component in development mode (e.g. dev server). |
-|  `FLAG_FORCE`  | `bool` | Ignore all enforcements and warnings. |
-|  `FLAG_VERSION`  | `str` | Semantic version for the build. If not provided via CLI arguments, a valid dev version will be automatically calculated. |
-|  `FLAG_TEST_MARKER`  | `List[str]` | Custom markers for testing. Can be used to skip or execute certain tests. |
+| Flag               | Type        | Description                                                                                                              |
+| ------------------ | ----------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `FLAG_MAKE`        | `bool`      | Build/compile/package all artifacts.                                                                                     |
+| `FLAG_CHECK`       | `bool`      | Run linting and style checks.                                                                                            |
+| `FLAG_TEST`        | `bool`      | Run unit and integration tests.                                                                                          |
+| `FLAG_RELEASE`     | `bool`      | Release all artifacts (e.g. to registries like DockerHub or NPM).                                                        |
+| `FLAG_RUN`         | `bool`      | Run the component in development mode (e.g. dev server).                                                                 |
+| `FLAG_FORCE`       | `bool`      | Ignore all enforcements and warnings.                                                                                    |
+| `FLAG_VERSION`     | `str`       | Semantic version for the build. If not provided via CLI arguments, a valid dev version will be automatically calculated. |
+| `FLAG_TEST_MARKER` | `List[str]` | Custom markers for testing. Can be used to skip or execute certain tests.                                                |
 
 ### API Reference
 
@@ -395,10 +395,10 @@ if args.get(build_utils.FLAG_RELEASE):
 
 The [`build_python.parse_arguments()`](https://github.com/ml-tooling/universal-build/blob/main/docs/universal_build.helpers.build_python.md#function-parse_arguments) argument parser has the following additional flags:
 
-| Flag  |  Type  | Description |
-| --- | --- | --- |
-|  `FLAG_PYPI_TOKEN`  | `str` | Personal access token for PyPI account. |
-|  `FLAG_PYPI_REPOSITORY`  | `str` | PyPI repository for publishing artifacts. |
+| Flag                   | Type  | Description                               |
+| ---------------------- | ----- | ----------------------------------------- |
+| `FLAG_PYPI_TOKEN`      | `str` | Personal access token for PyPI account.   |
+| `FLAG_PYPI_REPOSITORY` | `str` | PyPI repository for publishing artifacts. |
 
 And the following additional CLI options:
 
@@ -432,9 +432,9 @@ if args.get(build_utils.FLAG_RELEASE):
 
 The [`build_docker.parse_arguments()`](https://github.com/ml-tooling/universal-build/blob/main/docs/universal_build.helpers.build_docker.md#function-parse_arguments) argument parser has the following additional flags:
 
-| Flag  |  Type  | Description |
-| --- | --- | --- |
-|  `FLAG_DOCKER_IMAGE_PREFIX`  | `str` | Docker image prefix. This should be used to define the container registry where the image should be pushed to. |
+| Flag                       | Type  | Description                                                                                                    |
+| -------------------------- | ----- | -------------------------------------------------------------------------------------------------------------- |
+| `FLAG_DOCKER_IMAGE_PREFIX` | `str` | Docker image prefix. This should be used to define the container registry where the image should be pushed to. |
 
 And the following additional CLI options:
 
@@ -442,7 +442,7 @@ And the following additional CLI options:
 
 ### MkDocs Utilities
 
-The [`build_mkdocs`](https://github.com/ml-tooling/universal-build/blob/main/docs/universal_build.helpers.build_mkdocs.md) module of universal-build provides a collection of utilities to simplify the process of building and releasing MkDocs documentation. Refer to the [API documentation](https://github.com/ml-tooling/universal-build/blob/main/docs/universal_build.helpers.build_mkdocs.md) for full documentation on all MkDocs utilities. An example for a build script for  MkDocs documentation is shown below:
+The [`build_mkdocs`](https://github.com/ml-tooling/universal-build/blob/main/docs/universal_build.helpers.build_mkdocs.md) module of universal-build provides a collection of utilities to simplify the process of building and releasing MkDocs documentation. Refer to the [API documentation](https://github.com/ml-tooling/universal-build/blob/main/docs/universal_build.helpers.build_mkdocs.md) for full documentation on all MkDocs utilities. An example for a build script for MkDocs documentation is shown below:
 
 ```python
 from universal_build import build_utils
@@ -623,7 +623,7 @@ container_ip=$(docker inspect $container_id | jq -r '.[0].NetworkSettings.Networ
 
 > Note that the tool `jq` has to be installed. If you run a python script and use the Docker client, the command looks different, of course.
 
-When you don't put starting containers into a custom network, the container is now reachable from the host (GitHub Actions & Act) as well as other containers under this `$container_ip` address. Yet, it is *not* reachable from your local machine (e.g. your Mac). For that, you have to publish the port and use the `$_HOST_IP` address as explained above. The host port should be assigned randomly so that the setup is as host-independent as possible. To dynamically get the random port you can get it in the following way via bash:
+When you don't put starting containers into a custom network, the container is now reachable from the host (GitHub Actions & Act) as well as other containers under this `$container_ip` address. Yet, it is _not_ reachable from your local machine (e.g. your Mac). For that, you have to publish the port and use the `$_HOST_IP` address as explained above. The host port should be assigned randomly so that the setup is as host-independent as possible. To dynamically get the random port you can get it in the following way via bash:
 
 ```bash
 container_id=<CONTAINER-ID-OR-NAME>
