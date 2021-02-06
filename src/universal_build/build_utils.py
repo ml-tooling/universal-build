@@ -333,11 +333,7 @@ def run(  # type: ignore
     log(f"Executing: {command}")
 
     with subprocess.Popen(  # type: ignore
-        command,
-        shell=True,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        text=True,
+        command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
     ) as process:
         try:
             stdout = ""
@@ -515,9 +511,7 @@ def _get_default_cli_arguments_parser(
         f"--{FLAG_TEST}", help="Run unit and integration tests", action="store_true"
     )
     parser.add_argument(
-        f"--{FLAG_CHECK}",
-        help="Run linting and style checks.",
-        action="store_true",
+        f"--{FLAG_CHECK}", help="Run linting and style checks.", action="store_true"
     )
     parser.add_argument(
         f"--{FLAG_RELEASE}",
@@ -697,7 +691,8 @@ def _get_current_branch_version(
 
 def _get_dev_suffix(branch_name: Optional[str]) -> str:
     branch_name = branch_name or ""
-    return "dev." + branch_name
+    # New format as pip changed it's version schema (see https://github.com/pypa/pip/issues/9188 , https://www.python.org/dev/peps/pep-0440/)
+    return f".dev1+{branch_name}"
 
 
 class _VersionInvalidFormatException(Exception):
