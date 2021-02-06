@@ -9,6 +9,7 @@
 - [`universal_build.helpers.build_docker`](./universal_build.helpers.build_docker.md#module-universal_buildhelpersbuild_docker): Utilities to help building Docker images.
 - [`universal_build.helpers.build_mkdocs`](./universal_build.helpers.build_mkdocs.md#module-universal_buildhelpersbuild_mkdocs): Utilities to help building MkDocs documentations.
 - [`universal_build.helpers.build_python`](./universal_build.helpers.build_python.md#module-universal_buildhelpersbuild_python): Utilities to help building Python libraries.
+- [`universal_build.openapi_utils`](./universal_build.openapi_utils.md#module-universal_buildopenapi_utils): OpenAPI utilities.
 
 ## Classes
 
@@ -46,6 +47,9 @@
 - [`build_python.publish_pypi_distribution`](./universal_build.helpers.build_python.md#function-publish_pypi_distribution): Publish distribution to pypi.
 - [`build_python.test_with_py_version`](./universal_build.helpers.build_python.md#function-test_with_py_version): Run pytest in a environment wiht the specified python version.
 - [`build_python.update_version`](./universal_build.helpers.build_python.md#function-update_version): Update version in specified module.
+- [`openapi_utils.copy_openapi_client`](./universal_build.openapi_utils.md#function-copy_openapi_client): Copy the files, e.g. a generated OpenAPI client, from `source_dir` to `target_dir`.
+- [`openapi_utils.generate_openapi_client`](./universal_build.openapi_utils.md#function-generate_openapi_client): Generate an open api client.
+- [`openapi_utils.generate_openapi_js_client`](./universal_build.openapi_utils.md#function-generate_openapi_js_client): Calls `generate_openapi_client` to generate a javascript client with the swagger properties "useES6=true".
 
 
 ---
