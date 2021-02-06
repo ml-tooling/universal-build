@@ -54,6 +54,15 @@ class _Version:
         suffix = "" if not self.suffix else "-" + self.suffix
         return f"{self.major}.{self.minor}.{self.patch}{suffix}"
 
+    def to_pip_compatible_string(self) -> str:
+        return _Version.get_pip_compatible_string(self.to_string())
+
+    @staticmethod
+    def get_pip_compatible_string(version: str) -> str:
+        # See pip's version schema (see https://github.com/pypa/pip/issues/9188 , https://www.python.org/dev/peps/pep-0440/)
+        # pip compatible string: r"^v?([0-9]+)\.([0-9]+)\.([0-9]+)(?:\.[0-9A-Za-z]+)*?(?:\+[0-9A-Za-z-]+)?$"
+        return version.replace("-dev.", ".dev1+")
+
     @staticmethod
     def get_version_from_string(version: str) -> Optional["_Version"]:
         version_match = _Version.is_valid_version_format(version)
@@ -196,6 +205,7 @@ def parse_arguments(
             version.patch = 0
             # Apply dev prefix
             version.suffix = _get_dev_suffix(_get_current_branch()[0])
+
     elif args.get(FLAG_RELEASE) is False and args.get(FLAG_FORCE) is False and version:
         version.suffix = _get_dev_suffix(_get_current_branch()[0])
 
@@ -614,7 +624,6 @@ def _get_latest_branch_version() -> Optional[_Version]:
         disable_stdout_logging=True,
         exit_on_error=False,
     )
-
     return _Version.get_version_from_string(result.stdout.rstrip("\n"))
 
 
@@ -691,8 +700,7 @@ def _get_current_branch_version(
 
 def _get_dev_suffix(branch_name: Optional[str]) -> str:
     branch_name = branch_name or ""
-    # New format as pip changed it's version schema (see https://github.com/pypa/pip/issues/9188 , https://www.python.org/dev/peps/pep-0440/)
-    return f".dev1+{branch_name}"
+    return "dev." + branch_name
 
 
 class _VersionInvalidFormatException(Exception):
