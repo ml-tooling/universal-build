@@ -9,7 +9,7 @@
 - [`universal_build.helpers.build_docker`](./universal_build.helpers.build_docker.md#module-universal_buildhelpersbuild_docker): Utilities to help building Docker images.
 - [`universal_build.helpers.build_mkdocs`](./universal_build.helpers.build_mkdocs.md#module-universal_buildhelpersbuild_mkdocs): Utilities to help building MkDocs documentations.
 - [`universal_build.helpers.build_python`](./universal_build.helpers.build_python.md#module-universal_buildhelpersbuild_python): Utilities to help building Python libraries.
-- [`universal_build.openapi_utils`](./universal_build.openapi_utils.md#module-universal_buildopenapi_utils): OpenAPI utilities.
+- [`universal_build.helpers.openapi_utils`](./universal_build.helpers.openapi_utils.md#module-universal_buildhelpersopenapi_utils): OpenAPI utilities.
 
 ## Classes
 
@@ -19,8 +19,9 @@
 
 - [`build_utils.build`](./universal_build.build_utils.md#function-build): Run the build logic of the specified component, except if the path is a (sub-)path in skipped-paths.
 - [`build_utils.command_exists`](./universal_build.build_utils.md#function-command_exists): Checks whether the `command` exists and is marked as executable.
+- [`build_utils.copy`](./universal_build.build_utils.md#function-copy): Copy the files from source to target.
 - [`build_utils.create_git_tag`](./universal_build.build_utils.md#function-create_git_tag): Create an annotated git tag in the current HEAD via `git tag` and the provided version.
-- [`build_utils.duplicate_folder`](./universal_build.build_utils.md#function-duplicate_folder): Duplicate a folder into another folder.
+- [`build_utils.duplicate_folder`](./universal_build.build_utils.md#function-duplicate_folder): Deprecated. Use `build_utils.copy` instead.
 - [`build_utils.exit_process`](./universal_build.build_utils.md#function-exit_process): Exit the process with exit code.
 - [`build_utils.get_latest_version`](./universal_build.build_utils.md#function-get_latest_version): Returns the latest version based on Git tags.
 - [`build_utils.log`](./universal_build.build_utils.md#function-log): Log message to stdout.
@@ -47,9 +48,8 @@
 - [`build_python.publish_pypi_distribution`](./universal_build.helpers.build_python.md#function-publish_pypi_distribution): Publish distribution to pypi.
 - [`build_python.test_with_py_version`](./universal_build.helpers.build_python.md#function-test_with_py_version): Run pytest in a environment wiht the specified python version.
 - [`build_python.update_version`](./universal_build.helpers.build_python.md#function-update_version): Update version in specified module.
-- [`openapi_utils.copy_openapi_client`](./universal_build.openapi_utils.md#function-copy_openapi_client): Copy the files, e.g. a generated OpenAPI client, from `source_dir` to `target_dir`.
-- [`openapi_utils.generate_openapi_client`](./universal_build.openapi_utils.md#function-generate_openapi_client): Generate an open api client.
-- [`openapi_utils.generate_openapi_js_client`](./universal_build.openapi_utils.md#function-generate_openapi_js_client): Calls `generate_openapi_client` to generate a javascript client with the swagger properties "useES6=true".
+- [`openapi_utils.generate_openapi_client`](./universal_build.helpers.openapi_utils.md#function-generate_openapi_client): Generate an open api client.
+- [`openapi_utils.generate_openapi_js_client`](./universal_build.helpers.openapi_utils.md#function-generate_openapi_js_client): Calls `generate_openapi_client` to generate a javascript client with the swagger properties "useES6=true".
 
 
 ---
