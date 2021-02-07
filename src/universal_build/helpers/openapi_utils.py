@@ -1,12 +1,11 @@
 """OpenAPI utilities."""
 
 import pathlib
-import shutil
 from typing import Union
 
 import urllib3
 
-from . import build_utils
+from universal_build import build_utils
 
 
 def _check_and_download_swagger_cli(file_path: str) -> bool:
@@ -85,45 +84,3 @@ def generate_openapi_js_client(
         swagger_target_language="javascript",
         swagger_additional_properties="useES6=true",
     )
-
-
-def copy_openapi_client(source_dir: str, target_dir: str) -> bool:
-    """Copy the files, e.g. a generated OpenAPI client, from `source_dir` to `target_dir`.
-
-    It will copy all files in the source directory to the target directory. If a file or directory with the same name
-    exists at the target, it will be deleted first. Required directories will be created at the target so that the structure is preserved.
-
-    Example:
-    ```
-    copy_openapi_client(
-        source_dir="./temp/generated-openapi-client/src/",
-        target_dir="./webapp/src/services/example-client/"
-    )
-    ```
-
-    Args:
-        source_dir (str): The source directory from which the files will be copied.
-        target_dir (str): The target directory to which the files will be copied.
-
-    Returns:
-        bool: Returns True if the copy process was successful and False otherwise.
-    """
-    try:
-        for file in pathlib.Path(f"{source_dir}").iterdir():
-            file_name = str(file.parts[-1])
-            target_file_path = f"{target_dir}{file_name}"
-            print(target_file_path)
-            # Delete existing client files to be replaced with the new ones
-            path = pathlib.Path(target_file_path)
-            if path.exists():
-                if path.is_file():
-                    path.unlink()
-                elif path.is_dir():
-                    shutil.rmtree(target_file_path)
-            else:
-                path.mkdir(parents=True, exist_ok=True)
-            shutil.move(str(file), target_file_path)
-    except FileNotFoundError as e:
-        build_utils.log(str(e))
-        return False
-    return True

@@ -2,6 +2,7 @@
 
 import argparse
 import os
+import pathlib
 import re
 import shutil
 import subprocess
@@ -441,24 +442,79 @@ def get_latest_version() -> Optional[str]:
 
 
 def duplicate_folder(
-    src_path: str, target_path: str, exit_on_error: bool = True
-) -> None:
-    """Duplicate a folder into another folder.
+    src_path: str,
+    target_path: str,
+    preserve_target: bool = False,
+    exit_on_error: bool = True,
+) -> bool:
+    """Deprecated. Use `build_utils.copy` instead."""
+    return copy(src_path, target_path, preserve_target, exit_on_error)
+
+
+def copy(
+    src_path: str,
+    target_path: str,
+    preserve_target: bool = False,
+    exit_on_error: bool = True,
+) -> bool:
+    """Copy the files from source to target.
+
+    Depending on the mode, it will either completely replace the target path with the source path or it will copy all files of the source directory to the target directory.
+    If `preserve_target` is `True`, if a file or directory with the same name exists at the target, it will be deleted first. Required directories will be created at the target so that the structure is preserved.
+
+    Example:
+    ```
+    copy_openapi_client(
+        source_dir="./temp/generated-openapi-client/src/",
+        target_dir="./webapp/src/services/example-client/"
+    )
+    ```
 
     Args:
         src_path (str): Source path to duplicate.
         target_path (str): Target path to move the source folder.
             The existing content in the folder will be deleted.
+        preserve_target (bool, optional): If `True`, the files/directories of the source target will be put into the target path instead of replacing the target directory.
         exit_on_error (bool, optional): If `True`, exit process as soon as error occures. Defaults to True.
+
+    Returns:
+        bool: Returns `True` if the copy process was successful and `False` otherwise; if `exit_on_error` is True, the process exists instead of returning `False`.
     """
-    try:
-        if os.path.exists(target_path):
-            shutil.rmtree(target_path)
-        shutil.copytree(src_path, target_path)
-    except Exception as ex:
-        log("Failed to duplicate folder: " + str(ex))
-        if exit_on_error:
-            exit_process(1)
+    if preserve_target:
+        try:
+            for file in pathlib.Path(f"{src_path}").iterdir():
+                file_name = str(file.parts[-1])
+                target_file_path = f"{target_path}{file_name}"
+                print(target_file_path)
+                # Delete existing client files to be replaced with the new ones
+                path = pathlib.Path(target_file_path)
+                if path.exists():
+                    if path.is_file():
+                        path.unlink()
+                    elif path.is_dir():
+                        shutil.rmtree(target_file_path)
+                else:
+                    path.mkdir(parents=True, exist_ok=True)
+                shutil.move(str(file), target_file_path)
+        except FileNotFoundError as e:
+            log(str(e))
+            if exit_on_error:
+                exit_process(1)
+            else:
+                return False
+    else:
+        try:
+            if os.path.exists(target_path):
+                shutil.rmtree(target_path)
+            shutil.copytree(src_path, target_path)
+        except Exception as ex:
+            log("Failed to duplicate folder: " + str(ex))
+            if exit_on_error:
+                exit_process(1)
+            else:
+                return False
+
+    return True
 
 
 # Private functions
