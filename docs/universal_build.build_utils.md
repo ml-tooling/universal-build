@@ -26,7 +26,7 @@ Universal build utilities.
 
 ---
 
-<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/build_utils.py#L89"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/build_utils.py#L90"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `log`
 
@@ -45,7 +45,7 @@ Log message to stdout.
 
 ---
 
-<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/build_utils.py#L98"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/build_utils.py#L99"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `command_exists`
 
@@ -76,7 +76,7 @@ Checks whether the `command` exists and is marked as executable.
 
 ---
 
-<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/build_utils.py#L130"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/build_utils.py#L131"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `parse_arguments`
 
@@ -107,7 +107,7 @@ Sanitized means that, for example, the version is already checked and set depend
 
 ---
 
-<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/build_utils.py#L263"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/build_utils.py#L264"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `create_git_tag`
 
@@ -142,7 +142,7 @@ The version will be prefixed with 'v'. If push is set, the tag is pushed to remo
 
 ---
 
-<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/build_utils.py#L300"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/build_utils.py#L301"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `build`
 
@@ -162,7 +162,7 @@ Run the build logic of the specified component, except if the path is a (sub-)pa
 
 ---
 
-<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/build_utils.py#L322"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/build_utils.py#L323"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `run`
 
@@ -196,7 +196,7 @@ Run a specified command.
 
 ---
 
-<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/build_utils.py#L377"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/build_utils.py#L378"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `exit_process`
 
@@ -211,7 +211,7 @@ Exit the process with exit code.
 
 ---
 
-<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/build_utils.py#L392"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/build_utils.py#L393"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `replace_in_files`
 
@@ -240,7 +240,7 @@ Replaces a string or regex occurence in a collection of files.
 
 ---
 
-<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/build_utils.py#L433"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/build_utils.py#L434"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `get_latest_version`
 
@@ -253,7 +253,7 @@ Returns the latest version based on Git tags.
 
 ---
 
-<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/build_utils.py#L443"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/build_utils.py#L444"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `duplicate_folder`
 
@@ -261,11 +261,42 @@ Returns the latest version based on Git tags.
 duplicate_folder(
     src_path: str,
     target_path: str,
+    preserve_target: bool = False,
     exit_on_error: bool = True
-) → None
+) → bool
 ```
 
-Duplicate a folder into another folder. 
+Deprecated. Use `build_utils.copy` instead. 
+
+
+---
+
+<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/build_utils.py#L454"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+
+## <kbd>function</kbd> `copy`
+
+```python
+copy(
+    src_path: str,
+    target_path: str,
+    preserve_target: bool = False,
+    exit_on_error: bool = True
+) → bool
+```
+
+Copy the files from source to target. 
+
+Depending on the mode, it will either completely replace the target path with the source path or it will copy all files of the source directory to the target directory. If `preserve_target` is `True`, if a file or directory with the same name exists at the target, it will be deleted first. Required directories will be created at the target so that the structure is preserved. 
+
+
+
+**Example:**
+ ```
+copy_openapi_client(
+     source_dir="./temp/generated-openapi-client/src/",
+     target_dir="./webapp/src/services/example-client/"
+)
+``` 
 
 
 
@@ -273,7 +304,14 @@ Duplicate a folder into another folder.
  
  - <b>`src_path`</b> (str):  Source path to duplicate. 
  - <b>`target_path`</b> (str):  Target path to move the source folder.  The existing content in the folder will be deleted. 
+ - <b>`preserve_target`</b> (bool, optional):  If `True`, the files/directories of the source target will be put into the target path instead of replacing the target directory. 
  - <b>`exit_on_error`</b> (bool, optional):  If `True`, exit process as soon as error occures. Defaults to True. 
+
+
+
+**Returns:**
+ 
+ - <b>`bool`</b>:  Returns `True` if the copy process was successful and `False` otherwise; if `exit_on_error` is True, the process exists instead of returning `False`. 
 
 
 
