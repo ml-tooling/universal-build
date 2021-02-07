@@ -22,8 +22,7 @@ def main(args: dict) -> None:
         # Update version in _about.py
         build_python.update_version(
             os.path.join(HERE, f"src/{MAIN_PACKAGE}/_about.py"),
-            # build_utils._Version.get_pip_compatible_string(str(version)),
-            str(version),
+            build_utils._Version.get_pip_compatible_string(str(version)),
         )
 
     if args.get(build_utils.FLAG_MAKE):
