@@ -13,7 +13,7 @@
 
 ## Classes
 
-- No classes
+- [`openapi_utils.OpenApiGenerator`](./universal_build.helpers.openapi_utils.md#class-openapigenerator): Enum of generators that can generate clients based on OpenAPI specifications.
 
 ## Functions
 
@@ -49,7 +49,7 @@
 - [`build_python.test_with_py_version`](./universal_build.helpers.build_python.md#function-test_with_py_version): Run pytest in a environment wiht the specified python version.
 - [`build_python.update_version`](./universal_build.helpers.build_python.md#function-update_version): Update version in specified module.
 - [`openapi_utils.generate_openapi_client`](./universal_build.helpers.openapi_utils.md#function-generate_openapi_client): Generate an open api client.
-- [`openapi_utils.generate_openapi_js_client`](./universal_build.helpers.openapi_utils.md#function-generate_openapi_js_client): Calls `generate_openapi_client` to generate a javascript client with the swagger properties "useES6=true".
+- [`openapi_utils.generate_openapi_js_client`](./universal_build.helpers.openapi_utils.md#function-generate_openapi_js_client): Calls `generate_openapi_client` to generate a javascript client.
 
 
 ---

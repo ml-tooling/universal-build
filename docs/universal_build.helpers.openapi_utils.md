@@ -5,36 +5,39 @@
 # <kbd>module</kbd> `universal_build.helpers.openapi_utils`
 OpenAPI utilities. 
 
+**Global Variables**
+---------------
+- **DEFAULT_TEMP_DIR**
 
 ---
 
-<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/helpers/openapi_utils.py#L33"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/helpers/openapi_utils.py#L92"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `generate_openapi_client`
 
 ```python
 generate_openapi_client(
     openapi_spec_file: str,
-    swagger_target_language: str,
-    swagger_additional_properties: str = '',
-    temp_dir: str = '/temp',
-    swagger_codegen_cli_path: str = None
+    target_language: str,
+    work_dir: str = '/temp',
+    client_generator: OpenApiGenerator = <OPENAPI_CODEGEN: ('openapi-generator-jar', 'https://org/maven2/org/openapitools/openapi-generator-cli/1/openapi-generator-cli-jar', 'openapi_client', 'java -jar {cli_path} generate -i {openapi_spec_file} -g {target_language} -o {output_path} {additional_properties}')>,
+    additional_properties: str = ''
 ) → Union[str, NoneType]
 ```
 
 Generate an open api client. 
 
-The passed OpenAPI specification file will be taken to generate a client using swagger for the given programming language and optional swagger properties (see the swagger cli for more information). The client will be generated at the passed `temp_dir` directory. 
+The passed OpenAPI specification file will be taken to generate a client using the passed openapi-generator for the given programming language and optional additional properties (see the respective openapi cli for more information). The client will be generated at the passed `work_dir` directory. 
 
 
 
 **Args:**
  
  - <b>`openapi_spec_file`</b> (str):  The OpenAPI specification for which the client will be generated. 
- - <b>`swagger_target_language`</b> (str):  The client's programming language (e.g. `"javascript"`). 
- - <b>`swagger_additional_properties`</b> (str, optional):  Additional properties passed to the swagger client (e.g. `"useES6=true"`) 
- - <b>`temp_dir`</b> (str, optional):  The directory in which the generated client will be placed. If it does not exist, it will be created. 
- - <b>`swagger_codegen_cli_path`</b> (str, optional):  The function requires the Java swagger codegen cli to generate the client. If no path is provided, it will try downloading it according to the `_check_and_download_swagger_cli` function. 
+ - <b>`target_language`</b> (str):  The client's programming language (e.g. `"javascript"`). 
+ - <b>`work_dir`</b> (str, optional):  The directory in which the generator cli will be looked for and also the generated client will be placed. If it does not exist, it will be created. 
+ - <b>`client_generator`</b> (OpenApiGenerator, optional):  The OpenApiGenerator which will be used to generate the client. It will check whether the cli can be found within the `work_dir` directory and if not it will try to download it according to the `_check_and_download_generator_cli` function. 
+ - <b>`additional_properties`</b> (str, optional):  Additional properties passed to the OpenAPI generator client client (e.g. `"useES6=true"`) 
 
 
 
@@ -45,20 +48,49 @@ The passed OpenAPI specification file will be taken to generate a client using s
 
 ---
 
-<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/helpers/openapi_utils.py#L74"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/helpers/openapi_utils.py#L138"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `generate_openapi_js_client`
 
 ```python
 generate_openapi_js_client(
     openapi_spec_file: str,
-    temp_dir: str = '/temp'
+    work_dir: str = '/temp',
+    client_generator: OpenApiGenerator = <OPENAPI_CODEGEN: ('openapi-generator-jar', 'https://org/maven2/org/openapitools/openapi-generator-cli/1/openapi-generator-cli-jar', 'openapi_client', 'java -jar {cli_path} generate -i {openapi_spec_file} -g {target_language} -o {output_path} {additional_properties}')>
 ) → Union[str, NoneType]
 ```
 
-Calls `generate_openapi_client` to generate a javascript client with the swagger properties "useES6=true". 
+Calls `generate_openapi_client` to generate a javascript client. 
 
 For more information, see `generate_openapi_client`. 
+
+
+---
+
+<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/helpers/openapi_utils.py#L14"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+
+## <kbd>class</kbd> `OpenApiGenerator`
+Enum of generators that can generate clients based on OpenAPI specifications. 
+
+<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/helpers/openapi_utils.py#L30"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+
+### <kbd>method</kbd> `__init__`
+
+```python
+__init__(
+    cli_name: str,
+    download_url: str,
+    client_dir_name: str,
+    generate_command: str
+)
+```
+
+
+
+
+
+
+
 
 
 
