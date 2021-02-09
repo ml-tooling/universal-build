@@ -16,11 +16,11 @@
     "default": {
         "bracex": {
             "hashes": [
-                "sha256:2d2d1b4fb868357dc0bd7680caa16c58d56ff27e5c699aab0e4b084ffbbbbbc9",
-                "sha256:4c036b4215367f6b3d4721953c6cabe512e3575b13745a3081fe9bd44926d832"
+                "sha256:01f715cd0ed7a622ec8b32322e715813f7574de531f09b70f6f3b2c10f682425",
+                "sha256:64e2a6d14de9c8e022cf40539ac8468ba7c4b99550a2b05fc87fd20e392e568f"
             ],
             "markers": "python_version >= '3.6'",
-            "version": "==2.1"
+            "version": "==2.1.1"
         },
         "click": {
             "hashes": [
@@ -342,11 +342,11 @@
         },
         "wcmatch": {
             "hashes": [
-                "sha256:00e0aeb50d283c523276e96cb4a94e083289256f72de4e9638affe970867ec3e",
-                "sha256:bb36cd1944b5a79b69631a1a5fbb5bb79299032aa9ab683e60fe4db9747dc235"
+                "sha256:4b2f5758d845d2cb391529f892201916cbb1c2ce10a447c7b7a57a2f4bb5647e",
+                "sha256:7f5e260e98f2a12c6629e487bbd36bff50ba800e153f754cea4cac834b2c1ede"
             ],
             "markers": "python_version >= '3.6'",
-            "version": "==8.0.1"
+            "version": "==8.1"
         }
     },
     "develop": {}
