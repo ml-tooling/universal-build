@@ -149,4 +149,5 @@ def generate_openapi_js_client(
         work_dir=work_dir,
         target_language="javascript",
         client_generator=client_generator,
+        additional_properties="usePromises=true",
     )
