@@ -225,7 +225,9 @@ def _load_from_env_variables(sanatized_args: dict, program_args: List[str]) -> d
             # Only load env variables for string variables
             continue
 
-        if argument.replace("_", "-") in " ".join(program_args):
+        if argument in " ".join(program_args) or argument.replace("_", "-") in " ".join(
+            program_args
+        ):
             # Argument was provided via command line arguments
             continue
 
@@ -244,9 +246,19 @@ def _concat_command_line_arguments(args: Dict[str, Union[str, bool, List[str]]])
 
     for arg in args:
         arg_value = args[arg]  # getattr(args, arg)
-        # Underscores must be converted back to dashes, since the
-        # argparser initially transforms all dashes to underscores
-        cli_arg_name = str(arg).replace("_", "-")
+
+        cli_arg_name = str(arg)
+        if not any(
+            (
+                sys_arg == f"--{str(cli_arg_name)}"
+                or sys_arg.startswith(f"--{str(cli_arg_name)}=")
+                or os.environ.get(cli_arg_name.upper())
+            )
+            for sys_arg in sys.argv
+        ):
+            # For some args the underscores must be converted back to dashes,
+            # since the argparser initially transforms all dashes to underscores
+            cli_arg_name = cli_arg_name.replace("_", "-")
         if arg_value:
             # For boolean types, the existence of the flag is enough
             if type(arg_value) == bool:
