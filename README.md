@@ -471,7 +471,7 @@ if args.get(build_utils.FLAG_RELEASE):
 Install the tools in the Dockerfile in your `.github/actions/build-environment/Dockerfile` as demonstrated in this example:
 
 ```Dockerfile
-FROM mltooling/build-environment:0.6.9
+FROM mltooling/build-environment:0.6.11
 
 # Install Go Runtime
 RUN apt-get update \
@@ -483,7 +483,7 @@ RUN apt-get update \
 You can extend or overwrite the default entrypoint with your custom entrypoint script (e.g. `extended-entrypoint.sh`) as shown below:
 
 ```Dockerfile
-FROM mltooling/build-environment:0.6.9
+FROM mltooling/build-environment:0.6.11
 
 COPY extended-entrypoint.sh /extended-entrypoint.sh
 
