@@ -355,25 +355,30 @@ def run(  # type: ignore
         command = f"timeout {timeout} {command}"
     log(f"Executing: {command}")
 
-    with subprocess.Popen(  # type: ignore
-        command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+    with subprocess.Popen(
+        command,
+        shell=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        universal_newlines=True,
     ) as process:
+
         try:
             stdout = ""
             stderr = ""
-            with process.stdout:
-                for line in iter(process.stdout.readline, ""):
+            with process.stdout:  # type: ignore
+                for line in iter(process.stdout.readline, ""):  # type: ignore
                     if not disable_stdout_logging:
                         log(line.rstrip("\n"))
                     stdout += line
-            with process.stderr:
-                for line in iter(process.stderr.readline, ""):
+            with process.stderr:  # type: ignore
+                for line in iter(process.stderr.readline, ""):  # type: ignore
                     if not disable_stderr_logging:
                         log(line.rstrip("\n"))
                     stderr += line
             exitcode = process.wait(timeout=timeout)
-            process.stdout.close()
-            process.stderr.close()
+            process.stdout.close()  # type: ignore
+            process.stderr.close()  # type: ignore
 
             if exit_on_error and exitcode != 0:
                 exit_process(exitcode)
