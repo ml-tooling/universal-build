@@ -1,3 +1,4 @@
+import os
 import sys
 from typing import Tuple
 
@@ -190,6 +191,57 @@ class TestBuildClass:
 
         if arg == "pypi_token":
             assert not cli_args
+
+    @pytest.mark.parametrize(
+        "cli_args_string",
+        [
+            "--my_token=111 --deployment-token=666 --my_bool",
+            "--my_token=111 --deployment-token 666 --my_bool",
+            "--my_token 111 --deployment-token 666 --my_bool",
+        ],
+    )
+    def test_arguments_passed_to_submodule(self, cli_args_string: str):
+        """Tests whether the cli args passed to a module will be passed
+        in the same way to a submodule. The reason is that the argparser
+        converts all dashes to underscores.
+        """
+        HERE = os.path.abspath(os.path.dirname(__file__))
+        build_file_path = os.path.join(HERE, "build.py")
+
+        completed_process = build_utils.run(
+            f"python -u {build_file_path} {cli_args_string}",
+            exit_on_error=False,
+        )
+        assert completed_process.returncode == 0
+
+    def test_arguments_passed_as_env_to_submodule(self):
+        """Tests whether the args passed as env variables to a module correctly to submodules."""
+        HERE = os.path.abspath(os.path.dirname(__file__))
+        build_file_path = os.path.join(HERE, "build.py")
+
+        completed_process = build_utils.run(
+            f"MY_TOKEN=111 python -u {build_file_path} --deployment-token 666 --my_bool",
+            exit_on_error=False,
+        )
+        assert completed_process.returncode == 0
+
+    @pytest.mark.parametrize(
+        "cli_args_string",
+        [
+            "--my-token=111 --deployment-token=666 --my_bool",
+            "--my_token=111 --deployment_token 666 --my_bool",
+            "--my_token 111 --deployment-token 666 --my-bool",
+        ],
+    )
+    def test_arguments_passed_to_submodule_error(self, cli_args_string: str):
+        """Tests whether the cli args passed to a module will be passed in the same way to a submodule. The reason is that the argparser converts all dashes to underscores."""
+        HERE = os.path.abspath(os.path.dirname(__file__))
+        build_file_path = os.path.join(HERE, "build.py")
+        completed_process = build_utils.run(
+            f"python -u {build_file_path} --my-token=111 --deployment-token=666 --my_bool",
+            exit_on_error=False,
+        )
+        assert completed_process.returncode != 0
 
 
 def _mocked_get_remote_git_tags() -> list:
