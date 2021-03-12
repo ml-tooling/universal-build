@@ -35,7 +35,7 @@ def main(args: dict) -> None:
         build_python.build_distribution(exit_on_error=True)
 
     if args.get(build_utils.FLAG_CHECK):
-        build_python.code_checks(exit_on_error=True)
+        build_python.code_checks(exit_on_error=True, safety=False)
 
     if args.get(build_utils.FLAG_TEST):
         # Remove coverage files

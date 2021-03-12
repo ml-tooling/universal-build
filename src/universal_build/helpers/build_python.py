@@ -326,7 +326,7 @@ def code_checks(
 
     if not successful:
         build_utils.log(
-            "Style and linting checks failed. Please check the logs and fix the issues."
+            "Code checks (style, linting, safety, ...) failed. Please check the logs and fix the issues."
         )
         build_utils.exit_process(1)
 
