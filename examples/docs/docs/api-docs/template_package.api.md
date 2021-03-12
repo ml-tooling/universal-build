@@ -78,14 +78,6 @@ slow_call_to_external_url() → dict
 
 
 
----
-
-#### <kbd>property</kbd> fields
-
-
-
-
-
 
 
 
