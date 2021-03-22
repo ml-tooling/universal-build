@@ -40,7 +40,9 @@ def parse_arguments(
     )
 
 
-def check_image(image: str, trivy: bool = True, exit_on_error: bool = True) -> None:
+def check_image(
+    image: str, trivy: bool = True, exit_on_error: bool = True
+) -> subprocess.CompletedProcess:
     """Run vulnerability checks on Dockerimage.
 
     Args:
@@ -51,11 +53,12 @@ def check_image(image: str, trivy: bool = True, exit_on_error: bool = True) -> N
     build_utils.log("Run vulnerability checks on docker image:")
 
     if trivy and build_utils.command_exists("trivy", exit_on_error=exit_on_error):
-        build_utils.run(
+        return build_utils.run(
             f"trivy image --timeout=20m0s --exit-code 1 --severity HIGH,CRITICAL {image}",
             exit_on_error=exit_on_error,
         )
 
+    return subprocess.CompletedProcess(args="", returncode=-1, stdout="", stderr="")
     # TODO: Implement dockl container scan
 
 
