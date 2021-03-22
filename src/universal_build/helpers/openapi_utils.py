@@ -18,13 +18,13 @@ class OpenApiGenerator(Enum):
         "openapi-generator-cli.jar",
         "https://repo1.maven.org/maven2/org/openapitools/openapi-generator-cli/5.0.1/openapi-generator-cli-5.0.1.jar",
         "openapi_client",
-        "java -jar {cli_path} generate -i {openapi_spec_file} -g {target_language} -o {output_path} {additional_properties}",
+        "java -jar {cli_path} generate -i {openapi_spec_file} -g {target_language} -o {output_path} {additional_flags} {additional_properties}",
     )
     SWAGGER_CODEGEN = (
         "swagger-codegen-cli.jar",
         "https://repo1.maven.org/maven2/io/swagger/codegen/v3/swagger-codegen-cli/3.0.23/swagger-codegen-cli-3.0.23.jar",
         "client",
-        "java -jar {cli_path} generate -i {openapi_spec_file} -l {target_language} -o {output_path} {additional_properties}",
+        "java -jar {cli_path} generate -i {openapi_spec_file} -l {target_language} -o {output_path} {additional_flags} {additional_properties}",
     )
 
     def __init__(
@@ -51,6 +51,7 @@ class OpenApiGenerator(Enum):
         target_language: str,
         work_dir: str,
         additional_properties: str = None,
+        additional_flags: str = "",
     ) -> str:
 
         if additional_properties:
@@ -64,6 +65,7 @@ class OpenApiGenerator(Enum):
             target_language=target_language,
             output_path=self.get_output_path(work_dir=work_dir),
             additional_properties=additional_properties,
+            additional_flags=additional_flags,
         )
 
 
@@ -95,6 +97,7 @@ def generate_openapi_client(
     work_dir: str = DEFAULT_TEMP_DIR,
     client_generator: OpenApiGenerator = OpenApiGenerator.OPENAPI_CODEGEN,
     additional_properties: str = "",
+    additional_flags: str = "",
 ) -> Union[str, None]:
     """Generate an open api client.
 
@@ -129,6 +132,7 @@ def generate_openapi_client(
             target_language=target_language,
             work_dir=work_dir,
             additional_properties=additional_properties,
+            additional_flags=additional_flags,
         )
     )
 
@@ -139,6 +143,7 @@ def generate_openapi_js_client(
     openapi_spec_file: str,
     work_dir: str = DEFAULT_TEMP_DIR,
     client_generator: OpenApiGenerator = OpenApiGenerator.OPENAPI_CODEGEN,
+    additional_flags: str = "",
 ) -> Union[str, None]:
     """Calls `generate_openapi_client` to generate a javascript client.
 
@@ -150,4 +155,5 @@ def generate_openapi_js_client(
         target_language="javascript",
         client_generator=client_generator,
         additional_properties="usePromises=true",
+        additional_flags=additional_flags,
     )
