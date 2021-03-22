@@ -31,7 +31,7 @@ def main(args: dict) -> None:
             image=build_docker.get_image_name(name=COMPONENT_NAME, tag=version),
             exit_on_error=exit_on_error,
         )
-        if completed_process.returncode != 0:
+        if completed_process and completed_process.returncode != 0:
             build_utils.log(
                 f"The security check failed, but is ignored because {build_utils.FLAG_FORCE} flag is set."
             )
