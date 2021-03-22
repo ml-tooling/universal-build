@@ -11,7 +11,7 @@ OpenAPI utilities.
 
 ---
 
-<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/helpers/openapi_utils.py#L92"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/helpers/openapi_utils.py#L94"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `generate_openapi_client`
 
@@ -20,8 +20,9 @@ generate_openapi_client(
     openapi_spec_file: str,
     target_language: str,
     work_dir: str = '/temp',
-    client_generator: OpenApiGenerator = <OPENAPI_CODEGEN: ('openapi-generator-jar', 'https://org/maven2/org/openapitools/openapi-generator-cli/1/openapi-generator-cli-jar', 'openapi_client', 'java -jar {cli_path} generate -i {openapi_spec_file} -g {target_language} -o {output_path} {additional_properties}')>,
-    additional_properties: str = ''
+    client_generator: OpenApiGenerator = <OPENAPI_CODEGEN: ('openapi-generator-jar', 'https://org/maven2/org/openapitools/openapi-generator-cli/1/openapi-generator-cli-jar', 'openapi_client', 'java -jar {cli_path} generate -i {openapi_spec_file} -g {target_language} -o {output_path} {additional_flags} {additional_properties}')>,
+    additional_properties: str = '',
+    additional_flags: str = ''
 ) → Union[str, NoneType]
 ```
 
@@ -48,7 +49,7 @@ The passed OpenAPI specification file will be taken to generate a client using t
 
 ---
 
-<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/helpers/openapi_utils.py#L138"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/helpers/openapi_utils.py#L142"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `generate_openapi_js_client`
 
@@ -56,7 +57,8 @@ The passed OpenAPI specification file will be taken to generate a client using t
 generate_openapi_js_client(
     openapi_spec_file: str,
     work_dir: str = '/temp',
-    client_generator: OpenApiGenerator = <OPENAPI_CODEGEN: ('openapi-generator-jar', 'https://org/maven2/org/openapitools/openapi-generator-cli/1/openapi-generator-cli-jar', 'openapi_client', 'java -jar {cli_path} generate -i {openapi_spec_file} -g {target_language} -o {output_path} {additional_properties}')>
+    client_generator: OpenApiGenerator = <OPENAPI_CODEGEN: ('openapi-generator-jar', 'https://org/maven2/org/openapitools/openapi-generator-cli/1/openapi-generator-cli-jar', 'openapi_client', 'java -jar {cli_path} generate -i {openapi_spec_file} -g {target_language} -o {output_path} {additional_flags} {additional_properties}')>,
+    additional_flags: str = ''
 ) → Union[str, NoneType]
 ```
 
