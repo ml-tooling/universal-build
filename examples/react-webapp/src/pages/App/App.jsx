@@ -2,10 +2,9 @@ import React from 'react';
 
 import { useTranslation } from 'react-i18next';
 
-import logo from './logo.svg';
 import './App.css';
-
 import Button from '../../components/Button';
+import logo from './logo.svg';
 
 function App() {
   const { t } = useTranslation();
