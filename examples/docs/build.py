@@ -17,7 +17,9 @@ def main(args: dict) -> None:
         build_mkdocs.build_mkdocs(exit_on_error=True)
 
     if args.get(build_utils.FLAG_CHECK):
-        build_mkdocs.lint_markdown(exit_on_error=True)
+        # TODO: Markdown linting
+        # build_mkdocs.lint_markdown(exit_on_error=False)
+        pass
 
     if args.get(build_utils.FLAG_RELEASE):
         # TODO: Do not publish project-template

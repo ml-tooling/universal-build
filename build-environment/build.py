@@ -24,7 +24,7 @@ def main(args: dict) -> None:
         build_docker.build_docker_image(COMPONENT_NAME, version, exit_on_error=True)
 
     if args.get(build_utils.FLAG_CHECK):
-        build_docker.lint_dockerfile(exit_on_error=True)
+        build_docker.lint_dockerfile(exit_on_error=False)
 
         exit_on_error = False if build_utils.FLAG_FORCE else True
         completed_process = build_docker.check_image(
