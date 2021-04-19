@@ -201,7 +201,7 @@ def code_checks(
     pydocstyle: bool = True,
     mypy: bool = True,
     flake8: bool = True,
-    safety: bool = True,
+    safety: bool = False,
     exit_on_error: bool = True,
 ) -> None:
     """Run linting and style checks.
@@ -212,7 +212,7 @@ def code_checks(
         pydocstyle (bool, optional): Activate pydocstyle docstring check. Defaults to True.
         mypy (bool, optional): Activate mypy typing check. Defaults to True.
         flake8 (bool, optional): Activate flake8 linting check. Defaults to True.
-        safety (bool, optional): Activate saftey check via pipenv. Defaults to True.
+        safety (bool, optional): Activate saftey check via pipenv. Defaults to False.
         exit_on_error (bool, optional): If `True`, exit process as soon as error occures. Defaults to True.
     """
 
