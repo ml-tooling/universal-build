@@ -72,7 +72,11 @@ Run vulnerability checks on Dockerimage.
 ## <kbd>function</kbd> `lint_dockerfile`
 
 ```python
-lint_dockerfile(hadolint: bool = True, exit_on_error: bool = True) → None
+lint_dockerfile(
+    hadolint: bool = True,
+    dockerfile: str = 'Dockerfile',
+    exit_on_error: bool = True
+) → None
 ```
 
 Run hadolint on the Dockerfile. 
@@ -82,12 +86,13 @@ Run hadolint on the Dockerfile.
 **Args:**
  
  - <b>`hadolint`</b> (bool, optional):  Activate hadolint dockerfile linter. Defaults to `True`. 
+ - <b>`dockerfile`</b> (str, optional):  Specify a specific Dockerfile. If not specified, the default `Dockerfile` wil be used. 
  - <b>`exit_on_error`</b> (bool, optional):  Exit process if an error occurs. Defaults to `True`. 
 
 
 ---
 
-<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/helpers/build_docker.py#L84"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/helpers/build_docker.py#L87"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `get_image_name`
 
@@ -114,7 +119,7 @@ Get a valid versioned image name.
 
 ---
 
-<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/helpers/build_docker.py#L101"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/helpers/build_docker.py#L104"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `build_docker_image`
 
@@ -124,6 +129,8 @@ build_docker_image(
     version: str,
     build_args: str = '',
     docker_image_prefix: str = '',
+    dockerfile: Optional[str] = None,
+    additional_build_args: str = '',
     exit_on_error: bool = True
 ) → CompletedProcess
 ```
@@ -138,6 +145,7 @@ Build a docker image from a Dockerfile in the working directory.
  - <b>`version`</b> (str):  Version to use as tag. 
  - <b>`build_args`</b> (str, optional):  Add additional build arguments for docker build. 
  - <b>`docker_image_prefix`</b> (str, optional):  The prefix added to the name to indicate an organization on DockerHub or a completely different repository. 
+ - <b>`dockerfile`</b> (str, optional):  Specify a specific Dockerfile. If not specified, the default `Dockerfile` wil be used. 
  - <b>`exit_on_error`</b> (bool, optional):  If `True`, exit process as soon as an error occurs. 
 
 
@@ -149,7 +157,7 @@ Build a docker image from a Dockerfile in the working directory.
 
 ---
 
-<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/helpers/build_docker.py#L152"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="https://github.com/ml-tooling/universal-build/blob/main/src/universal_build/helpers/build_docker.py#L165"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ## <kbd>function</kbd> `release_docker_image`
 
