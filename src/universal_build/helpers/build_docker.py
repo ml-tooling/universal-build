@@ -3,7 +3,7 @@
 import argparse
 import os
 import subprocess
-from typing import List
+from typing import List, Optional
 
 from universal_build import build_utils
 
@@ -62,11 +62,14 @@ def check_image(
     # TODO: Implement dockl container scan
 
 
-def lint_dockerfile(hadolint: bool = True, exit_on_error: bool = True) -> None:
+def lint_dockerfile(
+    hadolint: bool = True, dockerfile: str = "Dockerfile", exit_on_error: bool = True
+) -> None:
     """Run hadolint on the Dockerfile.
 
     Args:
         hadolint (bool, optional): Activate hadolint dockerfile linter. Defaults to `True`.
+        dockerfile (str, optional): Specify a specific Dockerfile. If not specified, the default `Dockerfile` wil be used.
         exit_on_error (bool, optional): Exit process if an error occurs. Defaults to `True`.
     """
     build_utils.log("Run linters and style checks:")
@@ -77,7 +80,7 @@ def lint_dockerfile(hadolint: bool = True, exit_on_error: bool = True) -> None:
             config_file_arg = "--config=.hadolint.yml"
 
         build_utils.run(
-            f"hadolint {config_file_arg} Dockerfile", exit_on_error=exit_on_error
+            f"hadolint {config_file_arg} {dockerfile}", exit_on_error=exit_on_error
         )
 
 
@@ -103,6 +106,8 @@ def build_docker_image(
     version: str,
     build_args: str = "",
     docker_image_prefix: str = "",
+    dockerfile: Optional[str] = None,
+    additional_build_args: str = "",
     exit_on_error: bool = True,
 ) -> subprocess.CompletedProcess:
     """Build a docker image from a Dockerfile in the working directory.
@@ -112,6 +117,7 @@ def build_docker_image(
         version (str): Version to use as tag.
         build_args (str, optional): Add additional build arguments for docker build.
         docker_image_prefix (str, optional): The prefix added to the name to indicate an organization on DockerHub or a completely different repository.
+        dockerfile (str, optional): Specify a specific Dockerfile. If not specified, the default `Dockerfile` wil be used.
         exit_on_error (bool, optional): If `True`, exit process as soon as an error occurs.
 
     Returns:
@@ -122,8 +128,15 @@ def build_docker_image(
 
     versioned_tag = get_image_name(name=name, tag=version)
     latest_tag = get_image_name(name=name, tag="latest")
+
+    dockerfile_command = ""
+    if dockerfile:
+        dockerfile_command = " -f " + dockerfile
+
     completed_process = build_utils.run(
-        "docker build -t "
+        "docker build "
+        + dockerfile_command
+        + "-t "
         + versioned_tag
         + " -t "
         + latest_tag
