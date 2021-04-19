@@ -62,7 +62,10 @@ class _Version:
     def get_pip_compatible_string(version: str) -> str:
         # See pip's version schema (see https://github.com/pypa/pip/issues/9188 , https://www.python.org/dev/peps/pep-0440/)
         # pip compatible string: r"^v?([0-9]+)\.([0-9]+)\.([0-9]+)(?:\.[0-9A-Za-z]+)*?(?:\+[0-9A-Za-z-]+)?$"
-        return version.replace("-dev.", ".dev1+")
+        if "-dev." in version:
+            return version.replace("-dev.", ".dev1+")
+        # Version does not have the branch name suffix
+        return version.replace("-dev", ".dev1")
 
     @staticmethod
     def get_version_from_string(version: str) -> Optional["_Version"]:
@@ -179,9 +182,15 @@ def parse_arguments(
         exit_process(EXIT_CODE_INVALID_ARGUMENTS)
 
     try:
+        force = args.get(FLAG_FORCE)
+
+        # TODO: temp workaround: always use force in dev modus
+        if not args.get(FLAG_RELEASE):
+            force = True
+
         version: Optional[_Version] = _get_version(
             args.get(FLAG_VERSION),  # type: ignore
-            args.get(FLAG_FORCE),  # type: ignore
+            force,  # type: ignore
             existing_versions=_get_version_tags(),
         )
     except _VersionInvalidFormatException as e:
@@ -481,7 +490,7 @@ def copy(
 
     Example:
     ```
-    copy_openapi_client(
+    copy(
         source_dir="./temp/generated-openapi-client/src/",
         target_dir="./webapp/src/services/example-client/"
     )
@@ -724,7 +733,7 @@ def _get_version(
 
     Args:
         version (str): The version to be checked for validity. It will be tried to be transformed into a build_utils.Version object.
-        force (bool, optional): If set tu true, the version can be equal or smaller than existing patch version version numbers
+        force (bool, optional): If set to true, the version can be equal or smaller than existing patch version version numbers
         existing_versions (list, optional): The list of versions to be checked against
 
     Returns:
@@ -772,8 +781,10 @@ def _get_current_branch_version(
 
 
 def _get_dev_suffix(branch_name: Optional[str]) -> str:
-    branch_name = branch_name or ""
-    return "dev." + branch_name
+    # TODO: ignore branch name as temp fix
+    # branch_name = branch_name or ""
+    # return "dev." + branch_name
+    return "dev"
 
 
 class _VersionInvalidFormatException(Exception):
