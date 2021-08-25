@@ -19,8 +19,8 @@ OpenAPI utilities.
 generate_openapi_client(
     openapi_spec_file: str,
     target_language: str,
-    work_dir: str = '/temp',
-    client_generator: OpenApiGenerator = <OPENAPI_CODEGEN: ('openapi-generator-jar', 'https://org/maven2/org/openapitools/openapi-generator-cli/1/openapi-generator-cli-jar', 'openapi_client', 'java -jar {cli_path} generate -i {openapi_spec_file} -g {target_language} -o {output_path} {additional_flags} {additional_properties}')>,
+    work_dir: str = './temp',
+    client_generator: OpenApiGenerator = <OpenApiGenerator.OPENAPI_CODEGEN: ('openapi-generator-cli.jar', 'https://repo1.maven.org/maven2/org/openapitools/openapi-generator-cli/5.0.1/openapi-generator-cli-5.0.1.jar', 'openapi_client', 'java -jar {cli_path} generate -i {openapi_spec_file} -g {target_language} -o {output_path} {additional_flags} {additional_properties}')>,
     additional_properties: str = '',
     additional_flags: str = ''
 ) → Union[str, NoneType]
@@ -56,8 +56,8 @@ The passed OpenAPI specification file will be taken to generate a client using t
 ```python
 generate_openapi_js_client(
     openapi_spec_file: str,
-    work_dir: str = '/temp',
-    client_generator: OpenApiGenerator = <OPENAPI_CODEGEN: ('openapi-generator-jar', 'https://org/maven2/org/openapitools/openapi-generator-cli/1/openapi-generator-cli-jar', 'openapi_client', 'java -jar {cli_path} generate -i {openapi_spec_file} -g {target_language} -o {output_path} {additional_flags} {additional_properties}')>,
+    work_dir: str = './temp',
+    client_generator: OpenApiGenerator = <OpenApiGenerator.OPENAPI_CODEGEN: ('openapi-generator-cli.jar', 'https://repo1.maven.org/maven2/org/openapitools/openapi-generator-cli/5.0.1/openapi-generator-cli-5.0.1.jar', 'openapi_client', 'java -jar {cli_path} generate -i {openapi_spec_file} -g {target_language} -o {output_path} {additional_flags} {additional_properties}')>,
     additional_flags: str = ''
 ) → Union[str, NoneType]
 ```
