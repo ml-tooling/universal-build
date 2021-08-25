@@ -77,7 +77,7 @@ RUN apt-get update \
         gcc \
         python3-dev \
     && ln -s /usr/bin/python3 /usr/bin/python \
-    && ln -s /usr/bin/pip3 /usr/bin/pip \
+    # && ln -s /usr/bin/pip3 /usr/bin/pip \
     && pip install --no-cache-dir \
         setuptools==57.* \
         wheel==0.* \
