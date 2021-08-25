@@ -79,19 +79,19 @@ RUN apt-get update \
     && ln -s /usr/bin/python3 /usr/bin/python \
     && ln -s /usr/bin/pip3 /usr/bin/pip \
     && pip install --no-cache-dir \
-        setuptools==50.* \
+        setuptools==57.* \
         wheel==0.* \
         flake8==3.* \
         pytest==6.* \
         twine==3.* \
         mypy==0.* \
         pytest-cov==2.* \
-        black==20.8b1 \
-        pydocstyle==5.* \
+        black==21.7b0 \
+        pydocstyle==6.* \
         isort==5.* \
-        docker==4.* \
-        nox==2020.8.* \
-        pipenv==2020.11.* \
+        docker==5.* \
+        nox==2021.6.* \
+        pipenv==2021.5.* \
         better-exceptions==0.* \
         # Fix safety problems
         cryptography>=3.2.1\
