@@ -2,7 +2,6 @@
 
 import argparse
 import os
-import pathlib
 import re
 import shutil
 import subprocess
@@ -491,8 +490,8 @@ def copy(
     Example:
     ```
     copy(
-        source_dir="./temp/generated-openapi-client/src/",
-        target_dir="./webapp/src/services/example-client/"
+        source_path="./temp/generated-openapi-client/src/",
+        target_path="./webapp/src/services/example-client/"
     )
     ```
 
@@ -506,39 +505,22 @@ def copy(
     Returns:
         bool: Returns `True` if the copy process was successful and `False` otherwise; if `exit_on_error` is True, the process exists instead of returning `False`.
     """
-    if preserve_target:
-        try:
-            for file in pathlib.Path(f"{src_path}").iterdir():
-                file_name = str(file.parts[-1])
-                target_file_path = f"{target_path}{file_name}"
-                print(target_file_path)
-                # Delete existing client files to be replaced with the new ones
-                path = pathlib.Path(target_file_path)
-                if path.exists():
-                    if path.is_file():
-                        path.unlink()
-                    elif path.is_dir():
-                        shutil.rmtree(target_file_path)
-                else:
-                    path.mkdir(parents=True, exist_ok=True)
-                shutil.move(str(file), target_file_path)
-        except FileNotFoundError as e:
-            log(str(e))
-            if exit_on_error:
-                exit_process(1)
-            else:
-                return False
-    else:
-        try:
+    try:
+        if preserve_target:
+            # Use distutils copy tree method to preserve target data
+            # https://stackoverflow.com/questions/1868714/how-do-i-copy-an-entire-directory-of-files-into-an-existing-directory-using-pyth
+            from distutils.dir_util import copy_tree
+            copy_tree(src_path, target_path)
+        else:
             if os.path.exists(target_path):
                 shutil.rmtree(target_path)
             shutil.copytree(src_path, target_path)
-        except Exception as ex:
-            log("Failed to duplicate folder: " + str(ex))
-            if exit_on_error:
-                exit_process(1)
-            else:
-                return False
+    except Exception as ex:
+        log("Failed to duplicate folder: " + str(ex))
+        if exit_on_error:
+            exit_process(1)
+        else:
+            return False
 
     return True
 
