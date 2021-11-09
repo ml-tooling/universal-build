@@ -43,6 +43,7 @@ setup(
     license=LICENSE,
     packages=find_packages(where="src", exclude=("tests", "test", "examples", "docs")),
     package_dir={"": "src"},
+    # PEP 561: https://mypy.readthedocs.io/en/stable/installed_packages.html
     py_modules=[splitext(basename(path))[0] for path in glob("src/*.py")],
     zip_safe=False,
     install_requires=[
@@ -74,6 +75,7 @@ setup(
     package_data={
         # If there are data files included in your packages that need to be
         # 'sample': ['package_data.dat'],
+        MAIN_PACKAGE: ["py.typed"]
     },
     classifiers=[
         # TODO: Update based on https://pypi.org/classifiers/
