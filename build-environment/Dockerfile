@@ -79,19 +79,19 @@ RUN apt-get update \
     && ln -s /usr/bin/python3 /usr/bin/python \
     # && ln -s /usr/bin/pip3 /usr/bin/pip \
     && pip install --no-cache-dir \
-        setuptools==57.* \
+        setuptools==58.* \
         wheel==0.* \
         flake8==3.* \
         pytest==6.* \
         twine==3.* \
         mypy==0.* \
-        pytest-cov==2.* \
-        black==21.7b0 \
+        pytest-cov==3.* \
+        black==21.10b0 \
         pydocstyle==6.* \
         isort==5.* \
         docker==5.* \
-        nox==2021.6.* \
-        pipenv==2021.5.* \
+        nox==2021.10.* \
+        pipenv==2021.11.* \
         better-exceptions==0.* \
         # Fix safety problems
         cryptography>=3.2.1\
@@ -116,7 +116,7 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 # Install markdown lint tool
-RUN npm install -g markdownlint@^0.21.1 markdownlint-cli@^0.24.0
+RUN npm install -g markdownlint@^0.24.0 markdownlint-cli@^0.29.0
 
 # Workaround to get ssh working in act and github actions
 RUN mkdir -p /github/home/.ssh/ \
@@ -142,7 +142,7 @@ COPY ./resources/universal-build.tar.gz $RESOURCES_PATH/universal-build.tar.gz
 RUN pip install $RESOURCES_PATH/universal-build.tar.gz
 
 # Install hadolint - Dockerfile linter
-RUN curl -fsSL https://github.com/hadolint/hadolint/releases/download/v1.16.3/hadolint-Linux-x86_64 -o /bin/hadolint \
+RUN curl -fsSL https://github.com/hadolint/hadolint/releases/download/v2.8.0/hadolint-Linux-x86_64 -o /bin/hadolint \
     && chmod +x /bin/hadolint
 
 # Install trivy - Vulnerability Scanner for Containers
